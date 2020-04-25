@@ -2,7 +2,6 @@
 
 # Distutils setup script for Boodler.
 
-import distutils.log
 import os
 import os.path
 import re
@@ -10,79 +9,6 @@ import subprocess
 import sys
 
 from setuptools import setup, Command, Extension
-
-
-def append_if(cond, list1, list2):
-    """append_if(cond, list1, list2) -> list
-
-    Return a copy of list1, with list2 appended on if the condition is
-    true.
-    """
-
-    res = list(list1)
-    if cond:
-        res.extend(list2)
-    return res
-
-
-def check_header_available(path):
-    """check_header_available(path) -> func(includedirs) -> bool
-
-    Determine whether the given header is available in any of the
-    configured include directories. The path should be in the usual
-    C format: relative, forward slashes. (E.g.: 'sys/time.h')
-
-    This function is curried. check_header_available(path) does not
-    return a result; instead, it returns a function f(ls) which you
-    can call when you have a list of include directories to check.
-    The f(ls) function is what returns the boolean result.
-
-    Confused? You would use this like this:
-
-    fn = check_header_available('one.h')
-
-    Now fn(ls) tells you whether 'one.h' is in any of the include
-    directories listed in ls. It's set up this way because we don't
-    know the include directories until compile time.
-    """
-
-    pathels = path.split('/')
-
-    def resfunc(ls):
-        for dir in ls:
-            filename = os.path.join(dir, *pathels)
-            if os.path.isfile(filename):
-                return True
-        distutils.log.info("unable to locate header '%s'", path)
-        return False
-
-    return resfunc
-
-
-def check_all_available(*funcs):
-    """check_all_available(func1, func2, ...) -> func(includedirs) -> bool
-
-    Determine whether all of the given functions return True. This
-    function is curried.
-
-    There's no reason for that to make sense to you. You use it like this:
-
-    fn = check_all_available(
-        check_header_available('one.h'),
-        check_header_available('two.h') )
-
-    Now fn(ls) is a function that checks to make sure *both* 'one.h' and
-    'two.h' are available. You pass a list of include directories to
-    fn().
-    """
-
-    def resfunc(ls):
-        for func in funcs:
-            if not func(ls):
-                return False
-        return True
-
-    return resfunc
 
 
 class BooExtension(Extension):
@@ -132,33 +58,14 @@ class local_generate_pydoc(Command):
     """
 
     description = 'generate pydoc HTML (not needed for build/install)'
-    user_options = [
-        ('build-dir=', 'b', 'build directory (.py files)'),
-        ('pydoc-dir=', 'd', 'output directory'),
-        ('index-template=', None, 'template for index.html'),
-    ]
-
-    def initialize_options(self):
-        self.build_dir = None
-        self.index_template = None
-        self.pydoc_dir = None
-
-    def finalize_options(self):
-        self.set_undefined_options('build', ('build_lib', 'build_dir'))
-
-        if self.index_template is None:
-            self.index_template = 'doc/pydoc_template'
-
-        if self.pydoc_dir is None:
-            self.pydoc_dir = 'doc/pydoc'
 
     def run(self):
-        abs_build_dir = os.path.abspath(self.build_dir)
-        abs_index_template = os.path.abspath(self.index_template)
+        abs_build_dir = os.path.abspath('build')
+        abs_index_template = os.path.abspath('doc/pydoc_template')
 
         curdir = os.getcwd()
         try:
-            os.chdir(self.pydoc_dir)
+            os.chdir('doc/pydoc')
             self._generate(abs_build_dir, abs_index_template)
         finally:
             os.chdir(curdir)
@@ -322,12 +229,12 @@ class local_generate_pydoc(Command):
 
 
 setup(
-    name='Boodler',
+    name='boodler-redux',
     version='3.0.0',
     description='A programmable soundscape tool',
-    author='Andrew Plotkin',
-    author_email='erkyrath@eblong.com',
-    url='http://boodler.org/',
+    author='Beau Gunderson',
+    author_email='beau@beaugunderson.com',
+    url='https://github.com/beaugunderson/boodler-redux',
     license='GNU LGPL',
     platforms=['MacOS X', 'POSIX'],
     classifiers=[
@@ -335,7 +242,8 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: End Users/Desktop',
-        'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
+        ('License :: OSI Approved :: GNU Library or '
+         'Lesser General Public License (LGPL)'),
         'Operating System :: POSIX',
         'Operating System :: MacOS :: MacOS X',
         'Programming Language :: Python :: 3',
