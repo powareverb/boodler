@@ -643,7 +643,7 @@ class Resources:
     def build_tree(self):
         """build_tree() -> dict
 
-        Construct a dict containing the namespaced groups and resources 
+        Construct a dict containing the namespaced groups and resources
         in this Resources object. Individual resources are represented by
         keys; groups are represented by dicts containing more groups
         and resources.
@@ -862,8 +862,8 @@ class File:
     def __repr__(self):
         if self.univname:
             return '<File \'./' + self.univname + '\'>'
-        else:
-            return '<File \'' + self.pathname + '\'>'
+
+        return '<File \'' + self.pathname + '\'>'
 
     def open(self, binary=False):
         """open(binary=False) -> file
@@ -872,12 +872,7 @@ class File:
         If binary is False, the file is opened with newline translation
         ('r'); otherwise, in binary mode ('rb').
         """
-        if binary:
-            mode = 'rb'
-        else:
-            mode = 'r'
-
-        return open(self.pathname, mode)
+        return open(self.pathname, 'rb' if binary else 'r')
 
 
 class MemFile(File):
@@ -915,31 +910,31 @@ class MemFile(File):
 
 # Regular expression for valid Python identifiers: letters, digits, and
 # underscores. (But not starting with a digit.)
-ident_name_regexp = re.compile('\\A[a-zA-Z_][a-zA-Z_0-9]*\\Z')
+ident_name_regexp = re.compile(r'\A[a-zA-Z_][a-zA-Z_0-9]*\Z')
 
 # Regular expression for valid package names: one or more elements,
 # separated by periods. Each element must contain only lower-case letters,
 # digits, and underscores. An element may not start with a digit.
-package_name_regexp = re.compile('\\A[a-z_][a-z_0-9]*(\.([a-z_][a-z_0-9]*))*\\Z')
+package_name_regexp = re.compile(r'\A[a-z_][a-z_0-9]*(\.([a-z_][a-z_0-9]*))*\Z')
 
 # Regular expression for valid resource names: one or more elements,
 # separated by periods. Each element must contain only letters, digits,
 # and underscores. An element may not start with a digit.
-resource_name_regexp = re.compile('\\A[a-zA-Z_][a-zA-Z_0-9]*(\.([a-zA-Z_][a-zA-Z_0-9]*))*\\Z')
+resource_name_regexp = re.compile(r'\A[a-zA-Z_][a-zA-Z_0-9]*(\.([a-zA-Z_][a-zA-Z_0-9]*))*\Z')
 
 # Regexp which matches one capital letter (as a group)
 capital_letter_regexp = re.compile('([A-Z])')
 
 # Regexp which matches a caret followed by one letter (as a group)
-caret_letter_regexp = re.compile('\\^([A-Za-z])')
+caret_letter_regexp = re.compile(r'\^([A-Za-z])')
 
 
 def parse_package_version_spec(val):
     """parse_package_version_spec(val) -> (pkgname, VersionNumber)
         or (pkgname, VersionSpec) or (pkgname, None)
 
-    Parse a package identifier together with its version spec 
-    (e.g., "org.boodler.sample:1.0") or exact version spec 
+    Parse a package identifier together with its version spec
+    (e.g., "org.boodler.sample:1.0") or exact version spec
     (e.g., "org.boodler.sample::1.0"). If neither is present,
     the second value of the return tuple will be None.
 

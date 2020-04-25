@@ -120,7 +120,7 @@ class PackageLoader:
     import_recorder = None
 
     def __init__(self, collecdir, boodler_api_vers=None, importing_ok=False):
-        if type(boodler_api_vers) in [str]:
+        if isinstance(boodler_api_vers, str):
             boodler_api_vers = Version(boodler_api_vers)
 
         self.boodler_api_vers = boodler_api_vers
@@ -170,7 +170,6 @@ class PackageLoader:
         is available. It generates PackageLoadError if the package
         was malformed in some way which prevented loading.
         """
-
         if isinstance(versionspec, str):
             try:
                 versionspec = SpecifierSet(versionspec)
@@ -178,27 +177,31 @@ class PackageLoader:
                 versionspec = Version(versionspec)
 
         pgroup = self.load_group(pkgname)
+
         if not pgroup.get_num_versions():
             raise PackageNotFoundError(pkgname, 'no versions available')
 
         if isinstance(versionspec, Version):
             if not pgroup.has_version(versionspec):
-                raise PackageNotFoundError(pkgname,
-                                           'version \'' + str(versionspec) + '\' not available')
+                raise PackageNotFoundError(
+                    pkgname, 'version \'' + str(versionspec) + '\' not available')
+
             vers = versionspec
-        elif (versionspec is None) or isinstance(versionspec, SpecifierSet):
+        elif versionspec is None or isinstance(versionspec, SpecifierSet):
             vers = pgroup.find_version_match(versionspec)
         else:
-            raise PackageLoadError(pkgname,
-                                   'load spec must be a string, VersionSpec, or VersionNumber')
+            raise PackageLoadError(
+                pkgname, 'load spec must be a string, VersionSpec, or VersionNumber')
 
         if not vers:
             raise PackageNotFoundError(pkgname, 'no version matching \'' + str(versionspec) + '\'')
 
         pkg = self.load_specific(pkgname, vers)
+
         if self.currently_importing:
             # Record what package imported this one, and with what spec
             self.currently_importing.imported_pkg_specs[pkgname] = versionspec
+
         return pkg
 
     def load_group(self, pkgname):
@@ -265,7 +268,7 @@ class PackageLoader:
             # (either of which may be nonexistent).
             pgroup.discover_versions(fl, external_versions)
         finally:
-            if not (fl is None):
+            if fl is not None:
                 fl.close()
 
         # Add the new group to the cache.
@@ -287,11 +290,11 @@ class PackageLoader:
         a package which is not part of any PackageGroup. That would
         leave the cache in a confusing state.)
         """
-
-        if type(vers) in [str]:
+        if isinstance(vers, str):
             vers = Version(vers)
 
         pkg = self.packages.get((pkgname, vers))
+
         if pkg:
             return pkg
 
@@ -336,8 +339,10 @@ class PackageLoader:
             resources = exrec.resources
         else:
             resourcesfile = os.path.join(dirname, Filename_Resources)
+
             if os.path.isfile(resourcesfile):
                 fl = open(resourcesfile, 'r')
+
                 try:
                     resources = boopak.pinfo.Resources(pkgname, fl)
                 finally:
@@ -353,6 +358,7 @@ class PackageLoader:
         # Valid; we can now add it to the cache.
         self.packages[(pkgname, vers)] = pkg
         self.package_names[pkg.encoded_name] = pkg
+
         return pkg
 
     def clear_cache(self):
@@ -720,8 +726,10 @@ class PackageLoader:
 
         if not self.importing_ok:
             raise Exception('this loader may not import package data!')
-        if not (pkg.content is None):
+
+        if pkg.content is not None:
             return
+
         if pkg.import_in_progress:
             raise Exception('package imported while import is in progress: ' + pkg.name)
 

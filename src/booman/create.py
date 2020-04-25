@@ -581,7 +581,7 @@ def resolve_dependency_metadata(dirname, pkgname, pkgvers, resources, metadata, 
 def resolve_argument_list(dirname, key, ag):
     arglist = None
 
-    argspec = inspect.getargspec(ag.init)
+    argspec = inspect.getfullargspec(ag.init)
     # argspec is (args, varargs, varkw, defaults)
     maxinitargs = None
     mininitargs = None

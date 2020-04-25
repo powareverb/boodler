@@ -59,11 +59,14 @@ class Sample:
     def queue_note(self, pitch, volume, pan, starttime, chan):
         if cboodle.is_sample_error(self.csamp):
             raise SampleError('sample is unplayable')
+
         if not cboodle.is_sample_loaded(self.csamp):
             if not (self.reloader is None):
                 self.reloader.reload(self)
+
             if not cboodle.is_sample_loaded(self.csamp):
                 raise SampleError('sample is unloaded')
+
         (panscx, panshx, panscy, panshy) = boodle.stereo.extend_tuple(pan)
 
         def closure(samp=self, chan=chan):
@@ -81,11 +84,14 @@ class Sample:
     def queue_note_duration(self, pitch, volume, pan, starttime, duration, chan):
         if cboodle.is_sample_error(self.csamp):
             raise SampleError('sample is unplayable')
+
         if not cboodle.is_sample_loaded(self.csamp):
             if not (self.reloader is None):
                 self.reloader.reload(self)
+
             if not cboodle.is_sample_loaded(self.csamp):
                 raise SampleError('sample is unloaded')
+
         (panscx, panshx, panscy, panshy) = boodle.stereo.extend_tuple(pan)
 
         def closure(samp=self, chan=chan):
@@ -107,19 +113,23 @@ class Sample:
         )
         chan.addnote()
         self.refcount += 1
+
         if self.lastused < starttime + dur:
             self.lastused = starttime + dur
+
         return dur
 
     def get_info(self, pitch=1.0):
         if cboodle.is_sample_error(self.csamp):
             raise SampleError('sample is unplayable')
+
         res = cboodle.sample_info(self.csamp)
         ratio = float(res[0]) * float(pitch) * float(cboodle.framespersec())
+
         if len(res) == 2:
             return (float(res[1]) / ratio, None)
-        else:
-            return (float(res[1]) / ratio, (float(res[2]) / ratio, float(res[3]) / ratio))
+
+        return (float(res[1]) / ratio, (float(res[2]) / ratio, float(res[3]) / ratio))
 
 
 class MixinSample(Sample):
@@ -129,16 +139,13 @@ class MixinSample(Sample):
         self.minvals = [rn.min for rn in ranges]
         self.default = default
 
-        if filename is None:
-            filename = '<constructed>'
-        self.filename = filename
-
         if modname:
             self.__module__ = modname
 
-        self.lastused = 0
-        self.refcount = 0
-        self.csamp = None
+        if filename is None:
+            filename = '<constructed>'
+
+        super().__init__(filename, None)
 
     def find(self, pitch):
         pos = bisect.bisect(self.minvals, pitch)
@@ -280,26 +287,26 @@ def get_info(samp, pitch=1):
     return samp.get_info(pitch)
 
 
-class MixIn:
+class MixIn(type):
     """MixIn: base class for statically declared mix-in samples.
 
     To use this, declare a construct:
 
     class your_sample_name(MixIn):
         ranges = [
-            MixIn.range(...),
-            MixIn.range(...),
-            MixIn.range(...),
+            MixIn.Range(...),
+            MixIn.Range(...),
+            MixIn.Range(...),
         ]
         default = MixIn.default(...)
 
     A range declaration looks like
 
-        MixIn.range(maxval, sample)
+        MixIn.Range(maxval, sample)
     or
-        MixIn.range(minval, maxval, sample)
+        MixIn.Range(minval, maxval, sample)
     or
-        MixIn.range(minval, maxval, sample, pitch=1.0, volume=1.0)
+        MixIn.Range(minval, maxval, sample, pitch=1.0, volume=1.0)
 
     If you don't give a minval, the maxval of the previous range is used.
     You may use the constants MixIn.MIN and MixIn.MAX to represent the
@@ -311,7 +318,7 @@ class MixIn:
     or
         MixIn.default(sample, pitch=1.0, volume=1.0)
 
-    The default declaration is option. (As are, again, the pitch and
+    The default declaration is optional. (As are, again, the pitch and
     volume arguments.)
 
     When your declaration is complete, your_sample_name will magically
@@ -321,33 +328,43 @@ class MixIn:
     MIN = 0.0
     MAX = 1000000.0
 
+    def __new__(mcs, name, bases, classdict):
+        return MixinSample(
+            '<' + name + '>',
+            MixIn.sort_mixin_ranges(classdict['ranges']),
+            classdict.get('default', None),
+            classdict['__module__'])
+
+    @staticmethod
     def default(samp, pitch=None, volume=None):
         if samp is None:
             raise SampleError('default must have a sample')
-        return MixIn.range(MixIn.MIN, MixIn.MAX, samp, pitch=pitch, volume=volume)
 
-    default = staticmethod(default)
+        return MixIn.Range(MixIn.MIN, MixIn.MAX, samp, pitch=pitch, volume=volume)
 
     @total_ordering
-    class range:
+    class Range:
 
         def __init__(self, arg1, arg2, arg3=None, pitch=None, volume=None):
             if arg3 is None:
-                (min, max, samp) = (None, arg1, arg2)
+                (_min, _max, samp) = (None, arg1, arg2)
             else:
-                (min, max, samp) = (arg1, arg2, arg3)
+                (_min, _max, samp) = (arg1, arg2, arg3)
+
             if samp is None:
                 raise SampleError('range must have a sample')
-            if max is None:
+
+            if _max is None:
                 raise SampleError('range must have a maximum value')
 
-            (self.min, self.max) = (min, max)
+            (self.min, self.max) = (_min, _max)
+
             self.sample = samp
             self.pitch = pitch
             self.volume = volume
 
         def __repr__(self):
-            return '<range %s, %s>' % (self.min, self.max)
+            return '<Range %s, %s>' % (self.min, self.max)
 
         def __eq__(self, other):
             return self.min == other.min and self.max == other.max
@@ -356,36 +373,30 @@ class MixIn:
             self_min_less = False
             self_max_less = False
 
-            if not (self.min is None or other.min is None):
+            if self.min is not None and other.min is not None:
                 self_min_less = self.min < other.min
 
-            if not (self.max is None or other.max is None):
+            if self.max is not None and other.max is not None:
                 self_max_less = self.max < other.max
 
             return self_min_less or self_max_less
 
-    def __class__(name, bases, dic):
-        ranges = dic['ranges']
-        default = dic.get('default', None)
-        modname = dic['__module__']
-
-        MixIn.sort_mixin_ranges(ranges)
-        return MixinSample('<' + name + '>', ranges, default, modname)
-
-    __class__ = staticmethod(__class__)
-
+    @staticmethod
     def sort_mixin_ranges(ranges):
         ranges.sort()
 
         lastmin = 0.0
+
         for rn in ranges:
             if rn.min is None:
                 rn.min = lastmin
+
             if rn.min > rn.max:
                 raise SampleError('range\'s min must be less than its max')
+
             lastmin = rn.max
 
-    sort_mixin_ranges = staticmethod(sort_mixin_ranges)
+        return ranges
 
 
 class SampleLoader:
@@ -461,12 +472,13 @@ class AifcLoader(SampleLoader):
         loopstart = -1
         loopend = -1
 
-        if not (markers is None):
+        if markers is not None:
             for (mark, pos, name) in markers:
                 if mark == 1:
                     loopstart = pos
                 elif mark == 2:
                     loopend = pos
+
         if loopstart < 0 or loopend < 0:
             loopstart = -1
             loopend = -1
@@ -545,7 +557,7 @@ class MixinLoader(SampleLoader):
         modname = None
 
         if isinstance(filename, boopak.pinfo.File):
-            afl = filename.open(True)
+            afl = filename.open()
             modname = filename.package.encoded_name
         else:
             dirname = os.path.dirname(filename)
@@ -558,34 +570,44 @@ class MixinLoader(SampleLoader):
 
         for line in linelist:
             tok = line.split()
-            if len(tok) == 0:
+
+            if not tok:
                 continue
+
             if tok[0].startswith('#'):
                 continue
+
             if tok[0] == 'range':
                 if len(tok) < 4:
                     raise SampleError('range and filename required after range')
+
                 tup = self.parseparam(filename, dirname, tok[3:])
+
                 if tok[1] == '-':
                     startval = None
                 else:
                     startval = float(tok[1])
+
                 if tok[2] == '-':
                     endval = MixIn.MAX
                 else:
                     endval = float(tok[2])
-                rn = MixIn.range(startval, endval, tup[0], pitch=tup[1], volume=tup[2])
+
+                rn = MixIn.Range(startval, endval, tup[0], pitch=tup[1], volume=tup[2])
+
                 ranges.append(rn)
             elif tok[0] == 'else':
                 if len(tok) < 2:
                     raise SampleError('filename required after else')
+
                 tup = self.parseparam(filename, dirname, tok[1:])
                 rn = MixIn.default(tup[0], pitch=tup[1], volume=tup[2])
                 defval = rn
             else:
                 raise SampleError('unknown statement in mixin: ' + tok[0])
 
-        MixIn.sort_mixin_ranges(ranges)
+        ranges = MixIn.sort_mixin_ranges(ranges)
+
         return MixinSample(filename, ranges, defval, modname)
 
     def parseparam(self, filename, dirname, tok):
@@ -603,6 +625,7 @@ class MixinLoader(SampleLoader):
         if len(tok) > 2:
             if tok[2] != '-':
                 volume = float(tok[2])
+
         if len(tok) > 1:
             if tok[1] != '-':
                 pitch = float(tok[1])

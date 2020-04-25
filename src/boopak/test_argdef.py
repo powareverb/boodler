@@ -7,14 +7,12 @@
 import unittest
 import inspect
 
-from boopak.argdef import *
-from boopak import sparse
 from boodle import sample, agent, builtin
-
-from boopak.argdef import node_to_value, value_to_node
-from boopak.argdef import node_to_type, type_to_node
-from boopak.argdef import resolve_value
-from boopak.argdef import ArgListWrapper, ArgTupleWrapper
+from boopak import sparse
+from boopak.argdef import (
+    Arg, ArgDefError, ArgExtra, ArgList, ListOf, SequenceOf, TupleOf, Wrapped,
+    node_to_value, value_to_node, node_to_type, type_to_node, resolve_value,
+    ArgListWrapper, ArgTupleWrapper)
 
 
 class TestArgDef(unittest.TestCase):
@@ -172,7 +170,7 @@ class TestArgDef(unittest.TestCase):
         pass
 
     def test_from_argspec(self):
-        argspec = inspect.getargspec(self.argspec_testfunc)
+        argspec = inspect.getfullargspec(self.argspec_testfunc)
         arglist = ArgList.from_argspec(*argspec)
         self.assertEqual(len(arglist), 3)
         self.assertEqual(arglist.max_accepted(), 3)
@@ -302,7 +300,7 @@ class TestArgDef(unittest.TestCase):
             foo=Arg(description='Foo'),
             baz=Arg(description='Baz', default=1.5),
         )
-        argspec = inspect.getargspec(self.argspec_testfunc)
+        argspec = inspect.getfullargspec(self.argspec_testfunc)
         arglist2 = ArgList.from_argspec(*argspec)
 
         arglist = ArgList.merge(arglist1, arglist2)

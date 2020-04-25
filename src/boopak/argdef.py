@@ -407,12 +407,13 @@ class ArgList:
         ls = [arg for arg in self.args if (not arg.optional)]
         return len(ls)
 
-    def from_argspec(args, varargs, varkw, defaults):
+    @staticmethod
+    def from_argspec(args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations):
         """from_argspec(args, varargs, varkw, defaults) -> ArgList
 
         Construct an ArgList from a Python function. The four arguments
-        are those returned by inspect.getargspec() -- see the inspect module
-        in the Python standard library.
+        are those returned by inspect.getfullargspec() -- see the inspect
+        module in the Python standard library.
 
         This uses the names and positions of the function arguments
         to define an ArgList. If an argument has a default value, its
@@ -443,7 +444,7 @@ class ArgList:
             if pos >= defstart:
                 val = defaults[pos - defstart]
                 dic['default'] = val
-                if not (val is None):
+                if val is not None:
                     dic['type'] = infer_type(val)
             arg = Arg(name=key, index=pos, **dic)
             pos += 1
@@ -451,8 +452,6 @@ class ArgList:
 
         arglist.sort_args()
         return arglist
-
-    from_argspec = staticmethod(from_argspec)
 
     def merge(arglist1, arglist2=None):
         """merge(arglist1, arglist2=None) -> ArgList

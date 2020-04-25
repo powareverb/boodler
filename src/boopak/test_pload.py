@@ -49,12 +49,12 @@ def build_package(
     depends=None,
     metadata=None,
 ):
-
-    if type(vers) in [str]:
+    if isinstance(vers, str):
         vers = Version(vers)
 
     if not external_path:
         path = loader.generate_package_path(name)
+
         if not os.path.isdir(path):
             os.makedirs(path)
 
@@ -71,6 +71,7 @@ def build_package(
     if mod_main or mod_content:
         if not mod_main:
             mod_main = 'main'
+
         if not mod_content:
             mod_content = []
 
@@ -84,9 +85,11 @@ def build_package(
             fl.write('boodler.main: .\n')
         else:
             fl.write('boodler.main: ' + mod_main + '\n')
+
     if depends:
         if not isinstance(depends, list):
             depends = [depends]
+
         for (val1, val2) in depends:
             if val2 is None:
                 fl.write('boodler.requires: ' + val1 + '\n')
@@ -96,16 +99,20 @@ def build_package(
                 fl.write('boodler.requires_exact: ' + val1 + ' ' + str(val2) + '\n')
             else:
                 fl.write('boodler.requires: ' + val1 + ' ' + val2 + '\n')
+
     if metadata:
         for key in metadata:
             fl.write(key + ': ' + metadata[key] + '\n')
+
     fl.close()
 
     if mod_main:
         fl = open(os.path.join(path, mod_main + '.py'), 'w')
+
         if depends:
             fl.write('from boopak import package\n')
             count = 1
+
             for (val1, val2) in depends:
                 fl.write('imp' + str(count) + '=')
                 fl.write('package.bimport')
@@ -114,6 +121,7 @@ def build_package(
                 else:
                     fl.write('("' + val1 + '", "' + val2 + '")\n')
                 count += 1
+
         if isinstance(mod_content, dict):
             for key in mod_content:
                 val = mod_content[key]
@@ -121,10 +129,12 @@ def build_package(
         else:
             for val in mod_content:
                 fl.write(val + '\n')
+
         fl.close()
 
     if resources:
         fl = open(os.path.join(path, pload.Filename_Resources), 'w')
+
         for reskey in resources:
             resfile = resources[reskey]
             fl.write(':' + reskey + '\n')
@@ -149,9 +159,11 @@ def build_package(
 
     if not external_path:
         dic = collection.get(name)
+
         if not dic:
             dic = {}
             collection[name] = dic
+
         dic[vers] = path
 
 
@@ -308,7 +320,7 @@ class TestPLoad(unittest.TestCase):
             'unicode.metadata',
             metadata={
                 'test.plain': 'result',
-                'test.unicode': 'alpha is \xce\xb1',
+                'test.unicode': 'alpha is \u03b1',
             },
         )
 
@@ -327,11 +339,11 @@ class TestPLoad(unittest.TestCase):
                 'from boopak.package import bexport',
                 'bexport()',
                 'from boodle.sample import MixIn',
-                'class mixer(MixIn):',
+                'class mixer(metaclass=MixIn):',
                 '  ranges = [',
-                '    MixIn.range(2.0, 2.1, two, volume=1.4),',
-                '    MixIn.range(1.5, one, pitch=1.3),',
-                '    MixIn.range(1.0, zero),',
+                '    MixIn.Range(2.0, 2.1, two, volume=1.4),',
+                '    MixIn.Range(1.5, one, pitch=1.3),',
+                '    MixIn.Range(1.0, zero),',
                 '  ]',
                 '  default = MixIn.default(zero)',
             ],
@@ -381,7 +393,7 @@ else two
 
     def subtest_simple_import(self):
         pkg = self.loader.load('simple.test')
-        self.assertEqual(pkg.key, ('simple.test', '1.0'))
+        self.assertEqual(pkg.key, ('simple.test', Version('1.0')))
         mod = pkg.get_content()
 
     def subtest_import_module(self):
@@ -424,22 +436,22 @@ else two
 
     def subtest_version_specs(self):
         pkg = self.loader.load('version.specs')
-        self.assertEqual(pkg.key, ('version.specs', '2.5'))
-        pkg = self.loader.load('version.specs', '1.0')
-        self.assertEqual(pkg.key, ('version.specs', '1.5.3'))
-        pkg = self.loader.load('version.specs', '1.3')
-        self.assertEqual(pkg.key, ('version.specs', '1.5.3'))
+        self.assertEqual(pkg.key, ('version.specs', Version('2.5')))
+        pkg = self.loader.load('version.specs', '~=1.0')
+        self.assertEqual(pkg.key, ('version.specs', Version('1.5.3')))
+        pkg = self.loader.load('version.specs', '~=1.3')
+        self.assertEqual(pkg.key, ('version.specs', Version('1.5.3')))
         self.assertRaises(pload.PackageNotFoundError, self.loader.load, 'version.specs', '1.6')
-        pkg = self.loader.load('version.specs', '2.0')
-        self.assertEqual(pkg.key, ('version.specs', '2.5'))
-        pkg = self.loader.load('version.specs', '2.4')
-        self.assertEqual(pkg.key, ('version.specs', '2.5'))
+        pkg = self.loader.load('version.specs', '~=2.0')
+        self.assertEqual(pkg.key, ('version.specs', Version('2.5')))
+        pkg = self.loader.load('version.specs', '~=2.4')
+        self.assertEqual(pkg.key, ('version.specs', Version('2.5')))
         self.assertRaises(pload.PackageNotFoundError, self.loader.load, 'version.specs', '2.6')
         self.assertRaises(pload.PackageNotFoundError, self.loader.load, 'version.specs', '3')
-        pkg = self.loader.load('version.specs', '1.2')
-        self.assertEqual(pkg.key, ('version.specs', '1.5.3'))
+        pkg = self.loader.load('version.specs', '~=1.2')
+        self.assertEqual(pkg.key, ('version.specs', Version('1.5.3')))
         pkg = self.loader.load('version.specs', Version('1.2'))
-        self.assertEqual(pkg.key, ('version.specs', '1.2'))
+        self.assertEqual(pkg.key, ('version.specs', Version('1.2')))
 
     def subtest_load_group(self):
         grp = self.loader.load_group('version.specs')
@@ -451,14 +463,14 @@ else two
         self.assertEqual(grp.get_num_versions(), 4)
 
         vers = grp.find_version_match()
-        self.assertEqual(vers, '2.5')
+        self.assertEqual(vers, Version('2.5'))
         vers = grp.find_version_match(SpecifierSet('~=1.0'))
-        self.assertEqual(vers, '1.5.3')
+        self.assertEqual(vers, Version('1.5.3'))
 
     def subtest_load_by_name(self):
         file = self.loader.load_item_by_name('only.files/dir.two')
         self.assertResourceReadable(file, 'dir.two')
-        file = self.loader.load_item_by_name('only.files:1.0/dir.two')
+        file = self.loader.load_item_by_name('only.files:~=1.0/dir.two')
         self.assertResourceReadable(file, 'dir.two')
         file = self.loader.load_item_by_name('only.files::1.0/dir.two')
         self.assertResourceReadable(file, 'dir.two')
@@ -472,7 +484,7 @@ else two
         self.assertEqual(mod, pkg.get_content())
 
         self.assertRaises(pload.PackageNotFoundError, self.loader.load_item_by_name,
-                          'only.files:1.1/dir.two')
+                          'only.files:~=1.1/dir.two')
         self.assertRaises(ValueError, self.loader.load_item_by_name, 'dir.two')
         self.assertRaises(ValueError, self.loader.load_item_by_name, 'only.files/none.such')
 
@@ -704,7 +716,7 @@ else two
         self.assertTrue(mod2.imp1 is mod1)
         self.assertTrue(mod1.imp1.imp1 is mod1)
 
-    def subtest_mutual_dependency(self):
+    def subtest_mutual_dependency_2(self):
         pkg = self.loader.load('depend.on.fail')
 
         deplist = [('depend.on.fail', '1.0')]
@@ -714,7 +726,7 @@ else two
         self.assertRaises(pload.PackageNotFoundError, pkg.get_content)
 
         tup = self.loader.add_external_package(self.external_one_path)
-        self.assertEqual(tup, ('external.one', '1.0'))
+        self.assertEqual(tup, ('external.one', Version('1.0')))
         pkg = self.loader.load('depend.on.fail')
         deplist = [('depend.on.fail', '1.0'), ('external.one', '1.0')]
         tup = self.loader.load_package_dependencies(pkg)
