@@ -28,4 +28,3 @@ extern int sample_load(sample_t *samp, int framerate,
   int numchannels, int samplebits,
   int issigned, int isbigend);
 extern void sample_unload(sample_t *samp);
-

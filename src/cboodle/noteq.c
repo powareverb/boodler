@@ -6,38 +6,36 @@
    See the LGPL or GPL documents, or the above URL, for details.
 */
 
+#include <Python.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <Python.h>
 
 #include "common.h"
-#include "noteq.h"
 #include "audev.h"
+#include "noteq.h"
 #include "sample.h"
 
 /* This represents a linear volume fade, starting and ending at
    particular times. */
 typedef struct volrange_struct {
   long start, end;
-#ifdef BOODLER_INTMATH
-  long istartvol, iendvol;
-#else
   double startvol, endvol;
-#endif
 } volrange_t;
 
 /* A queue of notes, ordered by starting time, past to future. */
-static note_t *queue = NULL;
+static note_t* queue = NULL;
 
 static long current_time = 0; /* frame time */
 
-static volrange_t *ranges = NULL;
+static volrange_t* ranges = NULL;
 int maxranges = 0;
 
-static note_t *last_added = NULL;
+static note_t* last_added = NULL;
 
-static void leftright_volumes(double shiftx, double shifty,
-  double *outlft, double *outrgt);
+static void leftright_volumes(double shiftx,
+                              double shifty,
+                              double* outlft,
+                              double* outrgt);
 
 /* A quick introduction to Python reference-counting:
    (See <http://docs.python.org/api/api.html> for full docs.)
@@ -58,27 +56,24 @@ static void leftright_volumes(double shiftx, double shifty,
    Py_DECREF when we release it.
  */
 
-int noteq_init()
-{
+int noteq_init() {
   last_added = NULL;
 
   maxranges = 2;
-  ranges = (volrange_t *)malloc(sizeof(volrange_t) * maxranges);
+  ranges = (volrange_t*)malloc(sizeof(volrange_t) * maxranges);
   if (!ranges)
     return FALSE;
 
   return TRUE;
 }
 
-static void noteq_add(note_t *note)
-{
+static void noteq_add(note_t* note) {
   long starttime = note->starttime;
-  note_t **nptr;
+  note_t** nptr;
 
   if (last_added && starttime >= last_added->starttime) {
     nptr = &(last_added->next);
-  }
-  else {
+  } else {
     nptr = &queue;
   }
 
@@ -91,66 +86,76 @@ static void noteq_add(note_t *note)
   last_added = note;
 }
 
-static void noteq_remove(note_t **noteptr)
-{
-  note_t *note = (*noteptr);
+static void noteq_remove(note_t** noteptr) {
+  note_t* note = (*noteptr);
   (*noteptr) = note->next;
   note->next = NULL;
 
   last_added = NULL;
 }
 
-long note_create(sample_t *samp, double pitch, double volume,
-  stereo_t *pan,
-  long starttime, PyObject *channel, PyObject *removefunc)
-{
-  return note_create_reps(samp, pitch, volume, pan, starttime, 1, channel, removefunc);
+long note_create(sample_t* samp,
+                 double pitch,
+                 double volume,
+                 stereo_t* pan,
+                 long starttime,
+                 PyObject* channel,
+                 PyObject* removefunc) {
+  return note_create_reps(samp, pitch, volume, pan, starttime, 1, channel,
+                          removefunc);
 }
 
-long note_create_duration(sample_t *samp, double pitch, double volume,
-  stereo_t *pan,
-  long starttime, long duration, PyObject *channel, PyObject *removefunc)
-{
+long note_create_duration(sample_t* samp,
+                          double pitch,
+                          double volume,
+                          stereo_t* pan,
+                          long starttime,
+                          long duration,
+                          PyObject* channel,
+                          PyObject* removefunc) {
   int reps;
 
   if (!samp->hasloop) {
     reps = 1;
-  }
-  else {
+  } else {
     long looplen = samp->looplen;
     long margins = samp->numframes - looplen;
     duration = (long)((double)duration * (samp->framerate * pitch));
-    reps = (duration - margins + (looplen-1)) / looplen;
+    reps = (duration - margins + (looplen - 1)) / looplen;
   }
 
-  return note_create_reps(samp, pitch, volume, pan, starttime, reps, channel, removefunc);
+  return note_create_reps(samp, pitch, volume, pan, starttime, reps, channel,
+                          removefunc);
 }
 
-long note_create_reps(sample_t *samp, double pitch, double volume,
-  stereo_t *pan,
-  long starttime, int reps, PyObject *channel, PyObject *removefunc)
-{
-  note_t *note;
+long note_create_reps(sample_t* samp,
+                      double pitch,
+                      double volume,
+                      stereo_t* pan,
+                      long starttime,
+                      int reps,
+                      PyObject* channel,
+                      PyObject* removefunc) {
+  note_t* note;
   long duration;
   double ratio;
 
-  note = (note_t *)malloc(sizeof(note_t));
+  note = (note_t*)malloc(sizeof(note_t));
   if (!note)
     return 0;
-  
+
   ratio = (samp->framerate * pitch);
   if (!samp->hasloop || reps <= 1) {
     reps = 1;
     duration = (double)(samp->numframes) / ratio;
-  }
-  else {
-    duration = (double)(samp->numframes + samp->looplen * (reps-1)) / ratio;
+  } else {
+    duration = (double)(samp->numframes + samp->looplen * (reps - 1)) / ratio;
   }
 
   note->sample = samp;
   note->pitch = pitch;
   note->volume = volume;
-  /* Must copy the pan struct that was passed in, because it is 
+  /* Must copy the pan struct that was passed in, because it is
      stack-allocated. */
   note->pan = *pan;
   note->starttime = starttime;
@@ -166,31 +171,29 @@ long note_create_reps(sample_t *samp, double pitch, double volume,
 
   note->framepos = 0;
   note->framefrac = 0;
-  note->repsleft = reps-1;
+  note->repsleft = reps - 1;
   note->next = NULL;
 
   noteq_add(note);
 
-  /* printf("Added note %p, samp %p, pitch %g, vol %g, starttime %ld, reps %d, duration %ld\n",
-     note, samp, pitch, volume, starttime, reps, duration); */
+  /* printf("Added note %p, samp %p, pitch %g, vol %g, starttime %ld, reps %d,
+     duration %ld\n", note, samp, pitch, volume, starttime, reps, duration); */
 
   return duration;
 }
 
-void note_destroy(note_t **noteptr)
-{
-  note_t *note = (*noteptr);
+void note_destroy(note_t** noteptr) {
+  note_t* note = (*noteptr);
   /* printf("Removed note %p (samp %p)\n", note, note->sample); */
 
   noteq_remove(noteptr);
 
   if (note->removefunc && PyCallable_Check(note->removefunc)) {
-    PyObject *result;
+    PyObject* result;
     result = PyObject_CallFunction(note->removefunc, NULL);
     if (result) {
       Py_DECREF(result);
-    }
-    else {
+    } else {
       fprintf(stderr, "exception calling note remover\n");
       PyErr_Clear();
     }
@@ -227,44 +230,20 @@ void note_destroy(note_t **noteptr)
    typecasting.)
 */
 
-#ifdef BOODLER_INTMATH
+#define APPLY_RANGE(RANGE, CURTIME, FVOL, IVOL)                                \
+  if (CURTIME >= RANGE.end) {                                                  \
+    FVOL *= RANGE.endvol;                                                      \
+  } else if (CURTIME <= RANGE.start) {                                         \
+    FVOL *= RANGE.startvol;                                                    \
+  } else {                                                                     \
+    FVOL *=                                                                    \
+        ((double)(CURTIME - RANGE.start) / (double)(RANGE.end - RANGE.start) * \
+             (RANGE.endvol - RANGE.startvol) +                                 \
+         RANGE.startvol);                                                      \
+  }
 
-#define APPLY_RANGE(RANGE, CURTIME, FVOL, IVOL)    \
-    if (CURTIME >= RANGE.end) {                    \
-      IVOL = ((IVOL * RANGE.iendvol) >> 16);       \
-    }                                              \
-    else if (CURTIME <= RANGE.start) {             \
-      IVOL = ((IVOL * RANGE.istartvol) >> 16);     \
-    }                                              \
-    else {                                         \
-      long intermed = ((CURTIME-RANGE.start)       \
-	/ (((RANGE.end-RANGE.start) >> 8) | (long)1));                   \
-      intermed = ((intermed * (RANGE.iendvol - RANGE.istartvol)) >> 8);  \
-      intermed = intermed + RANGE.istartvol;       \
-      IVOL = ((IVOL * intermed) >> 16);            \
-    }
-
-#else /* BOODLER_INTMATH */
-
-#define APPLY_RANGE(RANGE, CURTIME, FVOL, IVOL)    \
-    if (CURTIME >= RANGE.end) {                    \
-      FVOL *= RANGE.endvol;                        \
-    }                                              \
-    else if (CURTIME <= RANGE.start) {             \
-      FVOL *= RANGE.startvol;                      \
-    }                                              \
-    else {                                         \
-      FVOL *= ((double)(CURTIME-RANGE.start)       \
-	/ (double)(RANGE.end-RANGE.start)          \
-	* (RANGE.endvol - RANGE.startvol)          \
-	+ RANGE.startvol);                         \
-    }
-
-#endif /* BOODLER_INTMATH */
-
-int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
-{
-  note_t **nptr;
+int noteq_generate(long* buffer, generate_func_t genfunc, void* rock) {
+  note_t** nptr;
   long framesperbuf = audev_get_framesperbuf();
   long end_time;
 
@@ -300,8 +279,8 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
      its contribution into the buffer. */
   nptr = &queue;
   while (1) {
-    note_t *note = (*nptr);
-    sample_t *samp;
+    note_t* note = (*nptr);
+    sample_t* samp;
     int willdelete = FALSE;
     long notestart;
     double pitch;
@@ -309,8 +288,8 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
     double volume;
     int bothpans;
     int numranges;
-    long *valptr;
-    value_t *sampdata;
+    long* valptr;
+    value_t* sampdata;
     long framepos, framefrac;
     long numframes;
 
@@ -327,7 +306,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
     /* We must compute a total volume, by multiplying the note's
        volume by the volume factor of every channel it's in. We do
-       this by iterating up the channel tree. 
+       this by iterating up the channel tree.
 
        The tricky part is that some channels might be in the middle of
        a volume change, which means we can't just multiply in a
@@ -344,262 +323,265 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
        indicates whether we've hit that first change yet.) */
 
     if (note->channel) {
-      PyObject *chan = note->channel;
+      PyObject* chan = note->channel;
       Py_INCREF(chan);
 
       while (1) {
-	PyObject *newchan;
-	PyObject *stereo;
-	PyObject *vol = PyObject_GetAttrString(chan, "volume");
-	if (vol) {
-	  if (PyTuple_Check(vol) && PyTuple_Size(vol) == 4) {
-	    /* A channel's volume is a 4-tuple: 
+        PyObject* newchan;
+        PyObject* stereo;
+        PyObject* vol = PyObject_GetAttrString(chan, "volume");
+        if (vol) {
+          if (PyTuple_Check(vol) && PyTuple_Size(vol) == 4) {
+            /* A channel's volume is a 4-tuple:
 
-	       (int starttime, int endtime, float startvol, float endvol)
+               (int starttime, int endtime, float startvol, float endvol)
 
-	       This is the general case: the volume fades from
-	       startvol to endvol over an interval. Before starttime,
-	       we assume the volume is flat at startvol; after
-	       endtime, we assume endvol. 
+               This is the general case: the volume fades from
+               startvol to endvol over an interval. Before starttime,
+               we assume the volume is flat at startvol; after
+               endtime, we assume endvol.
 
-	       If the volume is completely constant, endtime will be
-	       zero, or perhaps just before current_time. (This fits
-	       nicely into the general case.) */
+               If the volume is completely constant, endtime will be
+               zero, or perhaps just before current_time. (This fits
+               nicely into the general case.) */
 
-	    long endtm;
-	    double endvol;
-	    endtm = PyInt_AsLong(PyTuple_GET_ITEM(vol, 1));
-	    endvol = PyFloat_AsDouble(PyTuple_GET_ITEM(vol, 3));
+            long endtm;
+            double endvol;
+            endtm = PyInt_AsLong(PyTuple_GET_ITEM(vol, 1));
+            endvol = PyFloat_AsDouble(PyTuple_GET_ITEM(vol, 3));
 
-	    if (current_time >= endtm) {
-	      /* Channel volume is constant across the buffer. */
-	      volume *= endvol;
-	    }
-	    else {
-	      long starttm;
-	      double startvol;
-	      starttm = PyInt_AsLong(PyTuple_GET_ITEM(vol, 0));
-	      startvol = PyFloat_AsDouble(PyTuple_GET_ITEM(vol, 2));
-	      if (starttm >= end_time) {
-		/* Channel volume is constant across the buffer. */
-		volume *= startvol;
-	      }
-	      else {
-		/* This is the nasty case; we're in the middle of a
-		   fade. Rather than multiplying volume, we create a
-		   new range in the ranges list. */
+            if (current_time >= endtm) {
+              /* Channel volume is constant across the buffer. */
+              volume *= endvol;
+            } else {
+              long starttm;
+              double startvol;
+              starttm = PyInt_AsLong(PyTuple_GET_ITEM(vol, 0));
+              startvol = PyFloat_AsDouble(PyTuple_GET_ITEM(vol, 2));
+              if (starttm >= end_time) {
+                /* Channel volume is constant across the buffer. */
+                volume *= startvol;
+              } else {
+                /* This is the nasty case; we're in the middle of a
+                   fade. Rather than multiplying volume, we create a
+                   new range in the ranges list. */
 
-		if (numranges >= maxranges) {
-		  maxranges *= 2;
-		  ranges = (volrange_t *)realloc(ranges, 
-		    sizeof(volrange_t) * maxranges);
-		  if (!ranges)
-		    return TRUE;
-		}
-		ranges[numranges].start = starttm;
-		ranges[numranges].end = endtm;
-#ifdef BOODLER_INTMATH
-		ranges[numranges].istartvol = (long)(startvol * 65536.0);
-		ranges[numranges].iendvol = (long)(endvol * 65536.0);
-#else
-		ranges[numranges].startvol = startvol;
-		ranges[numranges].endvol = endvol;
-#endif
-		numranges++;
-	      }
-	    }
+                if (numranges >= maxranges) {
+                  maxranges *= 2;
+                  ranges = (volrange_t*)realloc(ranges,
+                                                sizeof(volrange_t) * maxranges);
+                  if (!ranges)
+                    return TRUE;
+                }
+                ranges[numranges].start = starttm;
+                ranges[numranges].end = endtm;
+                ranges[numranges].startvol = startvol;
+                ranges[numranges].endvol = endvol;
+                numranges++;
+              }
+            }
+          }
+          Py_DECREF(vol);
+        }
+        vol = NULL;
 
-	  }
-	  Py_DECREF(vol);
-	}
-	vol = NULL;
+        stereo = PyObject_GetAttrString(chan, "stereo");
+        if (stereo) {
+          if (PyTuple_Check(stereo) && PyTuple_Size(stereo) == 4) {
+            /* A channel's stereo value is a 4-tuple:
+               (int starttime, int endtime, tuple startpan, tuple endpan)
 
-	stereo = PyObject_GetAttrString(chan, "stereo");
-	if (stereo) {
-	  if (PyTuple_Check(stereo) && PyTuple_Size(stereo) == 4) {
-	    /* A channel's stereo value is a 4-tuple:
-	       (int starttime, int endtime, tuple startpan, tuple endpan)
+               Like the volume tuple, this is the general case. The
+               startpan and endpan values are stereo objects.
 
-	       Like the volume tuple, this is the general case. The
-	       startpan and endpan values are stereo objects. 
+               A stereo object is a 0-, 2-, or 4-tuple. In full form:
+               (xscale, xshift, yscale, yshift)
+               Missing entries are presumed to be (1,0,1,0) in that order. */
 
-	       A stereo object is a 0-, 2-, or 4-tuple. In full form:
-	       (xscale, xshift, yscale, yshift)
-	       Missing entries are presumed to be (1,0,1,0) in that order. */
+            PyObject* usepan = NULL;
 
-	    PyObject *usepan = NULL;
+            long starttm = 0;
+            PyObject* startpan = NULL;
+            long endtm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 1));
+            PyObject* endpan = PyTuple_GET_ITEM(stereo, 3);
 
-	    long starttm = 0;
-	    PyObject *startpan = NULL;
-	    long endtm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 1));
-	    PyObject *endpan = PyTuple_GET_ITEM(stereo, 3);
+            if (current_time >= endtm) {
+              /* Stereo is constant across the buffer. */
+              usepan = endpan;
+            } else {
+              starttm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 0));
+              startpan = PyTuple_GET_ITEM(stereo, 2);
 
-	    if (current_time >= endtm) {
-	      /* Stereo is constant across the buffer. */
-	      usepan = endpan;
-	    }
-	    else {
-	      starttm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 0));
-	      startpan = PyTuple_GET_ITEM(stereo, 2);
+              if (starttm >= end_time) {
+                /* Stereo is constant across the buffer. */
+                usepan = startpan;
+              } else {
+                /* Nasty case: we're in the middle of a stereo swoop. */
+                usepan = NULL;
+              }
+            }
 
-	      if (starttm >= end_time) {
-		/* Stereo is constant across the buffer. */
-		usepan = startpan;
-	      }
-	      else {
-		/* Nasty case: we're in the middle of a stereo swoop. */
-		usepan = NULL;
-	      }
-	    }
+            /* The value in usepan is now NULL if we're in a swoop, or
+               a stereo object if we're in the constant case. */
 
-	    /* The value in usepan is now NULL if we're in a swoop, or
-	       a stereo object if we're in the constant case. */
+            if (usepan) {
+              /* Apply constant transform to the pan value. (If we're
+                 already keeping track of two pan values, apply it to
+                 both of them.) */
+              int tuplesize = 0;
+              if (PyTuple_Check(usepan))
+                tuplesize = PyTuple_Size(usepan);
+              if (tuplesize >= 2) {
+                double chshift, chscale;
+                chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 0));
+                chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 1));
+                pan0.scalex = pan0.scalex * chscale;
+                pan0.shiftx = (pan0.shiftx * chscale) + chshift;
+                if (bothpans) {
+                  pan1.scalex = pan1.scalex * chscale;
+                  pan1.shiftx = (pan1.shiftx * chscale) + chshift;
+                }
+              }
+              if (tuplesize >= 4) {
+                double chshift, chscale;
+                chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 2));
+                chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 3));
+                pan0.scaley = pan0.scaley * chscale;
+                pan0.shifty = (pan0.shifty * chscale) + chshift;
+                if (bothpans) {
+                  pan1.scaley = pan1.scaley * chscale;
+                  pan1.shifty = (pan1.shifty * chscale) + chshift;
+                }
+              }
+            } else {
+              /* Record the pan positions at the start and end of the
+                 buffer (current_time and end_time). */
+              if (!bothpans) {
+                /* This is the first non-constant pan we've hit. Set
+                   up pan1 to be the same as what we've computed so
+                   far. */
+                pan1 = pan0;
+                bothpans = TRUE;
+              }
+              /* Extract the stereo object values into stereo_t structs. */
+              stereo_t tuplestart, tupleend;
+              int tuplesizestart = 0;
+              int tuplesizeend = 0;
+              if (PyTuple_Check(startpan))
+                tuplesizestart = PyTuple_Size(startpan);
+              if (tuplesizestart >= 2) {
+                tuplestart.scalex =
+                    PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 0));
+                tuplestart.shiftx =
+                    PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 1));
+              } else {
+                tuplestart.scalex = 1.0;
+                tuplestart.shiftx = 0.0;
+              }
+              if (tuplesizestart >= 4) {
+                tuplestart.scaley =
+                    PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 2));
+                tuplestart.shifty =
+                    PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 3));
+              } else {
+                tuplestart.scaley = 1.0;
+                tuplestart.shifty = 0.0;
+              }
+              if (PyTuple_Check(endpan))
+                tuplesizeend = PyTuple_Size(endpan);
+              if (tuplesizeend >= 2) {
+                tupleend.scalex = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 0));
+                tupleend.shiftx = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 1));
+              } else {
+                tupleend.scalex = 1.0;
+                tupleend.shiftx = 0.0;
+              }
+              if (tuplesizeend >= 4) {
+                tupleend.scaley = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 2));
+                tupleend.shifty = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 3));
+              } else {
+                tupleend.scaley = 1.0;
+                tupleend.shifty = 0.0;
+              }
 
-	    if (usepan) {
-	      /* Apply constant transform to the pan value. (If we're
-		 already keeping track of two pan values, apply it to
-		 both of them.) */
-	      int tuplesize = 0;
-	      if (PyTuple_Check(usepan))
-		tuplesize = PyTuple_Size(usepan);
-	      if (tuplesize >= 2) {
-		double chshift, chscale;
-		chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 0));
-		chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 1));
-		pan0.scalex = pan0.scalex * chscale;
-		pan0.shiftx = (pan0.shiftx * chscale) + chshift;
-		if (bothpans) {
-		  pan1.scalex = pan1.scalex * chscale;
-		  pan1.shiftx = (pan1.shiftx * chscale) + chshift;
-		}
-	      }
-	      if (tuplesize >= 4) {
-		double chshift, chscale;
-		chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 2));
-		chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 3));
-		pan0.scaley = pan0.scaley * chscale;
-		pan0.shifty = (pan0.shifty * chscale) + chshift;
-		if (bothpans) {
-		  pan1.scaley = pan1.scaley * chscale;
-		  pan1.shifty = (pan1.shifty * chscale) + chshift;
-		}
-	      }
-	    }
-	    else {
-	      /* Record the pan positions at the start and end of the 
-		 buffer (current_time and end_time). */
-	      if (!bothpans) {
-		/* This is the first non-constant pan we've hit. Set
-		   up pan1 to be the same as what we've computed so
-		   far. */
-		pan1 = pan0;
-		bothpans = TRUE;
-	      }
-	      /* Extract the stereo object values into stereo_t structs. */
-	      stereo_t tuplestart, tupleend;
-	      int tuplesizestart = 0;
-	      int tuplesizeend = 0;
-	      if (PyTuple_Check(startpan))
-		tuplesizestart = PyTuple_Size(startpan);
-	      if (tuplesizestart >= 2) {
-		tuplestart.scalex = PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 0));
-		tuplestart.shiftx = PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 1));
-	      }
-	      else {
-		tuplestart.scalex = 1.0;
-		tuplestart.shiftx = 0.0;
-	      }
-	      if (tuplesizestart >= 4) {
-		tuplestart.scaley = PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 2));
-		tuplestart.shifty = PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 3));
-	      }
-	      else {
-		tuplestart.scaley = 1.0;
-		tuplestart.shifty = 0.0;
-	      }
-	      if (PyTuple_Check(endpan))
-		tuplesizeend = PyTuple_Size(endpan);
-	      if (tuplesizeend >= 2) {
-		tupleend.scalex = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 0));
-		tupleend.shiftx = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 1));
-	      }
-	      else {
-		tupleend.scalex = 1.0;
-		tupleend.shiftx = 0.0;
-	      }
-	      if (tuplesizeend >= 4) {
-		tupleend.scaley = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 2));
-		tupleend.shifty = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 3));
-	      }
-	      else {
-		tupleend.scaley = 1.0;
-		tupleend.shifty = 0.0;
-	      }
+              /* Interpolate for current_time, into pan0. */
+              stereo_t usetuple;
+              if (current_time >= endtm) {
+                usetuple = tupleend;
+              } else if (current_time >= starttm) {
+                double ratio = ((double)(current_time - starttm)) /
+                               ((double)(endtm - starttm));
+                usetuple.scalex =
+                    ratio * (tupleend.scalex - tuplestart.scalex) +
+                    tuplestart.scalex;
+                usetuple.shiftx =
+                    ratio * (tupleend.shiftx - tuplestart.shiftx) +
+                    tuplestart.shiftx;
+                usetuple.scaley =
+                    ratio * (tupleend.scaley - tuplestart.scaley) +
+                    tuplestart.scaley;
+                usetuple.shifty =
+                    ratio * (tupleend.shifty - tuplestart.shifty) +
+                    tuplestart.shifty;
+              } else {
+                usetuple = tuplestart;
+              }
+              pan0.scalex = pan0.scalex * usetuple.scalex;
+              pan0.shiftx = (pan0.shiftx * usetuple.scalex) + usetuple.shiftx;
+              pan0.scaley = pan0.scaley * usetuple.scaley;
+              pan0.shifty = (pan0.shifty * usetuple.scaley) + usetuple.shifty;
 
-	      /* Interpolate for current_time, into pan0. */
-	      stereo_t usetuple;
-	      if (current_time >= endtm) {
-		usetuple = tupleend;
-	      }
-	      else if (current_time >= starttm) {
-		double ratio = ((double)(current_time - starttm)) / ((double)(endtm - starttm));
-		usetuple.scalex = ratio * (tupleend.scalex - tuplestart.scalex) + tuplestart.scalex;
-		usetuple.shiftx = ratio * (tupleend.shiftx - tuplestart.shiftx) + tuplestart.shiftx;
-		usetuple.scaley = ratio * (tupleend.scaley - tuplestart.scaley) + tuplestart.scaley;
-		usetuple.shifty = ratio * (tupleend.shifty - tuplestart.shifty) + tuplestart.shifty;
-	      }
-	      else {
-		usetuple = tuplestart;
-	      }
-	      pan0.scalex = pan0.scalex * usetuple.scalex;
-	      pan0.shiftx = (pan0.shiftx * usetuple.scalex) + usetuple.shiftx;
-	      pan0.scaley = pan0.scaley * usetuple.scaley;
-	      pan0.shifty = (pan0.shifty * usetuple.scaley) + usetuple.shifty;
+              /* Interpolate for end_time, into pan1. */
+              if (end_time >= endtm) {
+                usetuple = tupleend;
+              } else if (end_time >= starttm) {
+                double ratio = ((double)(end_time - starttm)) /
+                               ((double)(endtm - starttm));
+                usetuple.scalex =
+                    ratio * (tupleend.scalex - tuplestart.scalex) +
+                    tuplestart.scalex;
+                usetuple.shiftx =
+                    ratio * (tupleend.shiftx - tuplestart.shiftx) +
+                    tuplestart.shiftx;
+                usetuple.scaley =
+                    ratio * (tupleend.scaley - tuplestart.scaley) +
+                    tuplestart.scaley;
+                usetuple.shifty =
+                    ratio * (tupleend.shifty - tuplestart.shifty) +
+                    tuplestart.shifty;
+              } else {
+                usetuple = tuplestart;
+              }
+              pan1.scalex = pan1.scalex * usetuple.scalex;
+              pan1.shiftx = (pan1.shiftx * usetuple.scalex) + usetuple.shiftx;
+              pan1.scaley = pan1.scaley * usetuple.scaley;
+              pan1.shifty = (pan1.shifty * usetuple.scaley) + usetuple.shifty;
+            }
+          }
 
-	      /* Interpolate for end_time, into pan1. */
-	      if (end_time >= endtm) {
-		usetuple = tupleend;
-	      }
-	      else if (end_time >= starttm) {
-		double ratio = ((double)(end_time - starttm)) / ((double)(endtm - starttm));
-		usetuple.scalex = ratio * (tupleend.scalex - tuplestart.scalex) + tuplestart.scalex;
-		usetuple.shiftx = ratio * (tupleend.shiftx - tuplestart.shiftx) + tuplestart.shiftx;
-		usetuple.scaley = ratio * (tupleend.scaley - tuplestart.scaley) + tuplestart.scaley;
-		usetuple.shifty = ratio * (tupleend.shifty - tuplestart.shifty) + tuplestart.shifty;
-	      }
-	      else {
-		usetuple = tuplestart;
-	      }
-	      pan1.scalex = pan1.scalex * usetuple.scalex;
-	      pan1.shiftx = (pan1.shiftx * usetuple.scalex) + usetuple.shiftx;
-	      pan1.scaley = pan1.scaley * usetuple.scaley;
-	      pan1.shifty = (pan1.shifty * usetuple.scaley) + usetuple.shifty;
-	    }
-	  }
+          Py_DECREF(stereo);
+        }
+        stereo = NULL;
 
-	  Py_DECREF(stereo);
-	}
-	stereo = NULL;
+        /*
+        printf("pan0: %.3f %.3f %.3f %.3f. pan1: %.3f %.3f %.3f %.3f.\n",
+          pan0.scalex, pan0.shiftx, pan0.scaley, pan0.shifty,
+          pan1.scalex, pan1.shiftx, pan1.scaley, pan1.shifty); */
 
-	/*
-	printf("pan0: %.3f %.3f %.3f %.3f. pan1: %.3f %.3f %.3f %.3f.\n",
-	  pan0.scalex, pan0.shiftx, pan0.scaley, pan0.shifty,
-	  pan1.scalex, pan1.shiftx, pan1.scaley, pan1.shifty); */
+        /* Point chan at chan.parent, and continue the loop (unless
+           we've reached the top of the tree). */
 
-	/* Point chan at chan.parent, and continue the loop (unless
-	   we've reached the top of the tree). */
-
-	newchan = PyObject_GetAttrString(chan, "parent");
-	Py_DECREF(chan);
-	chan = NULL;
-	if (!newchan) {
-	  break;
-	}
-	if (newchan == Py_None) {
-	  Py_DECREF(newchan);
-	  break;
-	}
-	chan = newchan;
+        newchan = PyObject_GetAttrString(chan, "parent");
+        Py_DECREF(chan);
+        chan = NULL;
+        if (!newchan) {
+          break;
+        }
+        if (newchan == Py_None) {
+          Py_DECREF(newchan);
+          break;
+        }
+        chan = newchan;
       }
     }
 
@@ -617,346 +599,260 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
     if (note->starttime >= current_time) {
       notestart = note->starttime - current_time;
-    }
-    else {
+    } else {
       notestart = 0;
     }
-    
-    valptr = &buffer[notestart*2];
+
+    valptr = &buffer[notestart * 2];
 
     if (samp->numchannels == 1) {
       long lx;
 
       /* Compute the volume adjustment for the left and right output
-	 channels, based on the pan position. */
+         channels, based on the pan position. */
       double vollft, volrgt;
 
       if (!bothpans) {
-	leftright_volumes(pan0.shiftx, pan0.shifty, &vollft, &volrgt);
-      }
-      else {
-	/* The pan position is changing, so don't put anything in
-	   vollft/volrgt. Instead, work out the left and right volume
-	   ranges. */
-	double tmp0lft, tmp0rgt;
-	double tmp1lft, tmp1rgt;
+        leftright_volumes(pan0.shiftx, pan0.shifty, &vollft, &volrgt);
+      } else {
+        /* The pan position is changing, so don't put anything in
+           vollft/volrgt. Instead, work out the left and right volume
+           ranges. */
+        double tmp0lft, tmp0rgt;
+        double tmp1lft, tmp1rgt;
 
-	vollft = 1.0;
-	volrgt = 1.0;
-	range0lft.start = current_time;
-	range0rgt.start = current_time;
-	range0lft.end = end_time;
-	range0rgt.end = end_time;
+        vollft = 1.0;
+        volrgt = 1.0;
+        range0lft.start = current_time;
+        range0rgt.start = current_time;
+        range0lft.end = end_time;
+        range0rgt.end = end_time;
 
-	leftright_volumes(pan0.shiftx, pan0.shifty, &tmp0lft, &tmp0rgt);
-	leftright_volumes(pan1.shiftx, pan1.shifty, &tmp1lft, &tmp1rgt);
-#ifdef BOODLER_INTMATH
-	range0lft.istartvol = (long)(tmp0lft * 65536.0);
-	range0lft.iendvol = (long)(tmp1lft * 65536.0);
-	range0rgt.istartvol = (long)(tmp0rgt * 65536.0);
-	range0rgt.iendvol = (long)(tmp1rgt * 65536.0);
-#else
-	range0lft.startvol = tmp0lft;
-	range0lft.endvol = tmp1lft;
-	range0rgt.startvol = tmp0rgt;
-	range0rgt.endvol = tmp1rgt;
-#endif
+        leftright_volumes(pan0.shiftx, pan0.shifty, &tmp0lft, &tmp0rgt);
+        leftright_volumes(pan1.shiftx, pan1.shifty, &tmp1lft, &tmp1rgt);
+        range0lft.startvol = tmp0lft;
+        range0lft.endvol = tmp1lft;
+        range0rgt.startvol = tmp0rgt;
+        range0rgt.endvol = tmp1rgt;
       }
 
       long ivollft, ivolrgt;
-#ifdef BOODLER_INTMATH
-      long ivollftbase, ivolrgtbase;
-#endif
       ivollft = (long)(volume * vollft * 65536.0);
       ivolrgt = (long)(volume * volrgt * 65536.0);
-#ifdef BOODLER_INTMATH
-      ivollftbase = ivollft;
-      ivolrgtbase = ivolrgt;
-#endif
 
-      for (lx=notestart; lx<framesperbuf; lx++) {
-	long cursamp, nextsamp;
-	long val0, val1;
-	long result, reslef, resrgt;
+      for (lx = notestart; lx < framesperbuf; lx++) {
+        long cursamp, nextsamp;
+        long val0, val1;
+        long result, reslef, resrgt;
 
-	cursamp = framepos;
-	if (framepos+1 == samp->loopend && note->repsleft > 0) {
-	  nextsamp = (framepos + 1 - samp->looplen);
-	}
-	else {
-	  nextsamp = cursamp+1;
-	}
+        cursamp = framepos;
+        if (framepos + 1 == samp->loopend && note->repsleft > 0) {
+          nextsamp = (framepos + 1 - samp->looplen);
+        } else {
+          nextsamp = cursamp + 1;
+        }
 
-	val0 = (long)sampdata[cursamp];
-	val1 = (long)sampdata[nextsamp];
-	result = (val0 * (0x10000-framefrac)) + (val1 * framefrac);
+        val0 = (long)sampdata[cursamp];
+        val1 = (long)sampdata[nextsamp];
+        result = (val0 * (0x10000 - framefrac)) + (val1 * framefrac);
 
-	if (numranges || bothpans) {
-	  int ranx;
-	  long curtime = current_time + lx;
-#ifdef BOODLER_INTMATH
-	  /* Start with 0x4000, instead of 0x10000, to allow some
-	     headroom when we multiply by values over 0x10000. We'll
-	     compensate later by downshifting >>14 instead of >>16. */
-	  long ivarvols = 0x4000;
-#else
-	  double varvols = 1.0;
-#endif
-	  for (ranx=0; ranx<numranges; ranx++) {
-	    APPLY_RANGE(ranges[ranx], curtime, varvols, ivarvols);
-	  }
+        if (numranges || bothpans) {
+          int ranx;
+          long curtime = current_time + lx;
+          double varvols = 1.0;
 
-	  if (!bothpans) {
-	    /* Done. */
-#ifdef BOODLER_INTMATH
-	    ivollft = ((ivarvols * ivollftbase) >> 14);
-	    ivolrgt = ((ivarvols * ivolrgtbase) >> 14);
-#else
-	    ivollft = (long)(volume * varvols * vollft * 65536.0);
-	    ivolrgt = (long)(volume * varvols * volrgt * 65536.0);
-#endif
-	  }
-	  else {
-	    /* More to do -- we need to throw range0lft/range0rgt into
-	       the mix. */
-#ifdef BOODLER_INTMATH
-	    long ivarvolslft = ivarvols;
-	    long ivarvolsrgt = ivarvols;
-#else
-	    double varvolslft = varvols;
-	    double varvolsrgt = varvols;
-#endif
-	    APPLY_RANGE(range0lft, curtime, varvolslft, ivarvolslft);
-	    APPLY_RANGE(range0rgt, curtime, varvolsrgt, ivarvolsrgt);
+          for (ranx = 0; ranx < numranges; ranx++) {
+            APPLY_RANGE(ranges[ranx], curtime, varvols, ivarvols);
+          }
 
-#ifdef BOODLER_INTMATH
-	    ivollft = ((ivarvolslft * ivollftbase) >> 14);
-	    ivolrgt = ((ivarvolsrgt * ivolrgtbase) >> 14);
-#else
-	    ivollft = (long)(volume * varvolslft * vollft * 65536.0);
-	    ivolrgt = (long)(volume * varvolsrgt * volrgt * 65536.0);
-#endif
-	  }
-	}
+          if (!bothpans) {
+            /* Done. */
+            ivollft = (long)(volume * varvols * vollft * 65536.0);
+            ivolrgt = (long)(volume * varvols * volrgt * 65536.0);
+          } else {
+            /* More to do -- we need to throw range0lft/range0rgt into
+               the mix. */
+            double varvolslft = varvols;
+            double varvolsrgt = varvols;
 
-	/* All of the volume and pan information has been boiled down
-	   into ivollft/ivolrgt. Apply it to the sample. */
+            APPLY_RANGE(range0lft, curtime, varvolslft, ivarvolslft);
+            APPLY_RANGE(range0rgt, curtime, varvolsrgt, ivarvolsrgt);
 
-	reslef = ((result >> 16) * ivollft) >> 16;
-	resrgt = ((result >> 16) * ivolrgt) >> 16;
-	
-	*valptr += reslef;
-	valptr++;
-	*valptr += resrgt;
-	valptr++;
+            ivollft = (long)(volume * varvolslft * vollft * 65536.0);
+            ivolrgt = (long)(volume * varvolsrgt * volrgt * 65536.0);
+          }
+        }
 
-	framefrac += lpitch;
-	framepos += (framefrac >> 16);
-	framefrac &= 0xFFFF;
+        /* All of the volume and pan information has been boiled down
+           into ivollft/ivolrgt. Apply it to the sample. */
 
-	while (note->repsleft > 0 && framepos >= samp->loopend) {
-	  framepos -= samp->looplen;
-	  note->repsleft--;
-	}
+        reslef = ((result >> 16) * ivollft) >> 16;
+        resrgt = ((result >> 16) * ivolrgt) >> 16;
 
-	if (framepos+1 >= numframes && note->repsleft == 0) {
-	  willdelete = TRUE;
-	  break;
-	}
+        *valptr += reslef;
+        valptr++;
+        *valptr += resrgt;
+        valptr++;
+
+        framefrac += lpitch;
+        framepos += (framefrac >> 16);
+        framefrac &= 0xFFFF;
+
+        while (note->repsleft > 0 && framepos >= samp->loopend) {
+          framepos -= samp->looplen;
+          note->repsleft--;
+        }
+
+        if (framepos + 1 >= numframes && note->repsleft == 0) {
+          willdelete = TRUE;
+          break;
+        }
       }
-    }
-    else { /* samp->numchannels == 2 */
+    } else { /* samp->numchannels == 2 */
       long lx;
 
       /* Compute the volume adjustment for the left and right output
-	 channels, based on the pan position. We have to do this
-	 twice: for input channel 0 and for input channel 1. */
+         channels, based on the pan position. We have to do this
+         twice: for input channel 0 and for input channel 1. */
       double vol0lft, vol0rgt, vol1lft, vol1rgt;
 
       if (!bothpans) {
-	leftright_volumes(pan0.shiftx - pan0.scalex, pan0.shifty,
-	  &vol0lft, &vol0rgt); 
-	leftright_volumes(pan0.shiftx + pan0.scalex, pan0.shifty,
-	  &vol1lft, &vol1rgt);
-      }
-      else {
-	/* The pan position is changing, so don't put anything in
-	   vol#lft/vol#rgt. Instead, work out the left and right volume
-	   ranges for each channel. */
-	double tmp0lft, tmp0rgt;
-	double tmp1lft, tmp1rgt;
+        leftright_volumes(pan0.shiftx - pan0.scalex, pan0.shifty, &vol0lft,
+                          &vol0rgt);
+        leftright_volumes(pan0.shiftx + pan0.scalex, pan0.shifty, &vol1lft,
+                          &vol1rgt);
+      } else {
+        /* The pan position is changing, so don't put anything in
+           vol#lft/vol#rgt. Instead, work out the left and right volume
+           ranges for each channel. */
+        double tmp0lft, tmp0rgt;
+        double tmp1lft, tmp1rgt;
 
-	vol0lft = 1.0;
-	vol0rgt = 1.0;
-	range0lft.start = current_time;
-	range0rgt.start = current_time;
-	range0lft.end = end_time;
-	range0rgt.end = end_time;
+        vol0lft = 1.0;
+        vol0rgt = 1.0;
+        range0lft.start = current_time;
+        range0rgt.start = current_time;
+        range0lft.end = end_time;
+        range0rgt.end = end_time;
 
-	leftright_volumes(pan0.shiftx - pan0.scalex, pan0.shifty,
-	  &tmp0lft, &tmp0rgt);
-	leftright_volumes(pan1.shiftx - pan1.scalex, pan1.shifty,
-	  &tmp1lft, &tmp1rgt);
-#ifdef BOODLER_INTMATH
-	range0lft.istartvol = (long)(tmp0lft * 65536.0);
-	range0lft.iendvol = (long)(tmp1lft * 65536.0);
-	range0rgt.istartvol = (long)(tmp0rgt * 65536.0);
-	range0rgt.iendvol = (long)(tmp1rgt * 65536.0);
-#else
-	range0lft.startvol = tmp0lft;
-	range0lft.endvol = tmp1lft;
-	range0rgt.startvol = tmp0rgt;
-	range0rgt.endvol = tmp1rgt;
-#endif
+        leftright_volumes(pan0.shiftx - pan0.scalex, pan0.shifty, &tmp0lft,
+                          &tmp0rgt);
+        leftright_volumes(pan1.shiftx - pan1.scalex, pan1.shifty, &tmp1lft,
+                          &tmp1rgt);
 
-	vol1lft = 1.0;
-	vol1rgt = 1.0;
-	range1lft.start = current_time;
-	range1rgt.start = current_time;
-	range1lft.end = end_time;
-	range1rgt.end = end_time;
+        range0lft.startvol = tmp0lft;
+        range0lft.endvol = tmp1lft;
+        range0rgt.startvol = tmp0rgt;
+        range0rgt.endvol = tmp1rgt;
 
-	leftright_volumes(pan0.shiftx + pan0.scalex, pan0.shifty,
-	  &tmp0lft, &tmp0rgt);
-	leftright_volumes(pan1.shiftx + pan1.scalex, pan1.shifty,
-	  &tmp1lft, &tmp1rgt);
-#ifdef BOODLER_INTMATH
-	range1lft.istartvol = (long)(tmp0lft * 65536.0);
-	range1lft.iendvol = (long)(tmp1lft * 65536.0);
-	range1rgt.istartvol = (long)(tmp0rgt * 65536.0);
-	range1rgt.iendvol = (long)(tmp1rgt * 65536.0);
-#else
-	range1lft.startvol = tmp0lft;
-	range1lft.endvol = tmp1lft;
-	range1rgt.startvol = tmp0rgt;
-	range1rgt.endvol = tmp1rgt;
-#endif
+        vol1lft = 1.0;
+        vol1rgt = 1.0;
+        range1lft.start = current_time;
+        range1rgt.start = current_time;
+        range1lft.end = end_time;
+        range1rgt.end = end_time;
+
+        leftright_volumes(pan0.shiftx + pan0.scalex, pan0.shifty, &tmp0lft,
+                          &tmp0rgt);
+        leftright_volumes(pan1.shiftx + pan1.scalex, pan1.shifty, &tmp1lft,
+                          &tmp1rgt);
+
+        range1lft.startvol = tmp0lft;
+        range1lft.endvol = tmp1lft;
+        range1rgt.startvol = tmp0rgt;
+        range1rgt.endvol = tmp1rgt;
       }
 
       /* printf("(%gA+%gB , %gA+%gB)\n", vol0lft, vol1lft, vol0rgt, vol1rgt); */
 
       long ivol0lft, ivol0rgt, ivol1lft, ivol1rgt;
-#ifdef BOODLER_INTMATH
-      long ivol0lftbase, ivol0rgtbase;
-      long ivol1lftbase, ivol1rgtbase;
-#endif      
+
       ivol0lft = (long)(volume * vol0lft * 65536.0);
       ivol0rgt = (long)(volume * vol0rgt * 65536.0);
       ivol1lft = (long)(volume * vol1lft * 65536.0);
       ivol1rgt = (long)(volume * vol1rgt * 65536.0);
-#ifdef BOODLER_INTMATH
-      ivol0lftbase = ivol0lft;
-      ivol0rgtbase = ivol0rgt;
-      ivol1lftbase = ivol1lft;
-      ivol1rgtbase = ivol1rgt;
-#endif
-      
-      for (lx=notestart; lx<framesperbuf; lx++) {
-	long cursamp, nextsamp;
-	long val0, val1;
-	long resch0, resch1;
-	long res0lef, res0rgt, res1lef, res1rgt;
 
-	cursamp = framepos*2;
-	if (framepos+1 == samp->loopend && note->repsleft > 0) {
-	  nextsamp = (framepos + 1 - samp->looplen)*2;
-	}
-	else {
-	  nextsamp = cursamp+2;
-	}
+      for (lx = notestart; lx < framesperbuf; lx++) {
+        long cursamp, nextsamp;
+        long val0, val1;
+        long resch0, resch1;
+        long res0lef, res0rgt, res1lef, res1rgt;
 
-	val0 = (long)sampdata[cursamp];
-	val1 = (long)sampdata[nextsamp];
-	resch0 = (val0 * (0x10000-framefrac)) + (val1 * framefrac);
-	val0 = (long)sampdata[cursamp+1];
-	val1 = (long)sampdata[nextsamp+1];
-	resch1 = (val0 * (0x10000-framefrac)) + (val1 * framefrac);
+        cursamp = framepos * 2;
+        if (framepos + 1 == samp->loopend && note->repsleft > 0) {
+          nextsamp = (framepos + 1 - samp->looplen) * 2;
+        } else {
+          nextsamp = cursamp + 2;
+        }
 
-	if (numranges || bothpans) {
-	  int ranx;
-	  long curtime = current_time + lx;
-#ifdef BOODLER_INTMATH
-	  long ivarvols = 0x4000;
-#else
-	  double varvols = 1.0;
-#endif
-	  for (ranx=0; ranx<numranges; ranx++) {
-	    APPLY_RANGE(ranges[ranx], curtime, varvols, ivarvols);
-	  }
+        val0 = (long)sampdata[cursamp];
+        val1 = (long)sampdata[nextsamp];
+        resch0 = (val0 * (0x10000 - framefrac)) + (val1 * framefrac);
+        val0 = (long)sampdata[cursamp + 1];
+        val1 = (long)sampdata[nextsamp + 1];
+        resch1 = (val0 * (0x10000 - framefrac)) + (val1 * framefrac);
 
-	  if (!bothpans) {
-	    /* Done. */
-#ifdef BOODLER_INTMATH
-	    ivol0lft = ((ivarvols * ivol0lftbase) >> 14);
-	    ivol0rgt = ((ivarvols * ivol0rgtbase) >> 14);
-	    ivol1lft = ((ivarvols * ivol1lftbase) >> 14);
-	    ivol1rgt = ((ivarvols * ivol1rgtbase) >> 14);
-#else
-	    ivol0lft = (long)(volume * vol0lft * varvols * 65536.0);
-	    ivol0rgt = (long)(volume * vol0rgt * varvols * 65536.0);
-	    ivol1lft = (long)(volume * vol1lft * varvols * 65536.0);
-	    ivol1rgt = (long)(volume * vol1rgt * varvols * 65536.0);
-#endif
-	  }
-	  else {
-	    /* More to do -- we need to throw range*lft/range*rgt into
-	       the mix. */
-#ifdef BOODLER_INTMATH
-	    long ivarvolslft0 = ivarvols;
-	    long ivarvolsrgt0 = ivarvols;
-	    long ivarvolslft1 = ivarvols;
-	    long ivarvolsrgt1 = ivarvols;
-#else
-	    double varvolslft0 = varvols;
-	    double varvolsrgt0 = varvols;
-	    double varvolslft1 = varvols;
-	    double varvolsrgt1 = varvols;
-#endif
-	    APPLY_RANGE(range0lft, curtime, varvolslft0, ivarvolslft0);
-	    APPLY_RANGE(range0rgt, curtime, varvolsrgt0, ivarvolsrgt0);
-	    APPLY_RANGE(range1lft, curtime, varvolslft1, ivarvolslft1);
-	    APPLY_RANGE(range1rgt, curtime, varvolsrgt1, ivarvolsrgt1);
+        if (numranges || bothpans) {
+          int ranx;
+          long curtime = current_time + lx;
+          double varvols = 1.0;
 
-#ifdef BOODLER_INTMATH
-	    ivol0lft = ((ivarvolslft0 * ivol0lftbase) >> 14);
-	    ivol0rgt = ((ivarvolsrgt0 * ivol0rgtbase) >> 14);
-	    ivol1lft = ((ivarvolslft1 * ivol1lftbase) >> 14);
-	    ivol1rgt = ((ivarvolsrgt1 * ivol1rgtbase) >> 14);
-#else
-	    ivol0lft = (long)(volume * vol0lft * varvolslft0 * 65536.0);
-	    ivol0rgt = (long)(volume * vol0rgt * varvolsrgt0 * 65536.0);
-	    ivol1lft = (long)(volume * vol1lft * varvolslft1 * 65536.0);
-	    ivol1rgt = (long)(volume * vol1rgt * varvolsrgt1 * 65536.0);
-#endif
-	  }
-	}
+          for (ranx = 0; ranx < numranges; ranx++) {
+            APPLY_RANGE(ranges[ranx], curtime, varvols, ivarvols);
+          }
 
-	/* All of the volume and pan information has been boiled down
-	   into ivol#lft/ivol#rgt. Apply it to the sample. */
+          if (!bothpans) {
+            /* Done. */
+            ivol0lft = (long)(volume * vol0lft * varvols * 65536.0);
+            ivol0rgt = (long)(volume * vol0rgt * varvols * 65536.0);
+            ivol1lft = (long)(volume * vol1lft * varvols * 65536.0);
+            ivol1rgt = (long)(volume * vol1rgt * varvols * 65536.0);
+          } else {
+            /* More to do -- we need to throw range*lft/range*rgt into
+               the mix. */
+            double varvolslft0 = varvols;
+            double varvolsrgt0 = varvols;
+            double varvolslft1 = varvols;
+            double varvolsrgt1 = varvols;
 
-	res0lef = ((resch0 >> 16) * ivol0lft) >> 16;
-	res0rgt = ((resch0 >> 16) * ivol0rgt) >> 16;
-	res1lef = ((resch1 >> 16) * ivol1lft) >> 16;
-	res1rgt = ((resch1 >> 16) * ivol1rgt) >> 16;
-      
-	*valptr += (res0lef+res1lef);
-	valptr++;
-	*valptr += (res0rgt+res1rgt);
-	valptr++;
+            APPLY_RANGE(range0lft, curtime, varvolslft0, ivarvolslft0);
+            APPLY_RANGE(range0rgt, curtime, varvolsrgt0, ivarvolsrgt0);
+            APPLY_RANGE(range1lft, curtime, varvolslft1, ivarvolslft1);
+            APPLY_RANGE(range1rgt, curtime, varvolsrgt1, ivarvolsrgt1);
 
-	framefrac += lpitch;
-	framepos += (framefrac >> 16);
-	framefrac &= 0xFFFF;
+            ivol0lft = (long)(volume * vol0lft * varvolslft0 * 65536.0);
+            ivol0rgt = (long)(volume * vol0rgt * varvolsrgt0 * 65536.0);
+            ivol1lft = (long)(volume * vol1lft * varvolslft1 * 65536.0);
+            ivol1rgt = (long)(volume * vol1rgt * varvolsrgt1 * 65536.0);
+          }
+        }
 
-	while (note->repsleft > 0 && framepos >= samp->loopend) {
-	  framepos -= samp->looplen;
-	  note->repsleft--;
-	}
+        /* All of the volume and pan information has been boiled down
+           into ivol#lft/ivol#rgt. Apply it to the sample. */
 
-	if (framepos+1 >= numframes && note->repsleft == 0) {
-	  willdelete = TRUE;
-	  break;
-	}
+        res0lef = ((resch0 >> 16) * ivol0lft) >> 16;
+        res0rgt = ((resch0 >> 16) * ivol0rgt) >> 16;
+        res1lef = ((resch1 >> 16) * ivol1lft) >> 16;
+        res1rgt = ((resch1 >> 16) * ivol1rgt) >> 16;
+
+        *valptr += (res0lef + res1lef);
+        valptr++;
+        *valptr += (res0rgt + res1rgt);
+        valptr++;
+
+        framefrac += lpitch;
+        framepos += (framefrac >> 16);
+        framefrac &= 0xFFFF;
+
+        while (note->repsleft > 0 && framepos >= samp->loopend) {
+          framepos -= samp->looplen;
+          note->repsleft--;
+        }
+
+        if (framepos + 1 >= numframes && note->repsleft == 0) {
+          willdelete = TRUE;
+          break;
+        }
       }
     }
 
@@ -965,8 +861,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
     if (!willdelete) {
       nptr = &((*nptr)->next);
-    }
-    else {
+    } else {
       note_destroy(nptr);
     }
   }
@@ -975,13 +870,12 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
   return FALSE;
 }
 
-void note_destroy_by_channel(PyObject *channel)
-{
-  note_t **nptr;
+void note_destroy_by_channel(PyObject* channel) {
+  note_t** nptr;
 
   nptr = &queue;
   while (1) {
-    note_t *note = (*nptr);
+    note_t* note = (*nptr);
     int willdelete = FALSE;
 
     if (!note) {
@@ -990,47 +884,45 @@ void note_destroy_by_channel(PyObject *channel)
 
     if (note->channel == channel) {
       willdelete = TRUE;
-    }
-    else {
+    } else {
       if (note->channel && channel) {
-	PyObject *ancs = PyObject_GetAttrString(note->channel, "ancestors");
-	if (ancs) {
-	  if (PyMapping_HasKey(ancs, channel))
-	    willdelete = TRUE;
-	  Py_DECREF(ancs);
-	}
+        PyObject* ancs = PyObject_GetAttrString(note->channel, "ancestors");
+        if (ancs) {
+          if (PyMapping_HasKey(ancs, channel))
+            willdelete = TRUE;
+          Py_DECREF(ancs);
+        }
       }
     }
 
     if (!willdelete) {
       nptr = &((*nptr)->next);
-    }
-    else {
+    } else {
       note_destroy(nptr);
     }
   }
 }
 
-void noteq_adjust_timebase(long offset)
-{
-  note_t *note;
+void noteq_adjust_timebase(long offset) {
+  note_t* note;
 
   current_time -= offset;
 
   for (note = queue; note; note = note->next) {
     note->starttime -= offset;
-  }  
+  }
 }
 
 /* Given a point-source of sound at (shiftx, shifty), determine the
    volume levels it produces in the left and right output channels.
    These values will be between 0 and 1.
 */
-static void leftright_volumes(double shiftx, double shifty,
-  double *outlft, double *outrgt)
-{
+static void leftright_volumes(double shiftx,
+                              double shifty,
+                              double* outlft,
+                              double* outrgt) {
   double vollft, volrgt;
-  double dist; 
+  double dist;
 
   /* compute dist = max(abs(shiftx), abs(shifty)) */
 
@@ -1041,8 +933,7 @@ static void leftright_volumes(double shiftx, double shifty,
   if (shifty >= 0.0) {
     if (shifty > dist)
       dist = shifty;
-  }
-  else {
+  } else {
     if (-shifty > dist)
       dist = -shifty;
   }
@@ -1055,15 +946,14 @@ static void leftright_volumes(double shiftx, double shifty,
   }
 
   /* Now shiftx, shifty are in the range [-1, 1] */
-      
+
   /* Compute the volume levels, based on shiftx. (The Y value has no
      effect inside the [-1, 1] range.) */
 
   if (shiftx < 0.0) {
     vollft = 1.0;
     volrgt = 1.0 + shiftx;
-  }
-  else {
+  } else {
     volrgt = 1.0;
     vollft = 1.0 - shiftx;
   }
@@ -1071,7 +961,7 @@ static void leftright_volumes(double shiftx, double shifty,
   /* Now scale down the volumes, using the inverse square of the distance. */
 
   if (dist > 1.0) {
-    dist = dist*dist;
+    dist = dist * dist;
     vollft /= dist;
     volrgt /= dist;
   }
