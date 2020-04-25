@@ -3,7 +3,6 @@
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
-
 """sparse: A module which implements simple S-expressions.
 
 An S-expression is a string, or a parenthesized list of S-expressions.
@@ -72,6 +71,7 @@ from functools import total_ordering
 class ParseError(Exception):
     """ParseError: represents an error parsing string data into Trees.
     """
+
     pass
 
 
@@ -81,7 +81,7 @@ class Tree:
     This is a virtual base class. Do not instantiate it; instead use
     the List or ID class.
     """
-    
+
     def serialize(self):
         """serialize() -> str
 
@@ -135,6 +135,7 @@ class Tree:
         """
         raise ValueError('a list cannot be understood as a boolean')
 
+
 class List(Tree):
     """List: represents a list expression.
 
@@ -167,15 +168,15 @@ class List(Tree):
     values must be Trees. You can also construct a List from a Python
     list or dict, using the forms List(*list) or List(**dict).
     """
-    
+
     def __init__(self, *args, **attrs):
         self.list = list(args)
         self.attrs = dict(attrs)
         for val in self.list:
-            if (not isinstance(val, Tree)):
+            if not isinstance(val, Tree):
                 raise ValueError('List may only contain Lists and IDs')
         for val in list(self.attrs.values()):
-            if (not isinstance(val, Tree)):
+            if not isinstance(val, Tree):
                 raise ValueError('List attribute must be List or ID')
 
     def append(self, val):
@@ -183,7 +184,7 @@ class List(Tree):
 
         Add the Tree as the last positional entry.
         """
-        if (not isinstance(val, Tree)):
+        if not isinstance(val, Tree):
             raise ValueError('List may only contain Lists and IDs')
         self.list.append(val)
 
@@ -192,9 +193,9 @@ class List(Tree):
 
         Add the Tree val as a named entry, with the given key.
         """
-        if (not isinstance(val, Tree)):
+        if not isinstance(val, Tree):
             raise ValueError('List attribute must be List or ID')
-        if (not (type(key) in [str])):
+        if not (type(key) in [str]):
             raise ValueError('List attribute key must be a string')
         self.attrs[key] = val
 
@@ -205,18 +206,17 @@ class List(Tree):
         no entry with that key, returns None.
         """
         return self.attrs.get(key)
-        
+
     def has_attr(self, key):
         """has_attr(key) -> bool
 
         Returns whether there is an entry with the given key.
         """
         return key in self.attrs
-        
+
     def serialize(self):
-        ls = [ val.serialize() for val in self.list ]
-        ls = ls + [ key+'='+(self.attrs[key].serialize())
-            for key in self.attrs ]
+        ls = [val.serialize() for val in self.list]
+        ls = ls + [key + '=' + (self.attrs[key].serialize()) for key in self.attrs]
         return '(' + ' '.join(ls) + ')'
 
     def __len__(self):
@@ -224,10 +224,10 @@ class List(Tree):
 
     def __getitem__(self, key):
         return self.list.__getitem__(key)
-        
+
     def __contains__(self, it):
         return self.list.__contains__(it)
-        
+
     def __iter__(self):
         return self.list.__iter__()
 
@@ -247,37 +247,37 @@ class ID(Tree):
     """
 
     def __init__(self, id):
-        if (not (type(id) in [str])):
+        if not (type(id) in [str]):
             raise ValueError('ID must contain a string')
 
         self.id = id
         self.delimiter = None
         self.escape = False
 
-        if (not id):
+        if not id:
             self.delimiter = '"'
         for ch in id:
-            if (ch.isspace() or ch in ['=', '"', "'", '(', ')', '\\']):
+            if ch.isspace() or ch in ['=', '"', "'", '(', ')', '\\']:
                 self.delimiter = '"'
                 break
 
-        if (self.delimiter):
-            if ('"' in id):
-                if ("'" in id):
+        if self.delimiter:
+            if '"' in id:
+                if "'" in id:
                     self.escape = True
                 else:
                     self.delimiter = "'"
 
-        if ('\\' in id):
+        if '\\' in id:
             self.escape = True
 
     def serialize(self):
-        if (self.delimiter):
+        if self.delimiter:
             val = self.id
-            if (self.escape):
+            if self.escape:
                 val = val.replace('\\', '\\\\')
-                val = val.replace(self.delimiter, '\\'+self.delimiter)
-            return (self.delimiter + val + self.delimiter)
+                val = val.replace(self.delimiter, '\\' + self.delimiter)
+            return self.delimiter + val + self.delimiter
         else:
             return self.id
 
@@ -285,13 +285,13 @@ class ID(Tree):
         return len(self.id)
 
     def __eq__(self, other):
-        if (isinstance(other, ID)):
+        if isinstance(other, ID):
             other = other.id
 
         return self.id == other
 
     def __lt__(self, other):
-        if (isinstance(other, ID)):
+        if isinstance(other, ID):
             other = other.id
 
         return self.id < other
@@ -307,24 +307,28 @@ class ID(Tree):
 
     def as_boolean(self):
         val = self.id.lower()
-        if (not val):
+        if not val:
             return False
         val = val[0]
-        if (val in ['0', 'n', 'f']):
+        if val in ['0', 'n', 'f']:
             return False
         return True
+
 
 # EndOfList is used as an internal token during parsing. It should not be
 # used outside this module.
 EndOfList = object()
+
 
 class AttrToken:
     """AttrToken: represents a named value encountered during parsing.
 
     This is an internal class; it should not be used outside this module.
     """
+
     def __init__(self, key):
         self.key = key
+
 
 def parse(val):
     """parse(val) -> Tree
@@ -345,14 +349,15 @@ def parse(val):
     context = ParseContext(fl)
     try:
         res = context.parsetree()
-        if (res is EndOfList):
+        if res is EndOfList:
             raise ParseError('unexpected end of list)')
-        if (isinstance(res, AttrToken)):
+        if isinstance(res, AttrToken):
             raise ParseError('attributes may only occur in lists')
         context.finalwhite()
         return res
     finally:
         context.close()
+
 
 class ParseContext:
     """ParseContext: represents the state of an ongoing parse() operation.
@@ -371,7 +376,7 @@ class ParseContext:
 
         ParseContext(fl) -- constructor
     """
-    
+
     def __init__(self, fl):
         self.fl = fl
         self.nextch = None
@@ -391,17 +396,17 @@ class ParseContext:
 
         Raises ParseError on failure.
         """
-        
+
         ch = self.nextch
         fl = self.fl
 
-        if (ch is None):
+        if ch is None:
             ch = fl.read(1)
 
-        while (ch and ch.isspace()):
+        while ch and ch.isspace():
             ch = fl.read(1)
-        
-        if (ch):
+
+        if ch:
             raise ParseError('extra stuff after value')
 
     def parsetree(self):
@@ -415,32 +420,32 @@ class ParseContext:
         as x=y. These are not valid expressions on their own; they can
         only occur inside lists.
         """
-        
+
         ch = self.nextch
         fl = self.fl
 
-        if (ch is None):
+        if ch is None:
             ch = fl.read(1)
 
-        while (ch and ch.isspace()):
+        while ch and ch.isspace():
             ch = fl.read(1)
 
-        if (not ch):
+        if not ch:
             raise ParseError('unexpected end of input')
-        
-        if (ch == '('):
+
+        if ch == '(':
             self.nextch = None
             return self.parselist()
 
-        if (ch == ')'):
+        if ch == ')':
             self.nextch = None
             return EndOfList
 
-        if (ch in ['"', "'"]):
+        if ch in ['"', "'"]:
             self.nextch = ch
             return self.parsestring()
 
-        if (True):
+        if True:
             self.nextch = ch
             return self.parseid()
 
@@ -450,26 +455,25 @@ class ParseContext:
         Parse an unquoted string expression. The stream must be at the
         beginning of the expression.
         """
-        
+
         ch = self.nextch
         fl = self.fl
 
-        if (ch is None):
+        if ch is None:
             raise Exception('internal error: lookahead char missing')
-        
+
         idfl = io.StringIO()
-        while (ch and not (ch in ['=', '"', "'", '(', ')', '\\'])
-            and not ch.isspace()):
+        while ch and not (ch in ['=', '"', "'", '(', ')', '\\']) and not ch.isspace():
             idfl.write(ch)
             ch = fl.read(1)
         self.nextch = ch
 
         st = idfl.getvalue()
 
-        if (ch == '='):
+        if ch == '=':
             self.nextch = None
             return AttrToken(st)
-        if (ch == '\\'):
+        if ch == '\\':
             raise ParseError('backslash is only valid inside a quoted string')
         return ID(st)
 
@@ -482,19 +486,19 @@ class ParseContext:
 
         terminator = self.nextch
         self.nextch = None
-        
+
         fl = self.fl
         ch = fl.read(1)
-        
+
         idfl = io.StringIO()
         while True:
-            if (not ch):
+            if not ch:
                 raise ParseError('unterminated string literal')
-            if (ch == terminator):
+            if ch == terminator:
                 break
-            if (ch == '\\'):
+            if ch == '\\':
                 ch = fl.read(1)
-                if (not (ch in ['"', "'", '\\'])):
+                if not (ch in ['"', "'", '\\']):
                     raise ParseError('backslash must be followed by quote or backslash')
             idfl.write(ch)
             ch = fl.read(1)
@@ -509,22 +513,22 @@ class ParseContext:
         Parse a parenthesized list expression. The stream must be at
         the beginning of the list contents, after the open parenthesis.
         """
-        
-        if (not (self.nextch is None)):
+
+        if not (self.nextch is None):
             raise Exception('internal error: lookahead char')
-        
+
         nod = List()
         while True:
             val = self.parsetree()
-            if (val is EndOfList):
+            if val is EndOfList:
                 break
-            if (isinstance(val, AttrToken)):
+            if isinstance(val, AttrToken):
                 key = val.key
-                if (not key):
-                    if (len(nod) == 0):
+                if not key:
+                    if len(nod) == 0:
                         raise ParseError('= must be preceded by a key')
                     key = nod.list.pop()
-                    if (not isinstance(key, ID)):
+                    if not isinstance(key, ID):
                         raise ParseError('= may not be preceded by a list')
                     key = key.id
                 val = self.parseattr()
@@ -540,10 +544,10 @@ class ParseContext:
         Parse the value part of a named value. The stream must be after
         the equals sign.
         """
-        
+
         val = self.parsetree()
-        if (val is EndOfList):
+        if val is EndOfList:
             raise ParseError('attribute must have a value')
-        if (isinstance(val, AttrToken)):
+        if isinstance(val, AttrToken):
             raise ParseError('attribute may not contain another =')
         return val

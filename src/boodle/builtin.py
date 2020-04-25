@@ -3,7 +3,6 @@
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
-
 """builtin: A module containing useful utility Agent classes.
 
 These Agents are too important to be distributed in an optional package;
@@ -18,31 +17,39 @@ FadeInOutAgent -- creates a channel that fades up, holds, and fades out
 TestSoundAgent -- plays a little test melody
 """
 
+from boodle import stereo
+from boopak import pinfo
 import io
 from boodle import agent
 
 # Declare the imports list, so that "from boodle.builtin import *"
 # is practical.
 __all__ = [
-    'NullAgent', 'StopAgent',
-    'SetVolumeAgent', 'SetPanAgent', 
-    'FadeOutAgent', 'FadeInOutAgent',
-    'TestSoundAgent'
+    'NullAgent',
+    'StopAgent',
+    'SetVolumeAgent',
+    'SetPanAgent',
+    'FadeOutAgent',
+    'FadeInOutAgent',
+    'TestSoundAgent',
 ]
 
-### Add UnlistenAgent? SendEventAgent?
-### Give these get_argument_list() methods? (Would allow command-line use...)
+# Add UnlistenAgent? SendEventAgent?
+# Give these get_argument_list() methods? (Would allow command-line use...)
+
 
 class NullAgent(agent.Agent):
     """NullAgent:
 
     This agent does nothing. 
     """
-    
+
     def run(self):
         pass
+
     def get_title(self):
         return 'Null agent'
+
 
 class StopAgent(agent.Agent):
     """StopAgent:
@@ -54,8 +61,10 @@ class StopAgent(agent.Agent):
 
     def run(self):
         self.channel.stop()
+
     def get_title(self):
         return 'Stop channel'
+
 
 class SetVolumeAgent(agent.Agent):
     """SetVolumeAgent:
@@ -68,11 +77,14 @@ class SetVolumeAgent(agent.Agent):
         agent.Agent.__init__(self)
         self.newvol = float(newvol)
         self.duration = float(duration)
+
     def run(self):
         self.channel.set_volume(self.newvol, self.duration)
+
     def get_title(self):
         return 'Set channel volume'
-        
+
+
 class SetPanAgent(agent.Agent):
     """SetPanAgent:
 
@@ -84,11 +96,14 @@ class SetPanAgent(agent.Agent):
         agent.Agent.__init__(self)
         self.newpan = newpan
         self.duration = float(duration)
+
     def run(self):
         self.channel.set_pan(self.newpan, self.duration)
+
     def get_title(self):
         return 'Set channel pan'
-        
+
+
 class FadeOutAgent(agent.Agent):
     """FadeOutAgent(interval):
 
@@ -99,11 +114,14 @@ class FadeOutAgent(agent.Agent):
     def __init__(self, duration=0.005):
         agent.Agent.__init__(self)
         self.duration = float(duration)
+
     def run(self):
         self.channel.set_volume(0, self.duration)
         self.sched_agent(StopAgent(), self.duration)
+
     def get_title(self):
         return 'Fade out and stop channel'
+
 
 class FadeInOutAgent(agent.Agent):
     """FadeInOutAgent(agent, liveinterval, fadeinterval, fadeoutinterval=fadeinterval):
@@ -125,18 +143,21 @@ class FadeInOutAgent(agent.Agent):
         self.agentinst = agentinst
         self.fadeininterval = float(fadeinterval)
         self.liveinterval = float(liveinterval)
-        if (fadeoutinterval is None):
+        if fadeoutinterval is None:
             self.fadeoutinterval = self.fadeininterval
         else:
             self.fadeoutinterval = float(fadeoutinterval)
+
     def run(self):
         chan = self.new_channel(0)
         self.sched_agent(self.agentinst, 0, chan)
         chan.set_volume(1, self.fadeininterval)
         ag = FadeOutAgent(self.fadeoutinterval)
-        self.sched_agent(ag, self.liveinterval+self.fadeininterval, chan)
+        self.sched_agent(ag, self.liveinterval + self.fadeininterval, chan)
+
     def get_title(self):
         return 'Fade in, fade out, stop channel'
+
 
 class TestSoundAgent(agent.Agent):
     """TestSoundAgent:
@@ -145,33 +166,37 @@ class TestSoundAgent(agent.Agent):
     to create a sound sample without loading any Boodler modules from
     the external module collection.
     """
+
     sound = None
-    
+
     def makesound(fl):
         """makesound(fl) -> None
         Generate AIFF sound data for a short musical note, and write the
         AIFF to the given file.
         """
-        import aifc, math
+        import aifc
+        import math
+
         afl = aifc.open(fl, 'wb')
         afl.setnchannels(2)
         afl.setsampwidth(2)
         afl.setframerate(22050)
         nframes = 5000
-        ratio = (0.5 * math.pi / nframes)
+        ratio = 0.5 * math.pi / nframes
         for ix in range(nframes):
             amp = 0.5 * (math.sin(ix * 0.10) + math.sin(ix * 0.166666))
             amp *= math.cos(ix * ratio)
-            if (ix < 10):
-                amp *= (ix * 0.1)
+            if ix < 10:
+                amp *= ix * 0.1
             amp = int(amp * 0x4000)
             dat = chr((amp >> 8) & 0xFF) + chr(amp & 0xFF)
             amp = amp // 10
             dat += chr((amp >> 8) & 0xFF) + chr(amp & 0xFF)
             afl.writeframes(dat)
         afl.close()
+
     makesound = staticmethod(makesound)
-    
+
     def getsound():
         """getsound() -> File
         Create a sound sample object for a short musical note. The AIFF
@@ -179,7 +204,7 @@ class TestSoundAgent(agent.Agent):
         This caches the File object; if you call it more than once, you'll
         get the same File.
         """
-        if (not TestSoundAgent.sound):
+        if not TestSoundAgent.sound:
             fl = SafeStringIO()
             TestSoundAgent.makesound(fl)
             dat = fl.getvalue()
@@ -187,26 +212,32 @@ class TestSoundAgent(agent.Agent):
             mfile = pinfo.MemFile(dat, '.aiff', 'TestSound')
             TestSoundAgent.sound = mfile
         return TestSoundAgent.sound
+
     getsound = staticmethod(getsound)
-    
+
     def run(self):
         from boodle import music
-        pitches = [-5, -6, -3, -4, -1, -2, 1, 0,
-            (-6, -1), -3, -5, (0, 3), (-2, 1) ]
+
+        pitches = [-5, -6, -3, -4, -1, -2, 1, 0, (-6, -1), -3, -5, (0, 3), (-2, 1)]
         snd = TestSoundAgent.getsound()
         pos = 0.0
         center = stereo.scale(0)
         leftright = 1
         for val in pitches:
-            if (isinstance(val, tuple)):
+            if isinstance(val, tuple):
                 for pitch in val:
                     self.sched_note_pan(snd, pitch=music.get_pitch(pitch), pan=center, delay=pos)
             else:
-                self.sched_note_pan(snd, pitch=music.get_pitch(val), pan=stereo.scale(leftright), delay=pos)
+                self.sched_note_pan(snd,
+                                    pitch=music.get_pitch(val),
+                                    pan=stereo.scale(leftright),
+                                    delay=pos)
                 leftright = -leftright
             pos += 0.145
+
     def get_title(self):
         return 'Boodler test sound'
+
 
 class SafeStringIO:
     """SafeStringIO: a silly wrapper for cStringIO.
@@ -221,6 +252,7 @@ class SafeStringIO:
     cStringIO except that the close() method does nothing. Its functionality
     is moved to realclose().
     """
+
     def __init__(self):
         self.fl = io.StringIO()
         self.read = self.fl.read
@@ -229,13 +261,10 @@ class SafeStringIO:
         self.tell = self.fl.tell
         self.flush = self.fl.flush
         self.getvalue = self.fl.getvalue
+
     def close(self):
         pass
+
     def realclose(self):
         self.fl.close()
         self.fl = None
-
-# Late imports.
-
-from boodle import stereo
-from boopak import pinfo

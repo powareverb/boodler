@@ -4,15 +4,12 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-# readline is not available on all platforms, but we import it if possible.
-try:
-    import readline
-except:
-    pass
-
 import os.path
 
 from packaging.version import InvalidVersion, Version
+
+from booman import CommandError, CommandCancelled
+from boopak import collect, pinfo
 
 
 class Token:
@@ -34,7 +31,7 @@ class Token:
     """
 
     prompt = ''
-    
+
     def accept(self, source):
         """accept(source) -> value
 
@@ -44,6 +41,7 @@ class Token:
         (Raising KeyboardInterrupt is always a possibility.)
         """
         raise NotImplementedError(str(self))
+
 
 class YesNoToken(Token):
     """YesNoToken: Grab a "yes" or "no" element from the user. This
@@ -55,19 +53,20 @@ class YesNoToken(Token):
     """
 
     prompt = 'yes/no'
-    
+
     def accept(self, source):
-        while (True):
+        while True:
             try:
                 ln = input_line(self.prompt)
             except CommandCancelled:
                 return False
             ln = ln.lower()
-            if (ln.startswith('y')):
+            if ln.startswith('y'):
                 return True
-            if (ln.startswith('n')):
+            if ln.startswith('n'):
                 return False
             print('(Type "yes" or "no")')
+
 
 class PathToken(Token):
     """PathToken: Grab the name of a file or directory.
@@ -79,19 +78,20 @@ class PathToken(Token):
     """
 
     prompt = 'path'
-    
+
     def __init__(self, mustexist=True):
         self.mustexist = mustexist
 
     def accept(self, source):
         val = source.pop_word(self)
-        if (not os.path.exists(val)):
-            if (self.mustexist):
+        if not os.path.exists(val):
+            if self.mustexist:
                 raise CommandError('Does not exist: ' + val)
             return (val, False)
         else:
             return (val, True)
-    
+
+
 class FileToken(PathToken):
     """FileToken: Grab the name of a file.
 
@@ -102,12 +102,13 @@ class FileToken(PathToken):
     """
 
     prompt = 'file'
-    
+
     def accept(self, source):
         (val, exists) = PathToken.accept(self, source)
-        if (exists and not os.path.isfile(val)):
+        if exists and not os.path.isfile(val):
             raise CommandError('Not a file: ' + val)
         return (val, exists)
+
 
 class DirToken(PathToken):
     """DirToken: Grab the name of a file.
@@ -119,12 +120,13 @@ class DirToken(PathToken):
     """
 
     prompt = 'dir'
-    
+
     def accept(self, source):
         (val, exists) = PathToken.accept(self, source)
-        if (exists and not os.path.isdir(val)):
+        if exists and not os.path.isdir(val):
             raise CommandError('Not a directory: ' + val)
         return (val, exists)
+
 
 class PackageToken(Token):
     """PackageToken: Grab the name of a package.
@@ -154,7 +156,7 @@ class PackageOptVersionToken(Token):
     def accept(self, source):
         val = source.pop_word(self)
 
-        if (':' in val):
+        if ':' in val:
             try:
                 (pkgname, vers) = pinfo.parse_package_version_spec(val)
                 return (pkgname, vers)
@@ -170,14 +172,14 @@ class PackageOptVersionToken(Token):
         val = None
         vers = None
 
-        if (not source.is_empty()):
+        if not source.is_empty():
             val = source.pop_word(self)
             try:
                 vers = Version(val)
             except InvalidVersion:
-                if (self.greedy):
+                if self.greedy:
                     raise CommandError('Invalid version number: ' + val)
-                if (not (val is None)):
+                if not (val is None):
                     source.push_word(val)
         return (pkgname, vers)
 
@@ -202,17 +204,16 @@ class PackageFileURLToken(Token):
     def accept(self, source):
         val = source.pop_word(self)
 
-        if (':' in val
-            and not (val.startswith('/') or val.startswith('\\') or val.startswith('.'))):
+        if ':' in val and not (val.startswith('/') or val.startswith('\\') or val.startswith('.')):
             pos = val.find(':')
             dotpos = val.find('.')
-            if (dotpos < 0 or dotpos > pos):
+            if dotpos < 0 or dotpos > pos:
                 return (collect.Source_URL, val)
 
-        if (val.endswith('.zip') or val.endswith(collect.Suffix_PackageArchive)):
+        if val.endswith('.zip') or val.endswith(collect.Suffix_PackageArchive):
             return (collect.Source_FILE, val)
 
-        if (':' in val):
+        if ':' in val:
             try:
                 (pkgname, vers) = pinfo.parse_package_version_spec(val)
                 return (collect.Source_PACKAGE, (pkgname, vers))
@@ -228,14 +229,14 @@ class PackageFileURLToken(Token):
         val = None
         vers = None
 
-        if (not source.is_empty()):
+        if not source.is_empty():
             val = source.pop_word(self)
             try:
                 vers = Version(val)
             except InvalidVersion:
-                if (self.greedy):
+                if self.greedy:
                     raise CommandError('Invalid version number: ' + val)
-                if (not (val is None)):
+                if not (val is None):
                     source.push_word(val)
         return (collect.Source_PACKAGE, (pkgname, vers))
 
@@ -248,27 +249,27 @@ class ResourceToken(Token):
     """
 
     prompt = 'resource'
-    
+
     def accept(self, source):
         val = source.pop_word(self)
         pos = val.find('/')
-        if (pos < 0):
+        if pos < 0:
             raise CommandError('Not of form package/resource: ' + val)
 
-        res = val[ pos+1 : ]
-        val = val[ : pos ]
+        res = val[pos + 1:]
+        val = val[:pos]
 
         try:
             pinfo.parse_resource_name(res)
         except:
             raise CommandError('Invalid resource name: ' + res)
-            
+
         try:
             (pkg, vers) = pinfo.parse_package_version_spec(val)
         except:
             raise CommandError('Invalid package name: ' + val)
-        
-        return ( (pkg, vers), res )
+
+        return ((pkg, vers), res)
 
 
 class InputSource:
@@ -276,7 +277,7 @@ class InputSource:
     line arguments and pieces of previously-typed commands). Various Tokens
     pull information out of the InputSource; when it is empty, it asks
     for more from the user.
-    
+
     A Token can also push information back into the InputSource, which
     means that lookahead is possible.
 
@@ -298,7 +299,7 @@ class InputSource:
     # Constants representing what kind of input is currently stored up.
     EMPTY = 0
     SHELL = 1
-    LINE  = 2
+    LINE = 2
 
     def __init__(self, args=None):
         self.state = self.EMPTY
@@ -306,7 +307,7 @@ class InputSource:
         self.line = None
         self.pushback = []
 
-        if (args is None or args == []):
+        if args is None or args == []:
             return
         else:
             self.state = self.SHELL
@@ -317,7 +318,7 @@ class InputSource:
 
         Check whether any input is currently stored up.
         """
-        return (self.state == self.EMPTY and (not self.pushback))
+        return self.state == self.EMPTY and (not self.pushback)
 
     def pop_word(self, tok):
         """pop_word(tok) -> str
@@ -330,28 +331,28 @@ class InputSource:
         the token argument's prompt.
         """
 
-        if (self.pushback):
+        if self.pushback:
             return self.pushback.pop()
 
-        if (self.is_empty()):
+        if self.is_empty():
             self.state = self.LINE
             self.line = input_line(tok.prompt)
 
-        if (self.state == self.SHELL):
+        if self.state == self.SHELL:
             val = self.list.pop(0)
-            if (not self.list):
+            if not self.list:
                 self.state = self.EMPTY
             return val
-        if (self.state == self.LINE):
+        if self.state == self.LINE:
             # Maybe we should allow backslash escapes
             pos = self.line.find(' ')
-            if (pos < 0):
+            if pos < 0:
                 val = self.line
                 self.line = ''
             else:
                 val = self.line[:pos].strip()
-                self.line = self.line[pos+1:].strip()
-            if (not self.line):
+                self.line = self.line[pos + 1:].strip()
+            if not self.line:
                 self.state = self.EMPTY
             return val
 
@@ -370,9 +371,10 @@ class InputSource:
         """
 
         res = []
-        while (not self.is_empty()):
+        while not self.is_empty():
             res.append(self.pop_word(None))
         return res
+
 
 def input_line(prompt=''):
     """input_line(prompt='') -> str
@@ -386,15 +388,10 @@ def input_line(prompt=''):
     (EOF on stdin also appears as a KeyboardInterrupt.)
     """
     try:
-        ln = input(prompt+'> ')
+        ln = input(prompt + '> ')
         ln = ln.strip()
-        if (not ln):
+        if not ln:
             raise CommandCancelled()
         return ln
     except EOFError:
         raise KeyboardInterrupt()
-
-# Late imports
-from boopak import pinfo
-from boopak import collect
-from booman import CommandError, CommandCancelled

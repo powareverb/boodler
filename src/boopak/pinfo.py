@@ -3,7 +3,6 @@
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
-
 """pinfo: Classes which describe a Boodler module and its contents.
 
 Classes:
@@ -33,6 +32,8 @@ import sys
 
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import Version
+
+from boopak.exceptions import PackageLoadError, PackageNotFoundError
 
 
 class PackageInfo:
@@ -105,55 +106,52 @@ class PackageInfo:
         metadata = self.metadata
 
         val = metadata.get_one('boodler.package')
-        if (not val):
+        if not val:
+            raise PackageLoadError(pkgname, 'no boodler.package metadata entry')
+        if val != pkgname:
             raise PackageLoadError(pkgname,
-                'no boodler.package metadata entry')
-        if (val != pkgname):
-            raise PackageLoadError(pkgname,
-                'boodler.package does not match package location: ' + val)
+                                   'boodler.package does not match package location: ' + val)
 
         val = metadata.get_one('boodler.version')
-        if (not val):
+        if not val:
             val = '(missing, 1.0 assumed)'
             vers = Version('1.0')
         else:
             vers = Version(val)
-        if (vers != self.version):
+        if vers != self.version:
             raise PackageLoadError(pkgname,
-                'boodler.version does not match package version: ' + val)
+                                   'boodler.version does not match package version: ' + val)
 
         val = metadata.get_one('boodler.main')
-        if (not val):
+        if not val:
             pass
-        elif (val == '.'):
+        elif val == '.':
             pass
-        elif (ident_name_regexp.match(val)):
+        elif ident_name_regexp.match(val):
             pass
         else:
-            raise PackageLoadError(pkgname,
-                'boodler.main is not a module or . :' + val)
+            raise PackageLoadError(pkgname, 'boodler.main is not a module or . :' + val)
 
         val = metadata.get_one('boodler.api_required')
 
-        if (val):
+        if val:
             spec = SpecifierSet(val)
 
-            if (self.loader.boodler_api_vers):
-                if (not spec.match(self.loader.boodler_api_vers)):
-                    raise PackageLoadError(pkgname,
-                        'boodler.api_required does not match Boodler version: '
-                        + val)
+            if self.loader.boodler_api_vers:
+                if not spec.match(self.loader.boodler_api_vers):
+                    raise PackageLoadError(
+                        pkgname, 'boodler.api_required does not match Boodler version: ' + val)
 
         for val in metadata.get_all('boodler.requires'):
             try:
                 pos = val.find(' ')
 
-                if (pos < 0):
+                if pos < 0:
                     deppkg = val
                     depspec = None
                 else:
                     deppkg = val[:pos].strip()
-                    depspec = val[pos+1:].strip()
+                    depspec = val[pos + 1:].strip()
 
                     try:
                         depspec = SpecifierSet(depspec)
@@ -166,36 +164,33 @@ class PackageInfo:
 
                 self.dependencies.add((deppkg, depspec))
             except ValueError as ex:
-                raise PackageLoadError(pkgname,
-                    'boodler.requires line invalid: ' + val) from ex
+                raise PackageLoadError(pkgname, 'boodler.requires line invalid: ' + val) from ex
 
         for val in metadata.get_all('boodler.requires_exact'):
             try:
                 pos = val.find(' ')
-                if (pos < 0):
+                if pos < 0:
                     raise ValueError('version number required')
                 else:
                     deppkg = val[:pos].strip()
-                    depspec = val[pos+1:].strip()
+                    depspec = val[pos + 1:].strip()
                     depspec = Version(depspec)
                 parse_package_name(deppkg)
                 deppkg = str(deppkg)
-                self.dependencies.add( (deppkg, depspec) )
+                self.dependencies.add((deppkg, depspec))
             except ValueError as ex:
-                raise PackageLoadError(pkgname,
-                    'boodler.requires_exact line invalid: ' + val)
+                raise PackageLoadError(pkgname, 'boodler.requires_exact line invalid: ' + val)
 
         try:
             self.resource_tree = self.resources.build_tree()
         except ValueError as ex:
-            raise PackageLoadError(pkgname,
-                'unable to map resources: ' + str(ex))
+            raise PackageLoadError(pkgname, 'unable to map resources: ' + str(ex))
 
     def load_dependencies(self):
         """load_dependencies() -> (set, dict, int)
 
         Attempt to load all the packages which this package depends on.
-        
+
         This returns a triple (good, bad, count):
 
         - good is a set containing (packagename, version) pairs for every
@@ -230,10 +225,10 @@ class PackageInfo:
         A sound-player will have to call this, but a package manager
         should not. (The package creation tool does, though.)
         """
-        
-        if (not (self.content is None)):
+
+        if not (self.content is None):
             return self.content
-        if (self.import_in_progress):
+        if self.import_in_progress:
             # Annoying intermediate case; the module has been added to
             # sys.modules, but not yet to pkg.content.
             return sys.modules.get(self.encoded_name)
@@ -250,7 +245,7 @@ class PackageInfo:
         (If the filename is invalid or unsafe, ValueError is raised.
         However, this does not check whether the file exists.)
         """
-        
+
         pathname = build_safe_pathname(self.dir, filename)
         return File(self, pathname, filename)
 
@@ -262,13 +257,14 @@ class PackageInfo:
         with forward slashes, not backslashes.
 
         This is equivalent to get_file(filename).open(binary).
-        
+
         (If the filename is invalid or unsafe, ValueError is raised.
         If the file does not exist, IOError is raised.)
         """
-        
+
         tmpfile = self.get_file(filename)
         return tmpfile.open(binary)
+
 
 class PackageGroup:
     """PackageGroup: represents all the versions of a particular package
@@ -292,14 +288,14 @@ class PackageGroup:
     find_version_match() -- find the most recent version matching the spec
 
     Internal methods:
-    
+
     discover_versions() -- determine what versions are available
     """
 
     def __init__(self, loader, pkgname, dirname):
         self.loader = loader
         self.name = pkgname
-        self.dir = dirname     # May be None
+        self.dir = dirname  # May be None
         self.versions = []
 
     def __repr__(self):
@@ -318,20 +314,20 @@ class PackageGroup:
 
         res = {}
 
-        if (fl):
-            while (True):
+        if fl:
+            while True:
                 ln = fl.readline()
-                if (not ln):
+                if not ln:
                     break
                 ln = ln.strip()
-                if (not ln):
+                if not ln:
                     continue
-                if (ln.startswith('#')):
+                if ln.startswith('#'):
                     continue
                 vers = Version(ln)
                 res[vers] = False
 
-        if (external_versions):
+        if external_versions:
             for vers in external_versions:
                 res[vers] = True
 
@@ -404,33 +400,31 @@ class Metadata:
 
     def __init__(self, pkgname, fl=None):
         self.pkgname = pkgname
-        
+
         # Map of unicode -> list of unicode.
         self.map = {}
 
-        if (fl is None):
+        if fl is None:
             return
 
         while True:
             ln = fl.readline()
-            if (not ln):
+            if not ln:
                 break
             ln = ln.strip()
             # Ignore blank lines and comments.
-            if (not ln):
+            if not ln:
                 continue
-            if (ln.startswith('#')):
+            if ln.startswith('#'):
                 continue
 
             pos = ln.find(':')
-            if (pos < 0):
-                raise PackageLoadError(pkgname,
-                    'metadata file contains invalid line: ' + ln)
+            if pos < 0:
+                raise PackageLoadError(pkgname, 'metadata file contains invalid line: ' + ln)
             key = ln[:pos].strip()
-            val = ln[pos+1:].strip()
-            if (' ' in key):
-                raise PackageLoadError(pkgname,
-                    'metadata file contains invalid line: ' + ln)
+            val = ln[pos + 1:].strip()
+            if ' ' in key:
+                raise PackageLoadError(pkgname, 'metadata file contains invalid line: ' + ln)
 
             dict_accumulate(self.map, key, val)
 
@@ -459,7 +453,7 @@ class Metadata:
         """
 
         res = self.get_all(key)
-        if (not res):
+        if not res:
             return default
         return res[0]
 
@@ -495,9 +489,9 @@ class Metadata:
         the comment argument.
         """
 
-        if (type(comment) in [str]):
+        if type(comment) in [str]:
             comment = [comment]
-        if (comment):
+        if comment:
             for val in comment:
                 fl.write('# ')
                 fl.write(val)
@@ -532,8 +526,9 @@ class Metadata:
         package should not modify its own metadata.)
         """
 
-        if (key in self.map):
+        if key in self.map:
             self.map.pop(key)
+
 
 class Resources:
     """Resources: represents the contents of a Resources file.
@@ -562,61 +557,56 @@ class Resources:
     dump() -- write the contents of this Resources object to a file
     create() -- create a Resource object with the given key
     """
-    
+
     def __init__(self, pkgname, fl=None):
         self.pkgname = pkgname
-        
+
         # Map of str -> Resource.
         self.map = {}
         # List of keys, in order added
         self.keylist = []
 
-        if (fl is None):
+        if fl is None:
             return
 
         curdata = None
-        
+
         while True:
             ln = fl.readline()
-            if (not ln):
+            if not ln:
                 break
             ln = ln.strip()
             # Ignore blank lines and comments.
-            if (not ln):
+            if not ln:
                 continue
-            if (ln.startswith('#')):
+            if ln.startswith('#'):
                 continue
 
-            if (ln.startswith(':')):
+            if ln.startswith(':'):
                 # Beginning of a new section
                 key = ln[1:].strip()
                 try:
                     parse_resource_name(key)
                     key = str(key)
                 except ValueError:
-                    raise PackageLoadError(pkgname,
-                        'invalid resource: ' + key)
-                if (key in self.map):
-                    raise PackageLoadError(pkgname,
-                        'duplicate resource: ' + key)
+                    raise PackageLoadError(pkgname, 'invalid resource: ' + key)
+                if key in self.map:
+                    raise PackageLoadError(pkgname, 'duplicate resource: ' + key)
                 curdata = Resource(key)
                 self.map[key] = curdata
                 self.keylist.append(key)
                 continue
 
-            if (not curdata):
-                raise PackageLoadError(pkgname,
-                    'resource file needs initial ":resource" line')
+            if not curdata:
+                raise PackageLoadError(pkgname, 'resource file needs initial ":resource" line')
 
             pos = ln.find(':')
-            if (pos < 0):
-                raise PackageLoadError(pkgname,
-                    'resource file contains invalid line: ' + ln)
+            if pos < 0:
+                raise PackageLoadError(pkgname, 'resource file contains invalid line: ' + ln)
             key = ln[:pos].strip()
-            val = ln[pos+1:].strip()
-            if (' ' in key):
-                raise PackageLoadError(pkgname,
-                    'resource file contains invalid line: ' + ln)
+            val = ln[pos + 1:].strip()
+            if ' ' in key:
+                raise PackageLoadError(pkgname, 'resource file contains invalid line: ' + ln)
 
             dict_accumulate(curdata.map, key, val)
 
@@ -679,13 +669,13 @@ class Resources:
             grp = res
             for el in ls:
                 subgrp = grp.get(el)
-                if (subgrp is None):
+                if subgrp is None:
                     subgrp = {}
                     grp[el] = subgrp
-                if (not isinstance(subgrp, dict)):
+                if not isinstance(subgrp, dict):
                     raise ValueError('resource cannot be an attr of another resource: ' + key)
                 grp = subgrp
-            if (resel in grp):
+            if resel in grp:
                 raise ValueError('resource cannot contain an attr of another resource: ' + key)
             grp[resel] = key
 
@@ -704,9 +694,9 @@ class Resources:
         the comment argument.
         """
 
-        if (type(comment) in [str]):
+        if type(comment) in [str]:
             comment = [comment]
-        if (comment):
+        if comment:
             for val in comment:
                 fl.write('# ')
                 fl.write(val)
@@ -727,23 +717,24 @@ class Resources:
 
         Create a Resource object with the given key. If the key is not
         a valid resource key, or if it already exists, this raises ValueError.
-        
+
         (This should only be called by a package management tool. A
         package should not modify its own metadata.)
         """
-        
+
         try:
             parse_resource_name(key)
             key = str(key)
         except ValueError:
             raise ValueError(self.pkgname + ': invalid resource name: ' + key)
-            
-        if (key in self.map):
+
+        if key in self.map:
             raise ValueError(self.pkgname + ': resource already exists: ' + key)
         res = Resource(key)
         self.map[key] = res
         self.keylist.append(key)
         return res
+
 
 class Resource:
     """Resource: represents one section in a Resources file.
@@ -762,7 +753,7 @@ class Resource:
     add() -- add a metadata entry with the given key and value
     delete_all() -- delete all metadata entries with the given key
     """
-    
+
     def __init__(self, key):
         # Map of unicode -> list of unicode.
         self.key = key
@@ -788,7 +779,7 @@ class Resource:
         """
 
         res = self.get_all(key)
-        if (not res):
+        if not res:
             return default
         return res[0]
 
@@ -833,7 +824,7 @@ class Resource:
         package should not modify its own metadata.)
         """
 
-        if (key in self.map):
+        if key in self.map:
             self.map.pop(key)
 
 
@@ -859,7 +850,7 @@ class File:
 
     open() -- open the file for reading
     """
-    
+
     def __init__(self, pkg, pathname, univname=None):
         self.package = pkg
         self.pathname = pathname
@@ -867,11 +858,13 @@ class File:
         # If the file was pulled from Resource metadata, the metadata
         # field will be set (by the caller). See attrify_filename().
         self.metadata = None
+
     def __repr__(self):
-        if (self.univname):
+        if self.univname:
             return '<File \'./' + self.univname + '\'>'
         else:
             return '<File \'' + self.pathname + '\'>'
+
     def open(self, binary=False):
         """open(binary=False) -> file
 
@@ -879,12 +872,13 @@ class File:
         If binary is False, the file is opened with newline translation
         ('r'); otherwise, in binary mode ('rb').
         """
-        if (binary):
+        if binary:
             mode = 'rb'
         else:
             mode = 'r'
 
         return open(self.pathname, mode)
+
 
 class MemFile(File):
     """MemFile: represents a file which exists only in memory.
@@ -905,21 +899,24 @@ class MemFile(File):
 
     open() -- open the file for reading
     """
-    
+
     def __init__(self, dat, suffix, label):
-        File.__init__(self, None, '<'+label+'>')
+        File.__init__(self, None, '<' + label + '>')
         self.data = dat
         self.suffix = suffix
         self.label = label
+
     def __repr__(self):
         return '<MemFile <' + self.label + '>>'
+
     def open(self, binary=False):
         return io.StringIO(self.data)
+
 
 # Regular expression for valid Python identifiers: letters, digits, and
 # underscores. (But not starting with a digit.)
 ident_name_regexp = re.compile('\\A[a-zA-Z_][a-zA-Z_0-9]*\\Z')
-        
+
 # Regular expression for valid package names: one or more elements,
 # separated by periods. Each element must contain only lower-case letters,
 # digits, and underscores. An element may not start with a digit.
@@ -973,18 +970,19 @@ def parse_package_name(pkgname):
     Raises a ValueError if the name was in any way invalid. (Thus,
     this function can be used to ensure that a package name is valid.)
     """
-    
+
     res = package_name_regexp.match(pkgname)
-    if (not res):
+    if not res:
         raise ValueError('invalid package name: ' + pkgname)
 
     # Now we know there are no Unicode-only characters
     pkgname = str(pkgname)
 
     ls = pkgname.split('.')
-    if ('' in ls):
+    if '' in ls:
         raise ValueError('invalid package name: ' + pkgname)
     return ls
+
 
 def encode_package_name(pkgname, vers):
     """encode_package_name(pkgname, vers) -> str
@@ -1004,7 +1002,8 @@ def encode_package_name(pkgname, vers):
     res = res.replace('-', 'M')
     res = res.replace('_', 'U')
     res = res.replace('.', '_')
-    return '_BooPkg_'+res
+    return '_BooPkg_' + res
+
 
 def parse_resource_name(resname):
     """parse_resource_name(resname) -> list of str
@@ -1015,18 +1014,19 @@ def parse_resource_name(resname):
     Raises a ValueError if the name was in any way invalid. (Thus,
     this function can be used to ensure that a resource name is valid.)
     """
-    
+
     res = resource_name_regexp.match(resname)
-    if (not res):
+    if not res:
         raise ValueError('invalid resource name: ' + resname)
 
     # Now we know there are no Unicode-only characters
     resname = str(resname)
 
     ls = resname.split('.')
-    if ('' in ls):
+    if '' in ls:
         raise ValueError('invalid resource name: ' + resname)
     return ls
+
 
 def build_safe_pathname(basedir, filename):
     """build_safe_pathname(basedir, filename) -> str
@@ -1049,20 +1049,21 @@ def build_safe_pathname(basedir, filename):
     pathnames.
     """
 
-    if ('\\' in filename):
+    if '\\' in filename:
         raise ValueError('attempt to get filename with backslash: ' + filename)
-    if (filename.startswith('/')):
+    if filename.startswith('/'):
         raise ValueError('attempt to get absolute filename: ' + filename)
     els = filename.split('/')
-    if ('..' in els):
+    if '..' in els:
         raise ValueError('attempt to get filename with ..: ' + filename)
     # Normalize out double slashes and trailing slashes
-    els = [ el for el in els if el ]
+    els = [el for el in els if el]
     # Normalize out single dots
-    els = [ el for el in els if (el != '.') ]
+    els = [el for el in els if (el != '.')]
     pathname = os.path.join(basedir, *els)
     pathname = str(pathname)
     return pathname
+
 
 def dict_accumulate(dic, key, val):
     """dict_accumulate(dic, key, val) -> bool
@@ -1075,12 +1076,13 @@ def dict_accumulate(dic, key, val):
     """
 
     ls = dic.get(key)
-    if (ls is None):
+    if ls is None:
         dic[key] = [val]
         return True
     else:
         ls.append(val)
         return False
+
 
 def dict_all_values(dic, ls=None):
     """dict_all_values(dic, ls=None) -> ls
@@ -1093,15 +1095,11 @@ def dict_all_values(dic, ls=None):
     to it (and it is also returned).
     """
 
-    if (ls is None):
+    if ls is None:
         ls = []
-    if (not isinstance(dic, dict)):
+    if not isinstance(dic, dict):
         ls.append(dic)
     else:
         for val in list(dic.values()):
             dict_all_values(val, ls)
     return ls
-
-
-# late imports
-from boopak.pload import PackageLoadError, PackageNotFoundError

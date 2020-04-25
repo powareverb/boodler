@@ -3,7 +3,6 @@
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
-
 """package: Import and export utilities for Boodler sound packages.
 
 These functions allow a Boodler package to manage itself, its metadata,
@@ -32,16 +31,22 @@ Internal functions:
 info_being_imported() -- locate the PackageInfo which is being imported
 """
 
-__all__ = [ 
-    'now_building', 
-    'get_info', 'get_metadata', 'open_file', 'get_file', 
-    'subimport', 'bimport', 'bexport'
+__all__ = [
+    'now_building',
+    'get_info',
+    'get_metadata',
+    'open_file',
+    'get_file',
+    'subimport',
+    'bimport',
+    'bexport',
 ]
 
 from . import pinfo
 from . import pload
 
 GLOBAL_WARNING = '(perhaps you tried to import a Boodler package outside the Boodler loader, or you called a top-level package function while not at the top level of your package)'
+
 
 def info_being_imported():
     """info_being_imported() -> PackageInfo
@@ -51,11 +56,12 @@ def info_being_imported():
 
     (This is an internal function; do not call.)
     """
-    
+
     loader = pload.PackageLoader.global_loader
-    if (loader is None or loader.currently_importing is None):
+    if loader is None or loader.currently_importing is None:
         raise Exception('unable to determine which package is being imported ' + GLOBAL_WARNING)
     return loader.currently_importing
+
 
 def now_building():
     """now_building() -> module
@@ -71,7 +77,8 @@ def now_building():
 
     curpkg = info_being_imported()
     return curpkg.get_content()
-            
+
+
 def get_info(mod=None):
     """get_info(mod=None) -> PackageInfo
 
@@ -88,21 +95,22 @@ def get_info(mod=None):
     consistency with other functions in this package.)
     """
 
-    if (mod is None):
+    if mod is None:
         return info_being_imported()
-    if (isinstance(mod, pinfo.PackageInfo)):
+    if isinstance(mod, pinfo.PackageInfo):
         return mod
     loader = pload.PackageLoader.global_loader
-    if (loader is None):
+    if loader is None:
         raise Exception('unable to find module importer ' + GLOBAL_WARNING)
-    if (not (loader.currently_importing is None)):
+    if not (loader.currently_importing is None):
         curpkg = loader.currently_importing
-        if (curpkg.get_content() == mod):
+        if curpkg.get_content() == mod:
             return curpkg
     pkg = loader.module_info.get(mod)
-    if (pkg is None):
+    if pkg is None:
         raise Exception('module not recognized: ' + str(mod))
     return pkg
+
 
 def get_metadata(mod=None):
     """get_metadata(mod=None) -> Metadata
@@ -122,6 +130,7 @@ def get_metadata(mod=None):
 
     pkg = get_info(mod)
     return pkg.metadata
+
 
 def open_file(filename, binary=False, mod=None):
     """open_file(filename, binary=False, mod=None) -> file
@@ -147,6 +156,7 @@ def open_file(filename, binary=False, mod=None):
     pkg = get_info(mod)
     return pkg.open_file(filename, binary)
 
+
 def get_file(filename, mod=None):
     """get_file(filename, mod=None) -> File
 
@@ -170,6 +180,7 @@ def get_file(filename, mod=None):
 
     pkg = get_info(mod)
     return pkg.get_file(filename)
+
 
 def subimport(modname, mod=None):
     """subimport(modname, mod=None) -> value or None
@@ -200,18 +211,19 @@ def subimport(modname, mod=None):
     pkg = get_info(mod)
     glob = pkg.get_content().__dict__
 
-    if (modname == '*' or modname.endswith('.*')):
-        if (modname == '*'):
+    if modname == '*' or modname.endswith('.*'):
+        if modname == '*':
             fullname = pkg.encoded_name
         else:
-            fullname = pkg.encoded_name+'.'+(modname[ : -2 ])
+            fullname = pkg.encoded_name + '.' + (modname[:-2])
         __import__(fullname, glob, locals(), ['*'])
         return
-        
-    res = __import__(pkg.encoded_name+'.'+modname, glob, locals(), [])
+
+    res = __import__(pkg.encoded_name + '.' + modname, glob, locals(), [])
     for el in modname.split('.'):
         res = getattr(res, el)
     return res
+
 
 def bimport(pkgname, spec=None):
     """bimport(pkgname, spec=None) -> module
@@ -236,11 +248,12 @@ def bimport(pkgname, spec=None):
 
     curpkg = info_being_imported()
     loader = curpkg.loader
-    if (not (loader.import_recorder is None)):
+    if not (loader.import_recorder is None):
         loader.record_import(curpkg, pkgname, spec)
     pkg = loader.load(pkgname, spec)
     mod = pkg.get_content()
     return mod
+
 
 def bexport(resname=None):
     """bexport(resname=None) -> None
@@ -263,25 +276,25 @@ def bexport(resname=None):
 
     You may only call this from a sound module's top level.
     """
-    ### Just about files -- maybe rename
+    # Just about files -- maybe rename
 
     curpkg = info_being_imported()
     loader = pload.PackageLoader.global_loader
     mod = curpkg.get_content()
-    
+
     grp = curpkg.resource_tree
-    if (resname):
+    if resname:
         ls = resname.split('.')
         for key in ls:
-            if (key not in grp):
+            if key not in grp:
                 raise Exception('resource not found: ' + resname)
             grp = grp.get(key)
 
     ls = pinfo.dict_all_values(grp)
     for resname in ls:
         res = curpkg.resources.get(resname)
-        if (not res):
+        if not res:
             raise Exception('resource not found: ' + resname)
         filename = res.get_one('boodler.filename')
-        if (filename):
+        if filename:
             loader.attrify_filename(curpkg, mod, resname, res, filename)

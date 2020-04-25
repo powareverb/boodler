@@ -3,7 +3,6 @@
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
-
 """generator: A module containing various workhorse classes, used deep
 in the heart of Boodler.
 
@@ -14,11 +13,15 @@ FrameCount -- represents a time (or duration) measured in sound frames
 run_agents() -- the big function that does everything
 """
 
+from boodle import BoodlerError, StopGeneration
+from boodle import sample, listen, stereo
+import boodle
 import sys
 import logging
 import traceback
 import bisect
 import io
+
 
 class Generator:
     """Generator: A class that stores the internal state of Boodler
@@ -60,10 +63,13 @@ class Generator:
     dump_stats() -- write statistical information to the given file
     """
 
-    def __init__(self, basevolume=0.5, stdinlisten=False,
-        netlisten=False, listenport=None,
-        loader=None):
-        
+    def __init__(self,
+                 basevolume=0.5,
+                 stdinlisten=False,
+                 netlisten=False,
+                 listenport=None,
+                 loader=None):
+
         self.logger = logging.getLogger()
         self.logger.info('generator setting up')
 
@@ -85,8 +91,7 @@ class Generator:
 
         self.loader = loader
 
-        self.rootchannel = Channel(None, self, None, basevolume,
-            stereo.default())
+        self.rootchannel = Channel(None, self, None, basevolume, stereo.default())
         self.agentruntime = None
         self.bufferstarttime = None
 
@@ -97,8 +102,8 @@ class Generator:
         (This does not, however, shut down the cboodle module. The
         caller must do that.)
         """
-        
-        while (self.listeners):
+
+        while self.listeners:
             lis = self.listeners.pop(0)
             lis.close()
         self.logger.info('generator shut down')
@@ -117,24 +122,24 @@ class Generator:
         """
 
         fps = cboodle.framespersec()
-        
+
         typ = type(delay)
-        if (typ in [float, int]):
-            if (delay < 0):
+        if typ in [float, int]:
+            if delay < 0:
                 raise ScheduleError('negative delay time')
-            if (delay > 3605): 
+            if delay > 3605:
                 # about one hour
-                ### need to think about this
+                # need to think about this
                 raise ScheduleError('delay too long')
             # int() is willing to return a long if necessary
             fdelay = int(delay * fps)
-        elif (isinstance(delay, FrameCount)):
+        elif isinstance(delay, FrameCount):
             fdelay = delay.frames
-            if (fdelay < 0):
+            if fdelay < 0:
                 raise ScheduleError('negative delay time')
-            if (fdelay > 3605 * fps): 
+            if fdelay > 3605 * fps:
                 # about one hour
-                ### need to think about this
+                # need to think about this
                 raise ScheduleError('delay too long')
         else:
             raise ScheduleError('unknown type for delay')
@@ -156,24 +161,24 @@ class Generator:
         """
 
         fps = cboodle.framespersec()
-            
+
         typ = type(duration)
-        if (typ in [float, int]):
-            if (duration < 0):
+        if typ in [float, int]:
+            if duration < 0:
                 raise ScheduleError('negative duration time')
-            if (duration > 3605): 
+            if duration > 3605:
                 # about one hour
-                ### need to think about this
+                # need to think about this
                 raise ScheduleError('duration too long')
             # int() is willing to return a long if necessary
             fduration = int(duration * fps)
-        elif (isinstance(duration, FrameCount)):
+        elif isinstance(duration, FrameCount):
             fduration = duration.frames
-            if (fduration < 0):
+            if fduration < 0:
                 raise ScheduleError('negative duration time')
-            if (fduration > 3605 * fps): 
+            if fduration > 3605 * fps:
                 # about one hour
-                ### need to think about this
+                # need to think about this
                 raise ScheduleError('duration too long')
         else:
             raise ScheduleError('unknown type for duration')
@@ -187,7 +192,7 @@ class Generator:
         Set the interval (in seconds) at which stats are dumped to the
         logger. Pass None to turn stats off.
         """
-        
+
         self.statslogger = logging.getLogger('stats')
         self.stats_interval = val
         self.last_stats_dump = 0
@@ -202,7 +207,7 @@ class Generator:
         A given agent can only be on the queue once.
         """
 
-        if (ag.queued):
+        if ag.queued:
             tup = ag.get_class_name()
             raise ScheduleError(tup[1] + ' instance is already scheduled')
 
@@ -227,11 +232,10 @@ class Generator:
         """
 
         ag.logger.info('unscheduled')
-        
+
         ag.queued = False
         ag.channel.agentcount -= 1
-        posls = [ ix for ix in range(len(self.queue))
-            if (self.queue[ix][1] is ag) ]
+        posls = [ix for ix in range(len(self.queue)) if (self.queue[ix][1] is ag)]
         self.queue.pop(posls[0])
 
     def addhandler(self, han):
@@ -240,7 +244,7 @@ class Generator:
         Add a Handler object to the system. This sets up listening (and
         channel holds) as described by the Handler.
         """
-        
+
         ag = han.agent
         ag.logger.info('listening for "%s" on %s', han.event, han.listenchannel)
 
@@ -250,12 +254,12 @@ class Generator:
 
         chan = han.listenchannel
         chan.listenhandlers[han] = han
-        if (han.holdlisten):
+        if han.holdlisten:
             chan.listenholds += 1
 
         chan = han.runchannel
         chan.runhandlers[han] = han
-        if (han.holdrun):
+        if han.holdrun:
             chan.runholds += 1
 
     def remhandlers(self, hans):
@@ -266,32 +270,32 @@ class Generator:
 
         It is safe for a Handler to appear more than once in the list.
         """
-        
+
         for han in hans:
             # The list may have duplicates, so we have to be careful
             # not to kill a handler twice.
-            if (not han.alive):
+            if not han.alive:
                 continue
 
             ag = han.agent
             ag.logger.info('stopped listening for "%s"', han.event)
-            
+
             han.alive = False
             self.allhandlers.pop(han)
             ag.handlers.pop(han)
-                
+
             chan = han.listenchannel
             chan.listenhandlers.pop(han)
-            if (han.holdlisten):
+            if han.holdlisten:
                 chan.listenholds -= 1
-                if (chan.listenholds < 0):
+                if chan.listenholds < 0:
                     raise BoodleInternalError('channel listenholds negative')
-                    
+
             chan = han.runchannel
             chan.runhandlers.pop(han)
-            if (han.holdrun):
+            if han.holdrun:
                 chan.runholds -= 1
-                if (chan.runholds < 0):
+                if chan.runholds < 0:
                     raise BoodleInternalError('channel runholds negative')
 
             han.finalize()
@@ -302,51 +306,48 @@ class Generator:
         Process an event on the given channel. This invokes all the
         listeners which are paying attention to the event.
         """
-        
+
         key = ev[0]
         self.logger.info('event "%s" on %s', key, chan)
 
-        keydic = { key: True, '': True }
+        keydic = {key: True, '': True}
         pos = -1
-        while (True):
+        while True:
             pos = key.rfind('.', 0, pos)
-            if (pos < 0):
+            if pos < 0:
                 break
-            keydic[key[0 : pos]] = True
-        
+            keydic[key[0:pos]] = True
+
         hans = []
 
-        while (chan):
-            subhans = [ han for han in chan.listenhandlers
-                if han.event in keydic ]
-            if (subhans):
+        while chan:
+            subhans = [han for han in chan.listenhandlers if han.event in keydic]
+            if subhans:
                 hans.extend(subhans)
             chan = chan.parent
 
         for han in hans:
             # Conceivably an event handler can cancel a later handler.
             # So we have to double-check each one to see if it's alive.
-            if (not han.alive):
+            if not han.alive:
                 continue
             ag = han.agent
             ag.logger.info('received "%s"', ev[0])
             try:
-                if (not ag.channel.active):
+                if not ag.channel.active:
                     raise BoodleInternalError('listening agent not in active channel')
                 han.func(*ev)
-                ### cancel on return value?
+                # cancel on return value?
             except Exception as ex:
-                ag.logger.error('%s: %s',
-                    ex.__class__.__name__, ex,
-                    exc_info=True)
+                ag.logger.error('%s: %s', ex.__class__.__name__, ex, exc_info=True)
 
     def dump_stats(self, fl=None):
         """dump_stats(fl=sys.stdout) -> None
-        
+
         Write statistical information to the given file or stream.
         """
-        
-        if (fl is None):
+
+        if fl is None:
             fl = sys.stdout
         write = fl.write
 
@@ -356,7 +357,7 @@ class Generator:
         numchan = len(self.channels)
         write('%d channels\n' % (numchan,))
         numhan = len(self.allhandlers)
-        if (numhan):
+        if numhan:
             write('%d handlers\n' % (numhan,))
         numsamp = len(sample.cache)
         numsamploaded = 0
@@ -365,15 +366,16 @@ class Generator:
         numnotes = 0
         for samp in list(sample.cache.values()):
             numnotes = numnotes + samp.refcount
-            if (samp.csamp is None):
+            if samp.csamp is None:
                 numsampvirt += 1
-            elif (cboodle.is_sample_loaded(samp.csamp)):
+            elif cboodle.is_sample_loaded(samp.csamp):
                 numsamploaded += 1
             else:
                 numsampunloaded += 1
-        write('%d samples (%d loaded, %d unloaded, %d virtual)\n'
-            % (numsamp, numsamploaded, numsampunloaded, numsampvirt))
+        write('%d samples (%d loaded, %d unloaded, %d virtual)\n' %
+              (numsamp, numsamploaded, numsampunloaded, numsampvirt))
         write('%d notes\n' % (numnotes,))
+
 
 class Channel:
     """Channel: a class for creating hierarchical trees of sounds and
@@ -407,12 +409,12 @@ class Channel:
     """
 
     logger = None
-    ordinal = 0   # only for display name
+    ordinal = 0  # only for display name
 
     def __init__(self, parent, gen, createagent, startvol, pan):
         self.active = True
         self.generator = gen
-        if (not Channel.logger):
+        if not Channel.logger:
             Channel.logger = logging.getLogger('channel')
         Channel.ordinal += 1
         self.ordinal = Channel.ordinal
@@ -427,29 +429,28 @@ class Channel:
         self.runholds = 0
         self.propmap = {}
         self.parent = parent
-        
-        if (parent is None):
+
+        if parent is None:
             self.depth = 0
             self.ancestors = {}
             self.rootchannel = self
         else:
-            self.depth = parent.depth+1
+            self.depth = parent.depth + 1
             parent.childcount += 1
             self.ancestors = parent.ancestors.copy()
             self.ancestors[parent] = parent
             self.rootchannel = parent.rootchannel
-            
-        if (createagent is None):
+
+        if createagent is None:
             self.creatorname = '<boodler>'
         else:
             (dummy, self.creatorname, dummy2) = createagent.get_class_name()
-            
+
         gen.channels[self] = self
         self.logger.info('opened %s', self)
 
     def __str__(self):
-        return ('#%d (depth %d, out of %s)' 
-            % (self.ordinal, self.depth, self.creatorname))
+        return '#%d (depth %d, out of %s)' % (self.ordinal, self.depth, self.creatorname)
 
     def close(self):
         """close() -> None
@@ -461,27 +462,27 @@ class Channel:
         and from the regular check for channels with no more stuff
         scheduled.)
         """
-        
-        if (not self.active):
+
+        if not self.active:
             return
-            
-        if (self.childcount > 0):
+
+        if self.childcount > 0:
             raise BoodleInternalError('channel has children at close')
-        if (self.agentcount > 0):
+        if self.agentcount > 0:
             raise BoodleInternalError('channel has agents at close')
-        if (self.listenholds > 0):
+        if self.listenholds > 0:
             raise BoodleInternalError('channel has listens at close')
-        if (self.listenhandlers):
+        if self.listenhandlers:
             raise BoodleInternalError('channel has listenhandlers at close')
-        if (self.runhandlers):
+        if self.runhandlers:
             raise BoodleInternalError('channel has runhandlers at close')
-        if (self.notecount > 0):
+        if self.notecount > 0:
             raise BoodleInternalError('channel has notes at close')
-        if (self.parent):
+        if self.parent:
             self.parent.childcount -= 1
-            if (self.parent.childcount < 0):
+            if self.parent.childcount < 0:
                 raise BoodleInternalError('channel childcount negative')
-                
+
         self.logger.info('closed %s', self)
         gen = self.generator
         self.active = False
@@ -522,28 +523,29 @@ class Channel:
 
         Internal method. (The stop() method queues this up in stoplist.)
         """
-        
-        if (not self.active):
+
+        if not self.active:
             raise ChannelError('cannot stop an inactive channel')
         gen = self.generator
-        
+
         cboodle.stop_notes(self)
-        
-        agents = [ tup[1] for tup in gen.queue
-            if (tup[1].channel is self 
-                or self in tup[1].channel.ancestors) ]
+
+        agents = [
+            tup[1]
+            for tup in gen.queue
+            if (tup[1].channel is self or self in tup[1].channel.ancestors)
+        ]
         for ag in agents:
             gen.remagent(ag)
 
-        hans = [ han for han in gen.allhandlers
-            if ((han.runchannel is self
-                    or self in han.runchannel.ancestors)
-                or (han.listenchannel is self
-                    or self in han.listenchannel.ancestors)) ]
+        hans = [
+            han for han in gen.allhandlers
+            if ((han.runchannel is self or self in han.runchannel.ancestors) or
+                (han.listenchannel is self or self in han.listenchannel.ancestors))
+        ]
         gen.remhandlers(hans)
-            
-        chans = [ ch for ch in gen.channels
-            if (ch is self or self in ch.ancestors) ]
+
+        chans = [ch for ch in gen.channels if (ch is self or self in ch.ancestors)]
         chans.sort(Channel.compare)
         for ch in chans:
             ch.close()
@@ -555,7 +557,7 @@ class Channel:
 
         Internal method. (Called from sample.queue_note.)
         """
-        
+
         self.notecount = self.notecount + 1
 
     def remnote(self):
@@ -565,9 +567,9 @@ class Channel:
 
         Internal method. (Called from the callback to cboodle.create_note.)
         """
-        
+
         self.notecount = self.notecount - 1
-        if (self.notecount < 0):
+        if self.notecount < 0:
             raise BoodleInternalError('channel notecount negative')
 
     def get_root_channel(self):
@@ -604,23 +606,24 @@ class Channel:
         endtm = starttm + int(interval * cboodle.framespersec())
 
         (oldstarttm, oldendtm, oldstartvol, oldendvol) = self.volume
-        if (endtm < oldendtm):
+        if endtm < oldendtm:
             # The current fade runs past this one, so we leave it in place.
             return
-            
+
         # Work out the volume at the start of this buffer -- not at
         # agentruntime. This is because we're discarding the old volume
         # change. It's not going to have a chance to run up to the correct
         # changeover point.
 
         attm = self.generator.bufferstarttime
-        if (attm >= oldendtm):
+        if attm >= oldendtm:
             atstart = oldendvol
-        elif (attm >= oldstarttm):
-            atstart = (attm - oldstarttm) / float(oldendtm - oldstarttm) * (oldendvol - oldstartvol) + oldstartvol
+        elif attm >= oldstarttm:
+            atstart = (attm - oldstarttm) / float(oldendtm - oldstarttm) * (
+                oldendvol - oldstartvol) + oldstartvol
         else:
             atstart = oldstartvol
-            
+
         self.volume = (starttm, endtm, atstart, newvol)
 
     def set_pan(self, newpan, interval=0.5):
@@ -655,7 +658,7 @@ class Channel:
         endtm = starttm + int(interval * cboodle.framespersec())
 
         (oldstarttm, oldendtm, oldstartpan, oldendpan) = self.stereo
-        if (endtm < oldendtm):
+        if endtm < oldendtm:
             # The current swoop runs past this one, so we leave it in place.
             return
 
@@ -665,18 +668,17 @@ class Channel:
         # changeover point.
 
         attm = self.generator.bufferstarttime
-        if (attm >= oldendtm):
+        if attm >= oldendtm:
             atstart = oldendpan
-        elif (attm >= oldstarttm):
+        elif attm >= oldstarttm:
             pan0 = stereo.extend_tuple(oldstartpan)
             pan1 = stereo.extend_tuple(oldendpan)
             ratio = (attm - oldstarttm) / float(oldendtm - oldstarttm)
-            atstart = [ (ratio * (pan1[ix] - pan0[ix]) + pan0[ix])
-                for ix in range(4) ]
+            atstart = [(ratio * (pan1[ix] - pan0[ix]) + pan0[ix]) for ix in range(4)]
             atstart = tuple(atstart)
         else:
             atstart = oldstartpan
-            
+
         self.stereo = (starttm, endtm, atstart, newpan)
 
     def get_prop(self, key, default=None):
@@ -689,39 +691,39 @@ class Channel:
         Note that None is a legal property value. To distinguish between
         no property and a property set to None, use has_prop().
         """
-        
+
         key = boodle.check_prop_name(key)
         chan = self
-        while (chan):
-            if (key in chan.propmap):
+        while chan:
+            if key in chan.propmap:
                 return chan.propmap[key]
             chan = chan.parent
         return default
-            
+
     def has_prop(self, key):
         """has_prop(key) -> bool
 
         See whether this channel has a given property. If none is set, see
         if one is inherited from the parent.
         """
-        
+
         key = boodle.check_prop_name(key)
         chan = self
-        while (chan):
-            if (key in chan.propmap):
+        while chan:
+            if key in chan.propmap:
                 return True
             chan = chan.parent
         return False
-            
+
     def set_prop(self, key, val):
         """set_prop(key, val) -> None
 
         Set a property on this channel.
         """
-        
+
         key = boodle.check_prop_name(key)
         self.propmap[key] = val
-            
+
     def del_prop(self, key):
         """del_prop(key) -> None
 
@@ -733,7 +735,7 @@ class Channel:
         """
 
         key = boodle.check_prop_name(key)
-        if (key in self.propmap):
+        if key in self.propmap:
             self.propmap.pop(key)
 
     def compare(ch1, ch2):
@@ -746,6 +748,7 @@ class Channel:
         return (ch2.depth > ch1.depth) - (ch2.depth < ch1.depth)
 
     compare = staticmethod(compare)
+
 
 class FrameCount:
     """FrameCount: Represents a time (or duration) measured in a fixed
@@ -772,16 +775,17 @@ class FrameCount:
         self.frames = int(frames)
 
 
-TRIMTIME   = 26460000   # ten minutes
-TRIMOFFSET = 13230000   # five minutes
-UNLOADTIME =  1323000   # 30 seconds
-UNLOADAGE  = 10000000   # 4-ish minutes
+TRIMTIME = 26460000  # ten minutes
+TRIMOFFSET = 13230000  # five minutes
+UNLOADTIME = 1323000  # 30 seconds
+UNLOADAGE = 10000000  # 4-ish minutes
 
 # Small values, for debugging
 # TRIMTIME   =  80000
 # TRIMOFFSET =  50000
 # UNLOADTIME =  50000
 # UNLOADAGE  = 110000
+
 
 def run_agents(starttime, gen):
     """run_agents(starttime, gen) -> None
@@ -794,16 +798,16 @@ def run_agents(starttime, gen):
     Raises StopGeneration when the soundscape is over (i.e., when all
     channels have expired).
     """
-    
+
     gen.logger.debug('beginning run cycle at %d', starttime)
 
     # A lot of internal scheduling is kept in frame units (meaning
     # 1/44000 of a second or whatever). That'll overflow a long
     # integer eventually. So at regular intervals, we have to reset
-    # the clock. That means going through every data structure that 
+    # the clock. That means going through every data structure that
     # stores a time value, and subtracting a constant from it.
 
-    if (starttime >= TRIMTIME):
+    if starttime >= TRIMTIME:
         starttime -= TRIMOFFSET
         gen.logger.debug('trimming timebase, now %d', starttime)
         cboodle.adjust_timebase(TRIMOFFSET)
@@ -813,33 +817,33 @@ def run_agents(starttime, gen):
             tup[0] -= TRIMOFFSET
         for chan in gen.channels:
             (starttm, endtm, startvol, endvol) = chan.volume
-            if (endtm <= starttime):
+            if endtm <= starttime:
                 continue
             starttm -= TRIMOFFSET
             endtm -= TRIMOFFSET
             chan.volume = (starttm, endtm, startvol, endvol)
         for chan in gen.channels:
             (starttm, endtm, startpan, endpan) = chan.stereo
-            if (endtm <= starttime):
+            if endtm <= starttime:
                 continue
             starttm -= TRIMOFFSET
             endtm -= TRIMOFFSET
             chan.stereo = (starttm, endtm, startpan, endpan)
-        if (not (gen.stats_interval is None)):
+        if not (gen.stats_interval is None):
             gen.last_stats_dump -= TRIMOFFSET
 
     # We also look at the database of sound samples at regular intervals.
     # Any samples that aren't being used right now get unloaded from
     # memory.
 
-    if (gen.lastunload + UNLOADTIME < starttime):
+    if gen.lastunload + UNLOADTIME < starttime:
         gen.lastunload = starttime
-        sample.unload_unused(starttime-UNLOADAGE)
+        sample.unload_unused(starttime - UNLOADAGE)
 
     # We might dump stats at regular intervals.
 
-    if (not (gen.stats_interval is None)):
-        if (gen.last_stats_dump + int(gen.stats_interval * cboodle.framespersec()) < starttime):
+    if not (gen.stats_interval is None):
+        if gen.last_stats_dump + int(gen.stats_interval * cboodle.framespersec()) < starttime:
             gen.last_stats_dump = starttime
             fl = io.StringIO()
             gen.dump_stats(fl)
@@ -851,9 +855,9 @@ def run_agents(starttime, gen):
 
     nexttime = starttime + cboodle.framesperbuf()
 
-    if (gen.stoplist):
+    if gen.stoplist:
         for chan in gen.stoplist:
-            if (chan.active):
+            if chan.active:
                 chan.realstop()
         gen.stoplist = []
 
@@ -863,65 +867,58 @@ def run_agents(starttime, gen):
     gen.bufferstarttime = starttime
     # Events received from the outside world run at the start of the buffer.
     gen.agentruntime = starttime
-    while (gen.postqueue):
+    while gen.postqueue:
         ev = gen.postqueue.pop(0)
         gen.sendevent(ev, gen.rootchannel)
 
-    while (gen.queue and gen.queue[0][0] < nexttime):
+    while gen.queue and gen.queue[0][0] < nexttime:
         (runtime, ag, handle) = gen.queue.pop(0)
         ag.queued = False
         ag.channel.agentcount -= 1
         ag.logger.info('running')
         try:
-            if (not ag.channel.active):
+            if not ag.channel.active:
                 raise BoodleInternalError('queued agent not in active channel')
             gen.agentruntime = runtime
             handle()
         except Exception as ex:
-            ag.logger.error('%s: %s',
-                ex.__class__.__name__, ex,
-                exc_info=True)
+            ag.logger.error('%s: %s', ex.__class__.__name__, ex, exc_info=True)
         ag.firsttime = False
 
     gen.bufferstarttime = None
     gen.agentruntime = None
-    
-    ls = [ chan for chan in gen.channels
-        if (chan.notecount == 0
-            and chan.agentcount == 0
-            and chan.listenholds == 0
-            and chan.runholds == 0
-            and chan.childcount == 0)
+
+    ls = [
+        chan for chan in gen.channels
+        if (chan.notecount == 0 and chan.agentcount == 0 and chan.listenholds == 0 and
+            chan.runholds == 0 and chan.childcount == 0)
     ]
     for chan in ls:
-        if (chan.runhandlers):
+        if chan.runhandlers:
             gen.remhandlers(list(chan.runhandlers))
-        if (chan.listenhandlers):
+        if chan.listenhandlers:
             gen.remhandlers(list(chan.listenhandlers))
         chan.close()
 
-    if (not gen.channels):
+    if not gen.channels:
         raise StopGeneration()
 
 
-# Late imports.
-
-import boodle
-from boodle import sample, listen, stereo
-from boodle import BoodlerError, StopGeneration
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle
+
 
 class ScheduleError(BoodlerError):
     """ScheduleError: Represents an invalid use of the scheduler.
     """
-    pass
+
+
 class ChannelError(BoodlerError):
     """ChannelError: Represents an invalid use of a channel.
     """
-    pass
+
+
 class BoodleInternalError(BoodlerError):
     """BoodleInternalError: Represents an internal sanity check going
     wrong.
     """
-    pass

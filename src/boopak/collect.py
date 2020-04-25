@@ -3,7 +3,6 @@
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
-
 """collect: The PackageCollection class.
 
 This module contains PackageCollection, which is responsible for installing
@@ -28,13 +27,14 @@ Suffix_PackageArchive = '.boop'
 
 # Three places that a user can grab a package from.
 Source_PACKAGE = 1
-Source_FILE    = 2
-Source_URL     = 3
+Source_FILE = 2
+Source_URL = 3
 
 # The Boodler repository URL. (With closing slash, please.)
 REPOSITORY_URL = 'http://boodler.org/lib/'
 
-### between commands, this maintains a state of no external packages.
+# between commands, this maintains a state of no external packages.
+
 
 class PackageCollection(pload.PackageLoader):
     """PackageCollection: manages a package collection. This is a subclass
@@ -61,7 +61,7 @@ class PackageCollection(pload.PackageLoader):
     The coldir and dldir will be created, if necessary. When the
     PackageCollection shuts down, it will delete the files it has created
     in the dldir.
-        
+
     If a version is provided (either as a VersionNumber or a string which
     converts to one), then this is noted as the Boodler version which
     packages must be compatible with. (As noted in the boodler.api_required
@@ -104,41 +104,47 @@ class PackageCollection(pload.PackageLoader):
     shut_down() -- shut down the PackageCollection
 
     Internal methods:
-    
+
     rewrite_versions_file() -- write (or overwrite) a new Versions file
     """
-    
+
     # Counter for creating unique names for the download directory.
     instance_count = 0
-    
-    def __init__(self, basedir=None, coldir=None, dldir=None,
-        boodler_api_vers=None, importing_ok=False):
+
+    def __init__(self,
+                 basedir=None,
+                 coldir=None,
+                 dldir=None,
+                 boodler_api_vers=None,
+                 importing_ok=False):
 
         # basedir is overridden by coldir and dldir, if they are provided.
-        if (coldir is None and not (basedir is None)):
+        if coldir is None and not (basedir is None):
             coldir = os.path.join(basedir, Filename_Collection)
-        if (dldir is None and not (basedir is None)):
+        if dldir is None and not (basedir is None):
             dldir = os.path.join(basedir, Filename_Download)
-        
-        if (coldir is None):
-            raise ValueError('PackageCollection requires a collection directory (or base directory)')
-        if (dldir is None):
+
+        if coldir is None:
+            raise ValueError(
+                'PackageCollection requires a collection directory (or base directory)')
+        if dldir is None:
             raise ValueError('PackageCollection requires a download directory (or base directory)')
-        if (coldir == dldir):
-            raise ValueError('PackageCollection collection and download directories must be different')
+        if coldir == dldir:
+            raise ValueError(
+                'PackageCollection collection and download directories must be different')
 
         # Create coldir, if needed, and then initialize the base class to
         # use it.
-        if (not os.path.isdir(coldir)):
+        if not os.path.isdir(coldir):
             os.makedirs(coldir)
-        pload.PackageLoader.__init__(self, coldir,
-            boodler_api_vers=boodler_api_vers,
-            importing_ok=importing_ok)
+        pload.PackageLoader.__init__(self,
+                                     coldir,
+                                     boodler_api_vers=boodler_api_vers,
+                                     importing_ok=importing_ok)
 
         # Generate a unique subdirectory of dldir to work in.
         PackageCollection.instance_count += 1
-        val = ('tmp-' + str(os.getpid()) + '-'
-            + str(PackageCollection.instance_count))
+        val = 'tmp-' + str(os.getpid()) + '-' + str(PackageCollection.instance_count)
         dldir = os.path.join(dldir, val)
         self.downloaddir = dldir
 
@@ -159,7 +165,7 @@ class PackageCollection(pload.PackageLoader):
 
         Source_PACKAGE will be found and loaded from the collection.
         (The vers part may be a VersionNumber, VersionSpec, or None.)
-        
+
         Source_FILE will be unzipped (in the temporary work directory)
         and then loaded. (However, the temporary directory will not be
         kept in the loader's external package list. So you cannot reload
@@ -172,15 +178,15 @@ class PackageCollection(pload.PackageLoader):
         that is potentially a slow operation, and find_source() is not
         set up for slow operations.
         """
-        
-        if (srctype == Source_PACKAGE):
+
+        if srctype == Source_PACKAGE:
             (pkgname, vers) = loc
             return self.load(pkgname, vers)
-            
-        if (srctype == Source_URL):
+
+        if srctype == Source_URL:
             # See where it was fetched to.
             localfile = self.downloaded_files.get(loc)
-            if (not localfile):
+            if not localfile:
                 raise ValueError('URL not downloaded: ' + loc)
             loc = localfile
 
@@ -188,13 +194,13 @@ class PackageCollection(pload.PackageLoader):
         # See if we have already unzipped it to the temp directory. (We
         # identify files by name and modtime, so that if a file changes
         # on disk, we will unzip it again.)
-        
-        if (not os.path.isfile(loc)):
+
+        if not os.path.isfile(loc):
             raise ValueError('Unable to read file: ' + loc)
         modtime = os.path.getmtime(loc)
-        
-        pkg = self.unpacked_files.get( (loc, modtime) )
-        if (pkg):
+
+        pkg = self.unpacked_files.get((loc, modtime))
+        if pkg:
             return pkg
 
         # We need to unzip this. Pick a new temporary directory.
@@ -211,9 +217,9 @@ class PackageCollection(pload.PackageLoader):
 
         try:
             pkg = self.load(pkgname, vers)
-            if (not pkg.external):
+            if not pkg.external:
                 raise ValueError('Unpacked package does not appear to be external: ' + str(pkg))
-        
+
             self.unpacked_files[(loc, modtime)] = pkg
             return pkg
         finally:
@@ -221,7 +227,7 @@ class PackageCollection(pload.PackageLoader):
             # keep the unzipped directory around, in case the user wants
             # to examine it again.
             self.clear_external_packages()
-        
+
     def install_source(self, srctype, loc):
         """install_source(srctype, loc) -> PackageInfo
 
@@ -243,24 +249,25 @@ class PackageCollection(pload.PackageLoader):
         URL too, but that is potentially a slow operation, and
         install_source() is not set up for slow operations.
         """
-        
-        if (srctype == Source_PACKAGE):
-            ### should this fetch from a known URL on boodler.org?
+
+        if srctype == Source_PACKAGE:
+            # should this fetch from a known URL on boodler.org?
             (pkgname, vers) = loc
             raise ValueError('Package is already installed: ' + pkgname + ' ' + str(vers))
 
         # Tentatively load the package, so that we are sure that it
         # exists. This also lets us determine the package name and version.
         pkg = self.find_source(srctype, loc)
-        if (not pkg.external):
+        if not pkg.external:
             raise ValueError('Install package does not appear to be external: ' + str(pkg))
-        
+
         # If we successfully install, we will be moving the unzipped
         # version of the package from our temporary workspace. This
         # invalidates the entry in self.unpacked_files, so we will have
         # to remove that entry.
-        download_keys = [ key for key in list(self.unpacked_files.keys())
-            if (self.unpacked_files[key] == pkg) ]
+        download_keys = [
+            key for key in list(self.unpacked_files.keys()) if (self.unpacked_files[key] == pkg)
+        ]
 
         (pkgname, vers) = pkg.key
         # Tentatively load the package group, so we can add to its
@@ -268,7 +275,7 @@ class PackageCollection(pload.PackageLoader):
         groupdir = self.generate_package_path(pkgname)
         try:
             pgroup = self.load_group(pkgname)
-            if (groupdir != pgroup.dir):
+            if groupdir != pgroup.dir:
                 raise ValueError('PackageGroup is in wrong directory: ' + pgroup.dir)
             newversions = pgroup.get_versions()
         except pload.PackageNotFoundError as ex:
@@ -288,13 +295,13 @@ class PackageCollection(pload.PackageLoader):
         # does not. (There might be an old package directory, which we
         # must clear out.) Then we move the newly-unzipped directory from
         # the temp workspace.
-        if (not os.path.exists(destdir)):
+        if not os.path.exists(destdir):
             os.makedirs(destdir)
         remove_recursively(destdir)
         os.rename(srcdir, destdir)
 
         # Write a new Versions file.
-        if (not (vers in newversions)):
+        if not (vers in newversions):
             newversions.append(vers)
         self.rewrite_versions_file(groupdir, newversions, pkgname)
 
@@ -304,7 +311,7 @@ class PackageCollection(pload.PackageLoader):
 
     def fetch_source(self, srctype, loc):
         """fetch_source(srctype, loc) -> None or Fetcher
-        
+
         Make sure that a package of the form (Source_URL, url) is
         downloaded and ready to be passed to find_source() or
         install_source(). If it already is (or if srctype is Source_FILE
@@ -313,24 +320,24 @@ class PackageCollection(pload.PackageLoader):
 
         If the URL is *not* downloaded, this returns a Fetcher object.
         This should be called in some wise like this:
-        
+
             while (not fetcher.is_done()):
                 fetcher.work()
 
         Once fetcher.is_done() returns true, the package is downloaded,
         and the caller may proceed to find_source() or install_source().
         """
-        
-        if (srctype == Source_PACKAGE):
+
+        if srctype == Source_PACKAGE:
             return None
-        if (srctype == Source_FILE):
+        if srctype == Source_FILE:
             return None
 
-        if (loc in self.downloaded_files):
+        if loc in self.downloaded_files:
             return None
 
-        # Create the download directory, if necessary.      
-        if (not os.path.isdir(self.downloaddir)):
+        # Create the download directory, if necessary.
+        if not os.path.isdir(self.downloaddir):
             os.makedirs(self.downloaddir)
         # Invent a filename for the download.
         self.download_count += 1
@@ -343,7 +350,7 @@ class PackageCollection(pload.PackageLoader):
         """delete_package(pkgname, vers=None) -> None
 
         Delete a package from the collection.
-        
+
         If no second argument is given, the most recent available version
         of the package is deleted. If the argument is a VersionNumber,
         that version will be deleted. If it is a VersionSpec, the most
@@ -353,17 +360,16 @@ class PackageCollection(pload.PackageLoader):
         If the last version of a package is deleted, the entire group
         directory is deleted too.
         """
-        
+
         pgroup = self.load_group(pkgname)
         pkg = self.load(pkgname, vers)
-        if (pkg.external):
+        if pkg.external:
             raise ValueError('External package cannot be deleted: ' + pkg.dir)
-        newversions = [ vers for vers in pgroup.get_versions()
-            if (vers != pkg.version) ]
+        newversions = [vers for vers in pgroup.get_versions() if (vers != pkg.version)]
 
         self.clear_cache()
-        if (not newversions):
-            if (pgroup.dir):
+        if not newversions:
+            if pgroup.dir:
                 remove_recursively(pgroup.dir)
         else:
             self.rewrite_versions_file(pgroup.dir, newversions, pkg.name)
@@ -377,7 +383,7 @@ class PackageCollection(pload.PackageLoader):
         This method does not generate an error if the package group
         is malformed, or even missing.
         """
-        
+
         dirname = self.generate_package_path(pkgname)
         self.clear_cache()
         remove_recursively(dirname)
@@ -387,10 +393,10 @@ class PackageCollection(pload.PackageLoader):
 
         Delete all packages in the entire collection.
         """
-        
+
         self.clear_cache()
         remove_recursively(self.collecdir)
-        if (not os.path.isdir(self.collecdir)):
+        if not os.path.isdir(self.collecdir):
             os.makedirs(self.collecdir)
 
     def rewrite_versions_file(self, dirname, versionlist, pkgname='<unknown>'):
@@ -404,9 +410,9 @@ class PackageCollection(pload.PackageLoader):
         The versionlist may be altered (sorted) by this function, so the
         caller should not pass a list object which will be used again.
         """
-        
+
         versionlist.sort()
-        if (not os.path.isdir(dirname)):
+        if not os.path.isdir(dirname):
             os.makedirs(dirname)
         filename = os.path.join(dirname, pload.Filename_Versions)
         outfl = open(filename, 'w')
@@ -424,8 +430,8 @@ class PackageCollection(pload.PackageLoader):
         imported. (This is used only during package creation, to figure
         out dependencies.)
         """
-        
-        if (not (self.import_recorder is None)):
+
+        if not (self.import_recorder is None):
             raise ValueError('Recording was already started')
         self.import_recorder = {}
 
@@ -438,8 +444,8 @@ class PackageCollection(pload.PackageLoader):
         looks like (name,spec), or (name,version) for an exact request,
         for (name,None) for an any-version request.
         """
-        
-        if (self.import_recorder is None):
+
+        if self.import_recorder is None:
             raise ValueError('Recording was never started')
         res = self.import_recorder
         self.import_recorder = None
@@ -451,24 +457,24 @@ class PackageCollection(pload.PackageLoader):
         Note a bimport() call by a package being imported. This should
         only be called by bimport().
         """
-        
-        if (type(spec) in [str]):
+
+        if type(spec) in [str]:
             spec = SpecifierSet(spec)
-            
-        if (isinstance(spec, Version)):
+
+        if isinstance(spec, Version):
             isexact = True
-        elif ((spec is None) or isinstance(spec, SpecifierSet)):
+        elif (spec is None) or isinstance(spec, SpecifierSet):
             # ok
             isexact = False
         else:
             return
 
         ls = self.import_recorder.get(pkg.key)
-        if (not ls):
+        if not ls:
             ls = []
             self.import_recorder[pkg.key] = ls
 
-        ls.append( (name,spec) )
+        ls.append((name, spec))
 
     def create_temp_dir(self, label='tmp'):
         """create_temp_dir(label='tmp') -> str
@@ -479,7 +485,7 @@ class PackageCollection(pload.PackageLoader):
 
         The optional label argument will be used in the directory name.
         """
-        
+
         # Invent a new name.
         self.download_count += 1
         dirname = 'dir-' + label + '-' + str(self.download_count)
@@ -487,7 +493,7 @@ class PackageCollection(pload.PackageLoader):
         # Create it.
         os.makedirs(dirname)
         return dirname
-        
+
     def create_temp_file(self, label='tmp'):
         """create_temp_file(label='tmp') -> str
 
@@ -497,23 +503,23 @@ class PackageCollection(pload.PackageLoader):
 
         The optional label argument will be used in the file name.
         """
-        
-        # Create the download directory, if necessary.      
-        if (not os.path.isdir(self.downloaddir)):
+
+        # Create the download directory, if necessary.
+        if not os.path.isdir(self.downloaddir):
             os.makedirs(self.downloaddir)
         # Invent a new name.
         self.download_count += 1
         filename = 'file-' + label + '-' + str(self.download_count)
         filename = os.path.join(self.downloaddir, filename)
         return filename
-        
+
     def clean_temp(self):
         """clean_temp() -> None
 
         Clean up the temporary download workspace. Delete all files, and
         clear the internal caches that referred to them.
         """
-        
+
         self.unpacked_files.clear()
         self.downloaded_files.clear()
         self.clear_external_packages()
@@ -526,7 +532,7 @@ class PackageCollection(pload.PackageLoader):
 
         This cleans up the temporary download workspace.
         """
-        
+
         self.clear_cache()
         self.clean_temp()
         self.downloaddir = None
@@ -540,27 +546,28 @@ def remove_recursively(name):
     This deletes symlinks but does not follow them.
     """
 
-    if (not name):
+    if not name:
         raise ValueError('Attempt to remove nameless directory.')
-    
-    if (name.startswith(os.sep) and not (os.sep in name[1:])):
+
+    if name.startswith(os.sep) and not (os.sep in name[1:]):
         raise ValueError('Cannot remove top-level directory: ' + name)
 
-    if (os.path.islink(name)):
+    if os.path.islink(name):
         os.remove(name)
         return
 
-    if (not os.path.exists(name)):
+    if not os.path.exists(name):
         return
 
-    if (not os.path.isdir(name)):
+    if not os.path.isdir(name):
         os.remove(name)
         return
-        
+
     dirlist = os.listdir(name)
     for key in dirlist:
         remove_recursively(os.path.join(name, key))
     os.rmdir(name)
+
 
 def unpack_zip_file(filename, dirname):
     """unpack_zip_file(filename, dirname) -> None
@@ -572,7 +579,7 @@ def unpack_zip_file(filename, dirname):
 
     This raises zipfile.BadZipfile if filename is not a valid Zip file.
     """
-    
+
     fl = zipfile.ZipFile(filename)
 
     try:
@@ -580,28 +587,28 @@ def unpack_zip_file(filename, dirname):
         remove_recursively(dirname)
         # And then create it, empty
         os.makedirs(dirname)
-        
+
         for name in fl.namelist():
             # Some sanity-checking. Remember that filenames come out of Zip
             # files with / delimiters, regardless of what OS you're on or
             # what OS created the Zip file.
-            if (name.startswith('/')):
+            if name.startswith('/'):
                 raise ValueError('Absolute pathname found in Zip file: ' + filename)
             ls = name.split('/')
-            if ('..' in ls):
+            if '..' in ls:
                 raise ValueError('.. found in pathname in Zip file: ' + filename)
-            if (ls[-1] == ''):
+            if ls[-1] == '':
                 # Directory
                 ls.pop()
                 dest = os.path.join(dirname, *ls)
-                if (not os.path.isdir(dest)):
+                if not os.path.isdir(dest):
                     os.makedirs(dest)
             else:
                 # File
                 dat = fl.read(name)
-                if (len(ls) > 1):
+                if len(ls) > 1:
                     dest = os.path.join(dirname, *(ls[:-1]))
-                    if (not os.path.isdir(dest)):
+                    if not os.path.isdir(dest):
                         os.makedirs(dest)
                 dest = os.path.join(dirname, *ls)
                 outfl = open(dest, 'wb')
@@ -610,6 +617,7 @@ def unpack_zip_file(filename, dirname):
                 dat = None
     finally:
         fl.close()
+
 
 def locate_package_directory(dirname):
     """locate_package_directory(dirname) -> str
@@ -628,22 +636,22 @@ def locate_package_directory(dirname):
 
     Raises ValueError if no package directory is found.
     """
-    
-    if (not os.path.isdir(dirname)):
+
+    if not os.path.isdir(dirname):
         raise ValueError('Not a directory: ' + dirname)
-        
-    while (True):
+
+    while True:
         name = os.path.join(dirname, pload.Filename_Metadata)
-        if (os.path.isfile(name)):
+        if os.path.isfile(name):
             return dirname
         ls = os.listdir(dirname)
-        ls = [ name for name in ls if (not name.startswith('.')) ]
-        if (not ls):
+        ls = [name for name in ls if (not name.startswith('.'))]
+        if not ls:
             raise ValueError('Directory is empty: ' + dirname)
-        if (len(ls) > 1):
-            raise ValueError('Directory does not contain '
-                + pload.Filename_Metadata + ': ' + dirname)
+        if len(ls) > 1:
+            raise ValueError('Directory does not contain ' + pload.Filename_Metadata + ': ' +
+                             dirname)
         dirname = os.path.join(dirname, ls[0])
-        if (not os.path.isdir(dirname)):
-            raise ValueError('Directory does not contain '
-                + pload.Filename_Metadata + ': ' + dirname)
+        if not os.path.isdir(dirname):
+            raise ValueError('Directory does not contain ' + pload.Filename_Metadata + ': ' +
+                             dirname)

@@ -3,7 +3,6 @@
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
-
 """agent: A module which contains the Agent class, the fundamental work
 unit of Boodler.
 """
@@ -12,6 +11,12 @@ import logging
 import types
 
 from functools import total_ordering
+
+import boodle
+
+from boodle import generator, sample, stereo
+from boodle.generator import FrameCount  # imported for users to see
+from boopak import pload, sparse, argdef
 
 
 @total_ordering
@@ -91,7 +96,7 @@ class Agent:
 
         tup = self.get_class_name()
 
-        if (tup[2]):
+        if tup[2]:
             val = 'pkg.' + tup[0] + '.' + tup[1]
         else:
             val = tup[0] + '.' + tup[1]
@@ -127,8 +132,7 @@ class Agent:
 
         return self.sched_note_pan(samp, None, pitch, volume, delay, chan)
 
-    def sched_note_pan(self, samp, pan=None, pitch=1.0, volume=1.0, delay=0,
-        chan=None):
+    def sched_note_pan(self, samp, pan=None, pitch=1.0, volume=1.0, delay=0, chan=None):
         """sched_note_pan(sample, pan=0, pitch=1, volume=1, delay=0,
             chan=self.channel) -> duration
 
@@ -147,11 +151,11 @@ class Agent:
         This returns the expected duration of the sound, in seconds.
         """
 
-        if (self.generator is None or self.channel is None):
+        if self.generator is None or self.channel is None:
             raise generator.ScheduleError('scheduler has never been scheduled')
-        if (chan is None):
+        if chan is None:
             chan = self.channel
-        if (not chan.active):
+        if not chan.active:
             raise generator.ChannelError('cannot schedule note to inactive channel')
         gen = self.generator
         samp = sample.get(samp)
@@ -161,8 +165,7 @@ class Agent:
         dur = samp.queue_note(pitch, volume, pan, starttime, chan)
         return float(dur) / float(cboodle.framespersec())
 
-    def sched_note_duration(self, samp, duration, pitch=1.0, volume=1.0,
-        delay=0, chan=None):
+    def sched_note_duration(self, samp, duration, pitch=1.0, volume=1.0, delay=0, chan=None):
         """sched_note_duration(sample, duration, pitch=1, volume=1, delay=0,
             chan=self.channel) -> duration
 
@@ -183,7 +186,14 @@ class Agent:
 
         return self.sched_note_duration_pan(samp, duration, None, pitch, volume, delay, chan)
 
-    def sched_note_duration_pan(self, samp, duration, pan=None, pitch=1.0, volume=1.0, delay=0, chan=None):
+    def sched_note_duration_pan(self,
+                                samp,
+                                duration,
+                                pan=None,
+                                pitch=1.0,
+                                volume=1.0,
+                                delay=0,
+                                chan=None):
         """sched_note_duration_pan(sample, duration, pan=0, pitch=1, volume=1,
             delay=0, chan=self.channel) -> duration
 
@@ -205,11 +215,11 @@ class Agent:
         be slightly longer than the given duration.
         """
 
-        if (self.generator is None or self.channel is None):
+        if self.generator is None or self.channel is None:
             raise generator.ScheduleError('scheduler has never been scheduled')
-        if (chan is None):
+        if chan is None:
             chan = self.channel
-        if (not chan.active):
+        if not chan.active:
             raise generator.ChannelError('cannot schedule note to inactive channel')
         gen = self.generator
         samp = sample.get(samp)
@@ -278,27 +288,27 @@ class Agent:
         listening.
         """
 
-        if (not self.inited):
+        if not self.inited:
             raise generator.ScheduleError('agent is uninitialized')
-        if (self.generator is None or self.channel is None):
+        if self.generator is None or self.channel is None:
             raise generator.ScheduleError('listener has never been scheduled')
-        if (chan is None):
+        if chan is None:
             chan = self.channel
-        if (not chan.active):
+        if not chan.active:
             raise generator.ChannelError('cannot listen to inactive channel')
 
-        if (event is None):
+        if event is None:
             event = self.selected_event
-        if (event is None):
+        if event is None:
             raise generator.ScheduleError('must specify event to listen for')
-        if (callable(event)):
+        if callable(event):
             event = event()
-            if (event is None):
+            if event is None:
                 raise generator.ScheduleError('must return event to listen for')
-        if (event != ''):
+        if event != '':
             event = boodle.check_prop_name(event)
 
-        if (handle is None):
+        if handle is None:
             handle = self.receive
 
         gen = self.generator
@@ -315,23 +325,28 @@ class Agent:
         event.
         """
 
-        if (self.generator is None or self.channel is None):
+        if self.generator is None or self.channel is None:
             raise generator.ScheduleError('listener has never been scheduled')
 
-        if (event is None):
-            ls = [ han for han in self.handlers ]
+        if event is None:
+            ls = [han for han in self.handlers]
         else:
             event = boodle.check_prop_name(event)
-            ls = [ han for han in self.handlers if (han.event == event) ]
+            ls = [han for han in self.handlers if (han.event == event)]
 
-        if (not ls):
+        if not ls:
             return
 
         gen = self.generator
         gen.remhandlers(ls)
 
-    def post_listener_agent(self, ag, chan=None, event=None, handle=None,
-        hold=None, listenchan=None):
+    def post_listener_agent(self,
+                            ag,
+                            chan=None,
+                            event=None,
+                            handle=None,
+                            hold=None,
+                            listenchan=None):
         """post_listener_agent(agent, chan=self.channel,
             event=ag.selected_event, handle=ag.receive, hold=None,
             listenchan=chan)
@@ -361,14 +376,14 @@ class Agent:
         """
 
         chan = kwargs.pop('chan', None)
-        if (kwargs):
+        if kwargs:
             raise TypeError('invalid keyword argument for this function')
 
-        if (self.generator is None or self.channel is None):
+        if self.generator is None or self.channel is None:
             raise generator.ScheduleError('sender has never been scheduled')
-        if (chan is None):
+        if chan is None:
             chan = self.channel
-        if (not chan.active):
+        if not chan.active:
             raise generator.ChannelError('cannot send event to inactive channel')
         gen = self.generator
 
@@ -388,17 +403,17 @@ class Agent:
         handle function.
         """
 
-        if (not isinstance(ag, Agent)):
+        if not isinstance(ag, Agent):
             raise generator.ScheduleError('not an Agent instance')
-        if (not ag.inited):
+        if not ag.inited:
             raise generator.ScheduleError('agent is uninitialized')
-        if (self.generator is None or self.channel is None):
+        if self.generator is None or self.channel is None:
             raise generator.ScheduleError('scheduler has never been scheduled')
-        if (chan is None):
+        if chan is None:
             chan = self.channel
-        if (not chan.active):
+        if not chan.active:
             raise generator.ChannelError('cannot schedule agent to inactive channel')
-        if (handle is None):
+        if handle is None:
             handle = ag.run
         gen = self.generator
 
@@ -422,9 +437,9 @@ class Agent:
         handle different function.
         """
 
-        if (delay is None):
+        if delay is None:
             delay = self.origdelay
-            if (delay is None):
+            if delay is None:
                 raise generator.ScheduleError('resched with no prior delay')
         self.sched_agent(self, delay, chan, handle)
 
@@ -438,9 +453,9 @@ class Agent:
         the channel that the agent (self) is running in.
         """
 
-        if (self.channel is None):
+        if self.channel is None:
             raise generator.ChannelError('creator is not in a channel')
-        if (parent is None):
+        if parent is None:
             parent = self.channel
         chan = generator.Channel(parent, self.generator, self, startvolume, stereo.default())
         return chan
@@ -456,9 +471,9 @@ class Agent:
         the channel that the agent (self) is running in.
         """
 
-        if (self.channel is None):
+        if self.channel is None:
             raise generator.ChannelError('creator is not in a channel')
-        if (parent is None):
+        if parent is None:
             parent = self.channel
 
         pan = stereo.cast(pan)
@@ -585,14 +600,14 @@ class Agent:
         """
 
         res = Agent.cached_class_names.get(cla)
-        if (res):
+        if res:
             return res
 
         # Default value
         res = (cla.__module__, cla.__name__, False)
 
         loader = pload.PackageLoader.global_loader
-        if (loader):
+        if loader:
             try:
                 (pkg, resource) = loader.find_item_resources(cla)
                 res = (pkg.name, resource.key, True)
@@ -611,7 +626,7 @@ class Agent:
         """
 
         res = Agent.cached_argument_lists.get(cla)
-        if (not (res is None)):
+        if not (res is None):
             return res
 
         # Default value
@@ -619,14 +634,14 @@ class Agent:
         nodestr = None
 
         loader = pload.PackageLoader.global_loader
-        if (loader):
+        if loader:
             try:
                 (pkg, resource) = loader.find_item_resources(cla)
                 nodestr = resource.get_one('boodler.arguments')
             except:
                 pass
 
-        if (nodestr):
+        if nodestr:
             node = sparse.parse(nodestr)
             res = argdef.ArgList.from_node(node)
 
@@ -644,11 +659,11 @@ class Agent:
         """
 
         loader = pload.PackageLoader.global_loader
-        if (loader):
+        if loader:
             try:
                 (pkg, resource) = loader.find_item_resources(cla)
                 res = resource.get_one('dc.title')
-                if (res):
+                if res:
                     return res
             except:
                 pass
@@ -658,10 +673,12 @@ class Agent:
 
     get_title = classmethod(get_title)
 
+
 # Constants for the hold parameter of Agent.listen()
 HoldRun = 'run'
 HoldListen = 'listen'
 HoldBoth = True
+
 
 class Handler:
     """Handler: Represents the state of one agent listening for one event.
@@ -689,13 +706,13 @@ class Handler:
         self.holdlisten = False
         self.holdrun = False
 
-        if (hold is HoldListen):
+        if hold is HoldListen:
             self.holdlisten = True
             hold = None
-        if (hold is HoldRun):
+        if hold is HoldRun:
             self.holdrun = True
             hold = None
-        if (hold):
+        if hold:
             self.holdlisten = True
             self.holdrun = True
 
@@ -722,7 +739,7 @@ class Handler:
         Stop listening. It is safe to call this more than once.
         """
 
-        if (not self.alive):
+        if not self.alive:
             return
         self.generator.remhandlers([self])
 
@@ -754,69 +771,63 @@ def load_described(loader, args, wantmodule=False):
     tracking.
     """
 
-    if (type(args) in [str]):
+    if type(args) in [str]:
         argstr = args
-        args = [ '(', args, ')' ]
-    elif (isinstance(args, list)):
+        args = ['(', args, ')']
+    elif isinstance(args, list):
         argstr = ' '.join(args)
-        args = [ '(' ] + args + [ ')' ]
-    elif (isinstance(args, tuple)):
+        args = ['('] + args + [')']
+    elif isinstance(args, tuple):
         argstr = ' '.join(args)
-        args = [ '(' ] + list(args) + [ ')' ]
-    elif (isinstance(args, sparse.Tree)):
+        args = ['('] + list(args) + [')']
+    elif isinstance(args, sparse.Tree):
         argstr = args.serialize()
         # args is fine
     else:
         raise TypeError('args must be a str, list of str, or Tree')
 
-    if (not isinstance(args, sparse.Tree)):
+    if not isinstance(args, sparse.Tree):
         args = sparse.parse(' '.join(args))
 
-    if (isinstance(args, sparse.ID)):
+    if isinstance(args, sparse.ID):
         args = sparse.List(args)
-    if (not isinstance(args, sparse.List)):
+    if not isinstance(args, sparse.List):
         raise ValueError('arguments must be a list')
-    if (len(args) == 0):
+    if len(args) == 0:
         # default to the null agent, if none was given
         args = sparse.List(sparse.ID('/boodle.builtin.NullAgent'))
 
     classarg = args[0]
-    if (not isinstance(classarg, sparse.ID)):
+    if not isinstance(classarg, sparse.ID):
         raise ValueError('arguments must begin with a class name')
 
-    if (wantmodule):
-        ### clumsy!
-        mod = loader.load_item_by_name(classarg.as_string()+'/')
+    if wantmodule:
+        # clumsy!
+        mod = loader.load_item_by_name(classarg.as_string() + '/')
 
-        if (not isinstance(mod, types.ModuleType)):
+        if not isinstance(mod, types.ModuleType):
             raise TypeError(argstr + ' is not a module')
-        if (len(args) > 1):
+        if len(args) > 1:
             raise ValueError('modules cannot have arguments')
         return mod
 
     clas = loader.load_item_by_name(classarg.as_string())
 
-    if (not isinstance(clas, type(Agent))):
+    if not isinstance(clas, type(Agent)):
         raise TypeError(argstr + ' is not a class')
-    if (not issubclass(clas, Agent)):
+    if not issubclass(clas, Agent):
         raise TypeError(argstr + ' is not an Agent class')
 
     arglist = clas.get_argument_list()
-    if (arglist is None):
+    if arglist is None:
         arglist = argdef.ArgList()
     (valls, valdic) = arglist.resolve(args)
     wrapper = argdef.ArgClassWrapper(clas, valls, valdic)
     return wrapper
 
-# Late imports.
 
-import boodle
-from boodle import generator, sample, stereo
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle
-from boodle.generator import FrameCount # imported for users to see
-
-from boopak import pload, pinfo, sparse, argdef
 
 argdef.Agent = Agent
 argdef.load_described = load_described

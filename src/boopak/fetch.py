@@ -3,14 +3,16 @@
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
-
 """fetch: Utility classes for downloading a file from a server.
 
 This is used by PackageCollection to fetch packages from an archive
 server.
 """
 
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
+import urllib.parse
+
 
 class Fetcher:
     """Fetcher: represents a file which is being downloaded from a web
@@ -32,23 +34,24 @@ class Fetcher:
     (This is an abstract base class, so creating a Fetcher is not of
     any particular use.)
     """
-    
+
     def __init__(self, loader):
         self.loader = loader
-        
+
     def is_done(self):
         """is_done() -> bool
 
         Return whether the fetching process is complete.
         """
         return True
-        
+
     def work(self):
         """work() -> None
 
         Do another increment of work.
         """
         pass
+
 
 class URLFetcher(Fetcher):
     """URLFetcher: represents a file which is being downloaded via a URL.
@@ -65,7 +68,7 @@ class URLFetcher(Fetcher):
     This is not the way the Fetcher class is supposed to work, but it's what
     we've got.
     """
-    
+
     def __init__(self, loader, url, filename):
         Fetcher.__init__(self, loader)
         self.url = url
@@ -79,7 +82,7 @@ class URLFetcher(Fetcher):
             self.outfl = open(filename, 'wb')
             self.done = False
         finally:
-            if (self.done is None):
+            if self.done is None:
                 self.closeall()
 
     def __del__(self):
@@ -94,11 +97,11 @@ class URLFetcher(Fetcher):
 
         (This is an internal method. Do not call.)
         """
-        
-        if (self.infl):
+
+        if self.infl:
             self.infl.close()
             self.infl = None
-        if (self.outfl):
+        if self.outfl:
             self.outfl.close()
             self.outfl = None
 
@@ -115,11 +118,11 @@ class URLFetcher(Fetcher):
         Do another increment of work. If the download is complete, close
         the files.
         """
-        
-        if (self.done):
+
+        if self.done:
             return
         dat = self.infl.read(1000)
-        if (dat):
+        if dat:
             self.outfl.write(dat)
             return
 

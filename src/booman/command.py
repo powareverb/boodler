@@ -12,7 +12,12 @@ import zipfile
 
 from packaging.version import Version
 
+from booman import CommandError, CommandCancelled
+from booman import create
+from booman import frame
 from booman import token
+from boopak import collect
+from boopak import pinfo
 
 
 class CommandToken(token.Token):
@@ -25,26 +30,27 @@ class CommandToken(token.Token):
 
     verb_map -- a dict mapping words to Command subclasses.
     """
-    
+
     verb_map = None
 
     def __init__(self):
         # The verb_map only needs to be initialized the first time a
         # CommandToken is created.
-        if (CommandToken.verb_map is None):
+        if CommandToken.verb_map is None:
             CommandToken.verb_map = {}
             for cmd in command_list:
-                for verb in ([cmd.name] + cmd.synonyms):
+                for verb in [cmd.name] + cmd.synonyms:
                     CommandToken.verb_map[verb] = cmd
 
     def accept(self, source):
         val = source.pop_word(self)
         val = val.lower()
         cmdclass = CommandToken.verb_map.get(val)
-        if (not cmdclass):
-            raise CommandError('Unknown command: "' + val + '".'
-                + ' (Type "help" for a list of commands.)')
+        if not cmdclass:
+            raise CommandError('Unknown command: "' + val + '".' +
+                               ' (Type "help" for a list of commands.)')
         return cmdclass
+
 
 class Command:
     """Command: represents a possible command. Each subclass of Command
@@ -62,14 +68,14 @@ class Command:
     perform() -- carry out the command
     assert_done() -- ensure that the input has been exhausted
     """
-    
+
     name = '<unknown>'
     synonyms = []
     description = '<unknown>'
     help = None
 
     def __repr__(self):
-        return ('<Command \'' + self.name + '\'>')
+        return '<Command \'' + self.name + '\'>'
 
     def perform(self, source):
         """perform(source) -> None
@@ -87,11 +93,11 @@ class Command:
         (This should be called after all command arguments have been read,
         but before execution begins.)
         """
-        
-        if (not source.is_empty()):
+
+        if not source.is_empty():
             val = ' '.join(source.drain())
-            raise CommandError('Unexpected stuff after your command: "' 
-                + val + '".')
+            raise CommandError('Unexpected stuff after your command: "' + val + '".')
+
 
 class QuitCmd(Command):
     name = 'quit'
@@ -104,6 +110,7 @@ Leave the interactive prompt and shut down boodle-mgr.
     def perform(self, source):
         self.assert_done(source)
         frame.set_quit()
+
 
 class ContentsCmd(Command):
     name = 'contents'
@@ -135,15 +142,16 @@ or a URL to download and inspect.
 
         ls = sorted(list(ress.keys()))
         print('Resources:', len(ls))
-        
+
         for key in ls:
             res = ress.get(key)
             typ = res.get_one('boodler.use')
             typval = ''
-            if (typ):
-                typval = '['+typ+']'
+            if typ:
+                typval = '[' + typ + ']'
             print('  ', key, typval)
-        
+
+
 class DescribeCmd(Command):
     name = 'describe'
     synonyms = ['metadata']
@@ -176,28 +184,31 @@ version of the package you have installed.
 
         for key in ls:
             vals = meta.get_all(key)
-            if (not vals):
+            if not vals:
                 continue
-            if (len(vals) == 1):
-                print('  ', key+':', vals[0])
+            if len(vals) == 1:
+                print('  ', key + ':', vals[0])
             else:
-                print('  ', key+':')
+                print('  ', key + ':')
                 for val in vals:
                     print('    ', val)
+
 
 class ExamineCmd(Command):
     name = 'examine'
     synonyms = ['x']
     description = 'Examine a resource in a package'
-    ### help
-    
+
+    # help
+
     def perform(self, source):
         tok = token.ResourceToken()
         ((pkgname, vers), res) = tok.accept(source)
         self.assert_done(source)
 
-        ### not yet implemented
-                    
+        # not yet implemented
+
+
 class InstallCmd(Command):
     name = 'install'
     description = 'Install a package into your collection'
@@ -217,13 +228,13 @@ Install a package from the Boodler web site.
         (srctype, loc) = tok.accept(source)
         self.assert_done(source)
 
-        if (srctype == collect.Source_PACKAGE):
+        if srctype == collect.Source_PACKAGE:
             (pkgname, vers) = loc
-            if (isinstance(vers, Version)):
-                ### really this should query boodler.org for matching version
+            if isinstance(vers, Version):
+                # really this should query boodler.org for matching version
                 raise CommandError('You must supply an exact version number')
-            if (vers is None):
-                ### really this should query boodler.org for the latest version
+            if vers is None:
+                # really this should query boodler.org for the latest version
                 raise CommandError('You must supply a version number')
             destfile = create.build_package_filename(pkgname, vers)
             srctype = collect.Source_URL
@@ -239,22 +250,23 @@ Install a package from the Boodler web site.
             pkg = None
             already_got = False
 
-        if (already_got and (not frame.is_force)):
-            print(('The package ' + pkg.name
-                + ' (version ' + str(pkg.version) + ') is already installed. Do you want to reinstall it?'))
+        if already_got and (not frame.is_force):
+            print(('The package ' + pkg.name + ' (version ' + str(pkg.version) +
+                   ') is already installed. Do you want to reinstall it?'))
             tok = token.YesNoToken()
             res = tok.accept(source)
-            if (not res):
+            if not res:
                 raise CommandCancelled()
-        
+
         pkg = frame.loader.install_source(srctype, loc)
 
         print('Package:', pkg.name, '   Version:', str(pkg.version))
         meta = pkg.metadata
         print('Title:', meta.get_one('dc.title', '<not available>'))
 
-        ### check dependencies!
-        
+        # check dependencies!
+
+
 class ListCmd(Command):
     name = 'list'
     description = 'List all the packages installed'
@@ -271,6 +283,7 @@ entry.
         for key in ls:
             print('  ', format_package(key, False))
         print(len(ls), 'packages installed (ignoring multiple versions)')
+
 
 class ListAllCmd(Command):
     name = 'listall'
@@ -289,11 +302,12 @@ you have multiple versions of a package, this displays that fact.
             count += len(verslist)
             vers = verslist.pop(0)
             versions = str(vers)
-            if (verslist):
-                verslist = [ str(vers) for vers in verslist ]
-                versions += (' (also ' + ', '.join(verslist) + ')')
+            if verslist:
+                verslist = [str(vers) for vers in verslist]
+                versions += ' (also ' + ', '.join(verslist) + ')'
             print('  ', pkgname, versions)
         print(count, 'packages installed (including multiple versions)')
+
 
 class ObsoleteCmd(Command):
     name = 'obsolete'
@@ -320,24 +334,25 @@ can be deleted.
             (pkgname, vers) = key
             pgroup = frame.loader.load_group(pkgname)
             for oldvers in pgroup.get_versions():
-                if (oldvers != vers):
-                    obsolete.add( (pkgname, oldvers) )
+                if oldvers != vers:
+                    obsolete.add((pkgname, oldvers))
 
-        while (to_check):
+        while to_check:
             key = to_check.pop(0)
             for depkey in forward.get(key, []):
-                if (depkey in found_ok):
+                if depkey in found_ok:
                     continue
                 found_ok.add(depkey)
                 to_check.append(depkey)
 
         res = obsolete.difference(found_ok)
-        if (not res):
+        if not res:
             print('No obsolete packages found.')
             return
         print('The following versions can be deleted safely:')
         for key in res:
             print('  ', format_package(key))
+
 
 class VersionsCmd(Command):
     name = 'versions'
@@ -360,9 +375,10 @@ List all the versions of package that are installed.
             frame.note_backtrace()
             raise CommandError('Unable to read package: ' + pkgname)
 
-        ls = sorted([(pkgname, vers) for vers in pgroup.versions ])
+        ls = sorted([(pkgname, vers) for vers in pgroup.versions])
         for key in ls:
             print('  ', format_package(key))
+
 
 class RequiresCmd(Command):
     name = 'requires'
@@ -383,12 +399,10 @@ one you named.
         try:
             pkg = frame.loader.load(pkgname, vers)
         except pinfo.PackageNotFoundError:
-            raise CommandError('No such package installed: ' 
-                + format_package((pkgname, vers)))
+            raise CommandError('No such package installed: ' + format_package((pkgname, vers)))
         except pinfo.PackageLoadError:
             frame.note_backtrace()
-            raise CommandError('Unable to read package: '
-                + format_package((pkgname, vers)))
+            raise CommandError('Unable to read package: ' + format_package((pkgname, vers)))
 
         (forward, backward, bad) = frame.loader.find_all_dependencies()
 
@@ -396,10 +410,10 @@ one you named.
         to_check = [pkg.key]
         found_ok.add(pkg.key)
 
-        while (to_check):
+        while to_check:
             key = to_check.pop(0)
             for depkey in backward.get(key, []):
-                if (depkey in found_ok):
+                if depkey in found_ok:
                     continue
                 found_ok.add(depkey)
                 to_check.append(depkey)
@@ -411,6 +425,7 @@ one you named.
         ls.sort()
         for key in ls:
             print('  ', format_package(key))
+
 
 class DeleteCmd(Command):
     name = 'delete'
@@ -429,47 +444,47 @@ Delete a particular version of a package from your collection.
         (pkgname, vers) = tok.accept(source)
         self.assert_done(source)
 
-        if (vers is None):
+        if vers is None:
             dirname = frame.loader.generate_package_path(pkgname)
-            if (not os.path.exists(dirname)):
+            if not os.path.exists(dirname):
                 raise CommandError('No such package group: ' + pkgname)
 
-            if (not frame.is_force):
+            if not frame.is_force:
                 desc = ' all versions of'
                 try:
                     # A bad collection dir shouldn't derail us here
                     pgroup = frame.loader.load_group(pkgname)
-                    if (len(pgroup.versions) == 0):
+                    if len(pgroup.versions) == 0:
                         desc = ' the directory for'
-                    elif (len(pgroup.versions) == 1):
+                    elif len(pgroup.versions) == 1:
                         desc = ''
                     else:
                         desc = ' ' + str(len(pgroup.versions)) + ' versions of'
                 except:
                     pass
-                
-                print(('Are you sure you want to delete' + desc + ' '
-                    + pkgname + '?'))
+
+                print(('Are you sure you want to delete' + desc + ' ' + pkgname + '?'))
                 tok = token.YesNoToken()
                 res = tok.accept(source)
-                if (not res):
+                if not res:
                     raise CommandCancelled()
 
             frame.loader.delete_group(pkgname)
             print('All of package', pkgname, 'deleted.')
         else:
             pkg = frame.loader.load(pkgname, vers)
-        
-            if (not frame.is_force):
-                print(('Are you sure you want to delete ' + pkg.name
-                    + ' (version ' + str(pkg.version) + ')?'))
+
+            if not frame.is_force:
+                print(('Are you sure you want to delete ' + pkg.name + ' (version ' +
+                       str(pkg.version) + ')?'))
                 tok = token.YesNoToken()
                 res = tok.accept(source)
-                if (not res):
+                if not res:
                     raise CommandCancelled()
 
             frame.loader.delete_package(pkg.name, pkg.version)
             print('Package', format_package(pkg), 'deleted.')
+
 
 class DeleteAllCmd(Command):
     name = 'deleteall'
@@ -480,16 +495,17 @@ Delete every package in your collection.
 
     def perform(self, source):
         self.assert_done(source)
-        
-        if (not frame.is_force):
+
+        if not frame.is_force:
             print('Are you sure you want to delete every package in your collection?')
             tok = token.YesNoToken()
             res = tok.accept(source)
-            if (not res):
+            if not res:
                 raise CommandCancelled()
 
         frame.loader.delete_whole_collection()
         print('All packages deleted.')
+
 
 class CreateCmd(Command):
     name = 'create'
@@ -517,50 +533,50 @@ the command line. You should only use --import when you intend to use the
         (dirname, direxists) = tok.accept(source)
 
         destname = None
-        if (not source.is_empty()):
+        if not source.is_empty():
             tok = token.FileToken(False)
             (destname, destexists) = tok.accept(source)
 
         self.assert_done(source)
 
-        if (not frame.loader.importing_ok):
-            raise CommandError('Creating requires importing packages, and the --import option has not been set.')
+        if not frame.loader.importing_ok:
+            raise CommandError(
+                'Creating requires importing packages, and the --import option has not been set.')
 
         absdirname = os.path.abspath(dirname)
         abscoldir = os.path.abspath(frame.loader.collecdir)
-        if (absdirname.startswith(abscoldir)):
+        if absdirname.startswith(abscoldir):
             raise CommandError('Directory is inside the collection tree: ' + absdirname)
 
-        if (destname):
-            if (not destname.endswith(collect.Suffix_PackageArchive)):
-                destname = destname+collect.Suffix_PackageArchive
-        
+        if destname:
+            if not destname.endswith(collect.Suffix_PackageArchive):
+                destname = destname + collect.Suffix_PackageArchive
+
         tup = create.examine_directory(frame.loader, absdirname, destname)
         ((pkgname, pkgvers), contents, meta, ress) = tup
 
         frame.loader.clear_external_packages()
 
-        if (not destname):
+        if not destname:
             destname = os.path.dirname(absdirname)
             destfile = create.build_package_filename(pkgname, pkgvers)
             destname = os.path.join(destname, destfile)
 
-        if (os.path.exists(destname) and not frame.is_force):
+        if os.path.exists(destname) and not frame.is_force:
             print('Are you sure you want to overwrite ' + destname + '?')
             tok = token.YesNoToken()
             res = tok.accept(source)
-            if (not res):
+            if not res:
                 raise CommandCancelled()
 
         metafile = frame.loader.create_temp_file('metadata')
         ressfile = None
-        if (ress):
+        if ress:
             ressfile = frame.loader.create_temp_file('resources')
 
         # Comments for the head of the metadata and resource files
-        comments = [ format_package( (pkgname, pkgvers) ),
-            'package built ' + time.ctime() ]
-        
+        comments = [format_package((pkgname, pkgvers)), 'package built ' + time.ctime()]
+
         writer = codecs.getwriter('utf-8')
 
         fl = open(metafile, 'wb')
@@ -570,8 +586,8 @@ the command line. You should only use --import when you intend to use the
         finally:
             ufl.close()
             fl.close()
-            
-        if (ress):
+
+        if ress:
             fl = open(ressfile, 'wb')
             ufl = writer(fl)
             try:
@@ -579,14 +595,15 @@ the command line. You should only use --import when you intend to use the
             finally:
                 ufl.close()
                 fl.close()
-                
+
         fl = zipfile.ZipFile(destname, 'w')
         try:
-            create.construct_zipfile(fl,
-                (pkgname, pkgvers), absdirname, contents, metafile, ressfile)
+            create.construct_zipfile(fl, (pkgname, pkgvers), absdirname, contents, metafile,
+                                     ressfile)
         finally:
             fl.close()
         print('Package created:', destname)
+
 
 class ReloadCmd(Command):
     name = 'reload'
@@ -602,7 +619,8 @@ collection directory while boodle-mgr was running.
         frame.loader.clear_cache()
         frame.loader.clean_temp()
         print('Done.')
-        
+
+
 class HelpCmd(Command):
     name = 'help'
     synonyms = ['?']
@@ -616,19 +634,19 @@ Show some help on the given command.
 """
 
     def perform(self, source):
-        if (not source.is_empty()):
+        if not source.is_empty():
             cmdclass = CommandToken().accept(source)
             self.assert_done(source)
 
             cmd = cmdclass()
 
             extra = ''
-            if (cmd.synonyms):
+            if cmd.synonyms:
                 extra = ' ("' + '", "'.join(cmd.synonyms) + '")'
             print('Command "' + cmd.name + '"' + extra + ':')
 
             helptext = cmd.help
-            if (not helptext):
+            if not helptext:
                 helptext = cmd.description + '.'
             print()
             print(helptext.strip())
@@ -636,9 +654,10 @@ Show some help on the given command.
 
         self.assert_done(source)
 
-        maxlen = 1 + max([ len(cmd.name) for cmd in command_list ])
+        maxlen = 1 + max([len(cmd.name) for cmd in command_list])
         for cmd in command_list:
-            print((cmd.name+':').ljust(maxlen), cmd.description)
+            print((cmd.name + ':').ljust(maxlen), cmd.description)
+
 
 class LastErrorCmd(Command):
     name = 'lasterror'
@@ -652,9 +671,10 @@ exists to aid debugging of boodle-mgr.
         self.assert_done(source)
 
         val = frame.get_last_backtrace()
-        if (val is None):
+        if val is None:
             val = 'No Python exceptions have occurred.'
         print(val)
+
 
 # All the Command subclasses defined above. This list is used to
 # make the CommandToken.verb_map table, and also when listing the
@@ -665,7 +685,7 @@ command_list = [
     ListAllCmd,
     DescribeCmd,
     ContentsCmd,
-    ###ExamineCmd,
+    # ExamineCmd,
     VersionsCmd,
     ObsoleteCmd,
     RequiresCmd,
@@ -675,8 +695,9 @@ command_list = [
     CreateCmd,
     ReloadCmd,
     LastErrorCmd,
-    QuitCmd
+    QuitCmd,
 ]
+
 
 def format_package(val, full=True):
     """format_package(val, full=True) -> str
@@ -687,14 +708,15 @@ def format_package(val, full=True):
 
     If full is false, the version is ignored.
     """
-    
-    if (isinstance(val, pinfo.PackageInfo)):
+
+    if isinstance(val, pinfo.PackageInfo):
         val = val.key
     (name, vers) = val
-    if (full and vers):
-        return name+' '+str(vers)
+    if full and vers:
+        return name + ' ' + str(vers)
     else:
         return name
+
 
 def ensure_fetched(srctype, loc):
     """ensure_fetched(srctype, loc) -> None
@@ -704,23 +726,16 @@ def ensure_fetched(srctype, loc):
     does any slow processing -- that is, HTTP downloading -- which is
     necessary before the command is executed.
     """
-    
+
     fetcher = frame.loader.fetch_source(srctype, loc)
-    if (fetcher is None):
+    if fetcher is None:
         return
     print('Loading...', end=' ')
     count = 0
-    while (not fetcher.is_done()):
+    while not fetcher.is_done():
         fetcher.work()
         count += 1
-        if (count % 2 == 0):
+        if count % 2 == 0:
             sys.stdout.write('.')
             sys.stdout.flush()
     print('.')
-
-# Late imports
-from boopak import pinfo
-from boopak import collect
-from booman import CommandError, CommandCancelled
-from booman import frame
-from booman import create

@@ -11,7 +11,8 @@ from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import InvalidVersion, Version
 
 from boopak import pinfo
-from boopak.pinfo import Metadata, Resources, PackageLoadError
+from boopak.exceptions import PackageLoadError
+from boopak.pinfo import Metadata, Resources
 from boopak.pinfo import parse_package_name, parse_resource_name
 from boopak.pinfo import parse_package_version_spec
 from boopak.pinfo import build_safe_pathname, encode_package_name
@@ -24,12 +25,12 @@ class TestPInfo(unittest.TestCase):
         dat = 'xyzzy\nplugh\n'
         mfile = pinfo.MemFile(dat, '.txt', 'Stuff')
         self.assertEqual(mfile.suffix, '.txt')
-        
+
         fl = mfile.open()
         res = fl.read()
         fl.close()
         self.assertEqual(dat, res)
-        
+
         fl = mfile.open()
         res = fl.read()
         fl.close()
@@ -57,7 +58,7 @@ four : Four
         self.assertEqual(meta.get_one('missing', 'def'), 'def')
 
         self.assertEqual(meta.get_all('two'), ['2'])
-        self.assertEqual(meta.get_all('one'), ['1','11'])
+        self.assertEqual(meta.get_all('one'), ['1', '11'])
         self.assertEqual(meta.get_all('missing'), [])
 
         ls = list(meta.keys())
@@ -75,15 +76,15 @@ four : Four
         self.assertEqual(len(meta), 0)
         self.assertEqual(meta.get_all('foo'), [])
         self.assertEqual(list(meta.keys()), [])
-    
+
     def test_metadata_modify(self):
         meta = Metadata('<test>')
         meta.add('one', 'two')
-        
+
         meta2 = meta.clone()
         meta2.add('one', 'four')
         self.assertEqual(meta2.get_all('one'), ['two', 'four'])
-        
+
         meta.add('one', 'three')
         self.assertEqual(meta.get_all('one'), ['two', 'three'])
         self.assertEqual(meta2.get_all('one'), ['two', 'four'])
@@ -159,7 +160,7 @@ one: eleven
         self.assertEqual(res.get_all('two'), ['2', 'II'])
         self.assertEqual(res.get_one('missing'), None)
         self.assertEqual(res.get_one('missing', 'def'), 'def')
-        
+
         res = ress.get('Foo.Bar')
         self.assertTrue(res in ress.resources())
         self.assertEqual(res.get_one('one'), 'eleven')
@@ -198,13 +199,13 @@ one: eleven
         self.assertRaises(ValueError, ress.create, 'foo')
 
         self.assertEqual(foo, ress.get('foo'))
-    
+
     def test_resources_modify(self):
         ress = Resources('<test>')
         foo = ress.create('foo')
-        
+
         foo.add('one', 'two')
-        
+
         foo.add('one', 'three')
         self.assertEqual(foo.get_all('one'), ['two', 'three'])
 
@@ -214,7 +215,7 @@ one: eleven
 
     def test_resources_dump(self):
         ress = Resources('<test>')
-        
+
         val = self.dump_to_string(ress)
         self.assertEqual(val, '')
         val = self.dump_to_string(ress, 'I am a comment.')
@@ -237,35 +238,57 @@ one: eleven
 
         ress.create('one')
         dic = ress.build_tree()
-        self.assertEqual(dic, {'one':'one'})
-        
+        self.assertEqual(dic, {'one': 'one'})
+
         ress.create('two')
         dic = ress.build_tree()
-        self.assertEqual(dic, {'one':'one', 'two':'two'})
-        
+        self.assertEqual(dic, {'one': 'one', 'two': 'two'})
+
         ress.create('foo.three')
         dic = ress.build_tree()
-        self.assertEqual(dic, {'one':'one', 'two':'two',
-            'foo':{'three':'foo.three'}})
-        
+        self.assertEqual(dic, {'one': 'one', 'two': 'two', 'foo': {'three': 'foo.three'}})
+
         ress.create('foo.four')
         dic = ress.build_tree()
-        self.assertEqual(dic, {'one':'one', 'two':'two',
-            'foo':{'three':'foo.three', 'four':'foo.four'}})
-        
+        self.assertEqual(dic, {
+            'one': 'one',
+            'two': 'two',
+            'foo': {
+                'three': 'foo.three',
+                'four': 'foo.four'
+            }
+        })
+
         ress.create('x.y.z')
         dic = ress.build_tree()
-        self.assertEqual(dic, {'one':'one', 'two':'two',
-            'foo':{'three':'foo.three', 'four':'foo.four'},
-            'x':{'y':{'z':'x.y.z'}}})
-            
+        self.assertEqual(
+            dic,
+            {
+                'one': 'one',
+                'two': 'two',
+                'foo': {
+                    'three': 'foo.three',
+                    'four': 'foo.four'
+                },
+                'x': {
+                    'y': {
+                        'z': 'x.y.z'
+                    }
+                },
+            },
+        )
+
         ress.create('foo.four.bad')
         self.assertRaises(ValueError, ress.build_tree)
 
     def test_parse_package_version_spec(self):
         valid_list = [
-            'foo:~=1.0', 'foo:>=2', 'foo:<3.1', 'foo:>=2,<=4',
-            'foo::1.2.3', 'foo.bar::1.5.6a',
+            'foo:~=1.0',
+            'foo:>=2',
+            'foo:<3.1',
+            'foo:>=2,<=4',
+            'foo::1.2.3',
+            'foo.bar::1.5.6a',
         ]
 
         invalid_list = [
@@ -310,12 +333,32 @@ one: eleven
             ('_._005_.a', ['_', '_005_', 'a']),
         ]
         invalid_list = [
-            '', ' ',
-            '.', 'a.', '.b', '.c.', 'd..e', '..',
-            'x ', ' y', 'a b', 'a. b', 'a .b',
-            '0', '0x', 'a.0', 'x.y.9z',
-            'A', 'Hello', 'hello.There', 'olleH',
-            'a,b', 'a-b', 'a+b', 'a/b', 'a\\b',
+            '',
+            ' ',
+            '.',
+            'a.',
+            '.b',
+            '.c.',
+            'd..e',
+            '..',
+            'x ',
+            ' y',
+            'a b',
+            'a. b',
+            'a .b',
+            '0',
+            '0x',
+            'a.0',
+            'x.y.9z',
+            'A',
+            'Hello',
+            'hello.There',
+            'olleH',
+            'a,b',
+            'a-b',
+            'a+b',
+            'a/b',
+            'a\\b',
         ]
 
         for (name, result) in valid_list:
@@ -324,7 +367,7 @@ one: eleven
 
         for name in invalid_list:
             self.assertRaises(ValueError, parse_package_name, name)
-            
+
     def test_parse_resource_name(self):
         valid_list = [
             ('hello', ['hello']),
@@ -336,11 +379,28 @@ one: eleven
             ('_._005_.a', ['_', '_005_', 'a']),
         ]
         invalid_list = [
-            '', ' ',
-            '.', 'a.', '.b', '.c.', 'd..e', '..',
-            'x ', ' y', 'a b', 'a. b', 'a .b',
-            '0', '0x', 'a.0', 'x.y.9z',
-            'a,b', 'a-b', 'a+b', 'a/b', 'a\\b',
+            '',
+            ' ',
+            '.',
+            'a.',
+            '.b',
+            '.c.',
+            'd..e',
+            '..',
+            'x ',
+            ' y',
+            'a b',
+            'a. b',
+            'a .b',
+            '0',
+            '0x',
+            'a.0',
+            'x.y.9z',
+            'a,b',
+            'a-b',
+            'a+b',
+            'a/b',
+            'a\\b',
         ]
 
         for (name, result) in valid_list:
@@ -349,7 +409,7 @@ one: eleven
 
         for name in invalid_list:
             self.assertRaises(ValueError, parse_resource_name, name)
-            
+
     def test_dict_accumulate(self):
         dic = {}
         res = dict_accumulate(dic, 1, 'A')
@@ -363,14 +423,14 @@ one: eleven
         res = dict_accumulate(dic, 3, None)
         self.assertEqual(res, False)
 
-        target = { 3:[[],None], 2:[222], 1:['A','B'] }
+        target = {3: [[], None], 2: [222], 1: ['A', 'B']}
         self.assertEqual(dic, target)
 
     def test_dict_all_values(self):
         res = dict_all_values({})
         self.assertEqual(res, [])
 
-        dic = {1:11, 2:22, 3:{3:33, 31:331}, 4:44, 5:{55:55}}
+        dic = {1: 11, 2: 22, 3: {3: 33, 31: 331}, 4: 44, 5: {55: 55}}
         res = sorted(dict_all_values(dic))
         self.assertEqual(res, [11, 22, 33, 44, 55, 331])
 
@@ -411,7 +471,12 @@ one: eleven
 
     def test_build_safe_pathname(self):
         invalid_list = [
-            '/', '/foo', 'a\\b', 'a/../b', '../xyz', '..',
+            '/',
+            '/foo',
+            'a\\b',
+            'a/../b',
+            '../xyz',
+            '..',
         ]
         valid_list = [
             ('', '/tmp'),
@@ -424,8 +489,7 @@ one: eleven
         ]
 
         for name in invalid_list:
-            self.assertRaises(ValueError, build_safe_pathname, 
-                '/tmp', name)
+            self.assertRaises(ValueError, build_safe_pathname, '/tmp', name)
         for (name, result) in valid_list:
             val = build_safe_pathname('/tmp', name)
             self.assertEqual(val, result)

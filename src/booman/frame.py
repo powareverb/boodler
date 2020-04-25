@@ -4,8 +4,13 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-import traceback
 import io
+import traceback
+
+import booman.command
+import booman.token
+
+from boopak import collect
 
 # Global state for the command interpreter.
 
@@ -27,6 +32,7 @@ last_backtrace = None
 #   the --force command-line option was supplied.
 is_force = False
 
+
 def set_force_option(val=True):
     """set_force_option(val=True) -> None
 
@@ -37,6 +43,7 @@ def set_force_option(val=True):
     global is_force
     is_force = val
 
+
 def set_interactive(val=True):
     """set_interactive(val=True) -> None
 
@@ -46,12 +53,14 @@ def set_interactive(val=True):
     global is_interactive
     is_interactive = val
 
+
 def quit_yet():
     """quit_yet() -> bool
 
     Return whether the Quit command has been executed.
     """
     return shutdown
+
 
 def set_quit(val=True):
     """set_quit(val=True) -> None
@@ -60,6 +69,7 @@ def set_quit(val=True):
     """
     global shutdown
     shutdown = val
+
 
 def get_last_backtrace():
     """get_last_backtrace() -> str
@@ -71,6 +81,7 @@ def get_last_backtrace():
     However, it will not end with a newline.)
     """
     return last_backtrace
+
 
 def note_backtrace():
     """note_backtrace() -> None
@@ -85,6 +96,7 @@ def note_backtrace():
     last_backtrace = fl.getvalue().rstrip()
     fl.close()
 
+
 def setup_loader(basedir, coldir, dldir, importing_ok=False):
     """setup_loader(basedir, coldir, dldir, importing_ok=False) -> None
 
@@ -92,8 +104,8 @@ def setup_loader(basedir, coldir, dldir, importing_ok=False):
     (See the PackageCollection class for the arguments.)
     """
     global loader
-    loader = collect.PackageCollection(basedir, coldir, dldir,
-        importing_ok=importing_ok)
+    loader = collect.PackageCollection(basedir, coldir, dldir, importing_ok=importing_ok)
+
 
 def handle(args=None):
     """handle(args=None) -> None
@@ -107,12 +119,9 @@ def handle(args=None):
     """
     global last_backtrace
 
-    # Very, very late import
-    import booman.command
-
     try:
         # Print a blank line between interactive commands.
-        if (is_interactive):
+        if is_interactive:
             print()
 
         # Some ugliness here. If the user types a blank line at an input
@@ -121,20 +130,20 @@ def handle(args=None):
         # printing another blank line. So we do a little loop here. If
         # a command is typed, or we get any exception *except* a
         # CommandCancelled, this loop only runs once.
-        while (True):
+        while True:
             try:
-                source = token.InputSource(args)
+                source = booman.token.InputSource(args)
                 tok = booman.command.CommandToken()
                 cmdclass = tok.accept(source)
                 break
-            except CommandCancelled:
+            except booman.CommandCancelled:
                 pass
         # Okay, we got a command. Execute it.
         cmd = cmdclass()
         cmd.perform(source)
-    except CommandError as ex:
+    except booman.CommandError as ex:
         # Simple exception: print the message.
-        if (str(ex)):
+        if str(ex):
             print(str(ex))
     except KeyboardInterrupt:
         # EOF or interrupt. Pass it on.
@@ -142,7 +151,8 @@ def handle(args=None):
     except Exception as ex:
         # Unexpected exception: print it, and save a backtrace.
         note_backtrace()
-        print('Python exception:', ex.__class__.__name__+':', str(ex))
+        print('Python exception:', ex.__class__.__name__ + ':', str(ex))
+
 
 def cleanup():
     """cleanup() -> None
@@ -151,14 +161,6 @@ def cleanup():
     interpreter is exiting.
     """
     global loader
-    if (loader):
+    if loader:
         loader.shut_down()
         loader = None
-
-
-# Late imports
-
-from boopak import collect
-import booman
-from booman import CommandError, CommandCancelled
-from booman import token

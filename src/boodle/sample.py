@@ -3,7 +3,6 @@
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
-
 """sample: A module containing the Sample class; also the SampleLoader
 classes, which know how to load data from various sound files (AIFF,
 WAV, etc).
@@ -24,18 +23,19 @@ import wave
 
 from functools import total_ordering
 
+import boodle
+import boopak
+
 # Maps File objects, and also str/unicode pathnames, to Samples.
 cache = {}
 
-# We still support $BOODLER_SOUND_PATH, for old times' sake.
-# But packaged modules should not rely on it.
-sound_dirs = os.environ.get('BOODLER_SOUND_PATH', os.curdir)
-sound_dirs = sound_dirs.split(':')
+sound_dirs = [os.curdir]
 
-if struct.pack("h", 1) == "\000\001":
+if struct.pack('h', 1) == '\000\001':
     big_endian = 1
 else:
     big_endian = 0
+
 
 class Sample:
     """Sample: represents a sound file, held in memory.
@@ -57,69 +57,83 @@ class Sample:
         return '<Sample at ' + str(self.filename) + '>'
 
     def queue_note(self, pitch, volume, pan, starttime, chan):
-        if (cboodle.is_sample_error(self.csamp)):
+        if cboodle.is_sample_error(self.csamp):
             raise SampleError('sample is unplayable')
-        if (not cboodle.is_sample_loaded(self.csamp)):
-            if (not (self.reloader is None)):
+        if not cboodle.is_sample_loaded(self.csamp):
+            if not (self.reloader is None):
                 self.reloader.reload(self)
-            if (not cboodle.is_sample_loaded(self.csamp)):
+            if not cboodle.is_sample_loaded(self.csamp):
                 raise SampleError('sample is unloaded')
-        (panscx, panshx, panscy, panshy) = stereo.extend_tuple(pan)
+        (panscx, panshx, panscy, panshy) = boodle.stereo.extend_tuple(pan)
+
         def closure(samp=self, chan=chan):
             samp.refcount -= 1
             chan.remnote()
-        dur = cboodle.create_note(self.csamp, pitch, volume,
-            panscx, panshx, panscy, panshy,
-            starttime, chan, closure)
+
+        dur = cboodle.create_note(self.csamp, pitch, volume, panscx, panshx, panscy, panshy,
+                                  starttime, chan, closure)
         chan.addnote()
         self.refcount += 1
-        if (self.lastused < starttime + dur):
+        if self.lastused < starttime + dur:
             self.lastused = starttime + dur
         return dur
 
     def queue_note_duration(self, pitch, volume, pan, starttime, duration, chan):
-        if (cboodle.is_sample_error(self.csamp)):
+        if cboodle.is_sample_error(self.csamp):
             raise SampleError('sample is unplayable')
-        if (not cboodle.is_sample_loaded(self.csamp)):
-            if (not (self.reloader is None)):
+        if not cboodle.is_sample_loaded(self.csamp):
+            if not (self.reloader is None):
                 self.reloader.reload(self)
-            if (not cboodle.is_sample_loaded(self.csamp)):
+            if not cboodle.is_sample_loaded(self.csamp):
                 raise SampleError('sample is unloaded')
-        (panscx, panshx, panscy, panshy) = stereo.extend_tuple(pan)
+        (panscx, panshx, panscy, panshy) = boodle.stereo.extend_tuple(pan)
+
         def closure(samp=self, chan=chan):
             samp.refcount -= 1
             chan.remnote()
-        dur = cboodle.create_note_duration(self.csamp, pitch, volume,
-            panscx, panshx, panscy, panshy,
-            starttime, duration, chan, closure)
+
+        dur = cboodle.create_note_duration(
+            self.csamp,
+            pitch,
+            volume,
+            panscx,
+            panshx,
+            panscy,
+            panshy,
+            starttime,
+            duration,
+            chan,
+            closure,
+        )
         chan.addnote()
         self.refcount += 1
-        if (self.lastused < starttime + dur):
+        if self.lastused < starttime + dur:
             self.lastused = starttime + dur
         return dur
 
     def get_info(self, pitch=1.0):
-        if (cboodle.is_sample_error(self.csamp)):
+        if cboodle.is_sample_error(self.csamp):
             raise SampleError('sample is unplayable')
         res = cboodle.sample_info(self.csamp)
         ratio = float(res[0]) * float(pitch) * float(cboodle.framespersec())
-        if (len(res) == 2):
+        if len(res) == 2:
             return (float(res[1]) / ratio, None)
         else:
-            return (float(res[1]) / ratio,
-                (float(res[2]) / ratio, float(res[3]) / ratio))
+            return (float(res[1]) / ratio, (float(res[2]) / ratio, float(res[3]) / ratio))
+
 
 class MixinSample(Sample):
+
     def __init__(self, filename, ranges, default, modname=None):
         self.ranges = ranges
-        self.minvals = [ rn.min for rn in ranges ]
+        self.minvals = [rn.min for rn in ranges]
         self.default = default
 
-        if (filename is None):
+        if filename is None:
             filename = '<constructed>'
         self.filename = filename
 
-        if (modname):
+        if modname:
             self.__module__ = modname
 
         self.lastused = 0
@@ -130,54 +144,55 @@ class MixinSample(Sample):
         pos = bisect.bisect(self.minvals, pitch)
         pos -= 1
 
-        while (pos >= 0):
+        while pos >= 0:
             rn = self.ranges[pos]
-            if (pitch <= rn.max):
+            if pitch <= rn.max:
                 return rn
             pos -= 1
 
-        if (not (self.default is None)):
+        if not (self.default is None):
             return self.default
 
         raise SampleError(str(pitch) + ' is outside mixin ranges')
 
     def queue_note(self, pitch, volume, pan, starttime, chan):
         rn = self.find(pitch)
-        if (not (rn.pitch is None)):
+        if not (rn.pitch is None):
             pitch *= rn.pitch
-        if (not (rn.volume is None)):
+        if not (rn.volume is None):
             volume *= rn.volume
         samp = get(rn.sample)
         return samp.queue_note(pitch, volume, pan, starttime, chan)
 
     def queue_note_duration(self, pitch, volume, pan, starttime, duration, chan):
         rn = self.find(pitch)
-        if (not (rn.pitch is None)):
+        if not (rn.pitch is None):
             pitch *= rn.pitch
-        if (not (rn.volume is None)):
+        if not (rn.volume is None):
             volume *= rn.volume
         samp = get(rn.sample)
         return samp.queue_note_duration(pitch, volume, pan, starttime, duration, chan)
 
     def get_info(self, pitch=1.0):
         rn = self.find(pitch)
-        if (not (rn.pitch is None)):
+        if not (rn.pitch is None):
             pitch *= rn.pitch
         samp = get(rn.sample)
         return samp.get_info(pitch)
 
+
 def unload_unused(deathtime):
     for samp in list(cache.values()):
-        if (samp.refcount == 0
-            and (not (samp.csamp is None))
-            and deathtime >= samp.lastused
-            and cboodle.is_sample_loaded(samp.csamp)):
-                cboodle.unload_sample(samp.csamp)
+        if (samp.refcount == 0 and (not (samp.csamp is None)) and deathtime >= samp.lastused and
+                cboodle.is_sample_loaded(samp.csamp)):
+            cboodle.unload_sample(samp.csamp)
+
 
 def adjust_timebase(trimoffset, maxage):
     for samp in list(cache.values()):
-        if (samp.lastused >= -maxage):
+        if samp.lastused >= -maxage:
             samp.lastused = samp.lastused - trimoffset
+
 
 def get(sname):
     """get(sample) -> Sample
@@ -185,7 +200,7 @@ def get(sname):
     Load a sample object, given a filename or File object. (You can also
     pass a Sample object; it will be returned back to you.)
 
-    (If the filename is relative, $BOODLER_SOUND_PATH is searched.)
+    (If the filename is relative, os.curdir is searched.)
 
     The module maintains a cache of sample objects, so if you load the
     same filename twice, the second get() call will be fast.
@@ -196,35 +211,36 @@ def get(sname):
     """
 
     # If the argument is a Sample in the first place, return it.
-    if (isinstance(sname, Sample)):
+    if isinstance(sname, Sample):
         return sname
 
     # If we've seen it before, it's in the cache.
     samp = cache.get(sname)
-    if (not (samp is None)):
+    if not (samp is None):
         return samp
 
     suffix = None
 
-    if (isinstance(sname, boopak.pinfo.MemFile)):
+    if isinstance(sname, boopak.pinfo.MemFile):
         filename = sname
         suffix = sname.suffix
-    elif (isinstance(sname, boopak.pinfo.File)):
+    elif isinstance(sname, boopak.pinfo.File):
         filename = sname
-        if (not os.access(sname.pathname, os.R_OK)):
+        if not os.access(sname.pathname, os.R_OK):
             raise SampleError('file not readable: ' + sname.pathname)
         (dummy, suffix) = os.path.splitext(sname.pathname)
-    elif (not (type(sname) in [str])):
+    elif not isinstance(sname, str):
         raise SampleError('not a File or filename')
-    elif (os.path.isabs(sname)):
+    elif os.path.isabs(sname):
         filename = sname
-        if (not os.access(filename, os.R_OK)):
+        if not os.access(filename, os.R_OK):
             raise SampleError('file not readable: ' + filename)
         (dummy, suffix) = os.path.splitext(filename)
     else:
-        for dir in sound_dirs:
-            filename = os.path.join(dir, sname)
-            if (os.access(filename, os.R_OK)):
+        for _dir in sound_dirs:
+            filename = os.path.join(_dir, sname)
+
+            if os.access(filename, os.R_OK):
                 (dummy, suffix) = os.path.splitext(filename)
                 break
         else:
@@ -306,22 +322,23 @@ class MixIn:
     MAX = 1000000.0
 
     def default(samp, pitch=None, volume=None):
-        if (samp is None):
+        if samp is None:
             raise SampleError('default must have a sample')
-        return MixIn.range(MixIn.MIN, MixIn.MAX, samp,
-            pitch=pitch, volume=volume)
+        return MixIn.range(MixIn.MIN, MixIn.MAX, samp, pitch=pitch, volume=volume)
+
     default = staticmethod(default)
 
     @total_ordering
     class range:
+
         def __init__(self, arg1, arg2, arg3=None, pitch=None, volume=None):
-            if (arg3 is None):
+            if arg3 is None:
                 (min, max, samp) = (None, arg1, arg2)
             else:
                 (min, max, samp) = (arg1, arg2, arg3)
-            if (samp is None):
+            if samp is None:
                 raise SampleError('range must have a sample')
-            if (max is None):
+            if max is None:
                 raise SampleError('range must have a maximum value')
 
             (self.min, self.max) = (min, max)
@@ -339,10 +356,10 @@ class MixIn:
             self_min_less = False
             self_max_less = False
 
-            if (not (self.min is None or other.min is None)):
+            if not (self.min is None or other.min is None):
                 self_min_less = self.min < other.min
 
-            if (not (self.max is None or other.max is None)):
+            if not (self.max is None or other.max is None):
                 self_max_less = self.max < other.max
 
             return self_min_less or self_max_less
@@ -353,7 +370,7 @@ class MixIn:
         modname = dic['__module__']
 
         MixIn.sort_mixin_ranges(ranges)
-        return MixinSample('<'+name+'>', ranges, default, modname)
+        return MixinSample('<' + name + '>', ranges, default, modname)
 
     __class__ = staticmethod(__class__)
 
@@ -362,11 +379,12 @@ class MixIn:
 
         lastmin = 0.0
         for rn in ranges:
-            if (rn.min is None):
+            if rn.min is None:
                 rn.min = lastmin
-            if (rn.min > rn.max):
+            if rn.min > rn.max:
                 raise SampleError('range\'s min must be less than its max')
             lastmin = rn.max
+
     sort_mixin_ranges = staticmethod(sort_mixin_ranges)
 
 
@@ -413,7 +431,7 @@ def find_loader(suffix):
     """
     clas = SampleLoader.suffixmap.get(suffix)
 
-    if (clas is None):
+    if clas is None:
         raise SampleError('unknown sound file extension \'' + suffix + '\'')
 
     return clas
@@ -424,7 +442,7 @@ class AifcLoader(SampleLoader):
     suffixlist = ['.aifc', '.aiff', '.aif']
 
     def raw_load(self, filename, csamp):
-        if (isinstance(filename, boopak.pinfo.File)):
+        if isinstance(filename, boopak.pinfo.File):
             afl = filename.open(True)
         else:
             afl = open(filename, 'rb')
@@ -433,7 +451,7 @@ class AifcLoader(SampleLoader):
             numframes = fl.getnframes()
             dat = fl.readframes(numframes)
             numchannels = fl.getnchannels()
-            samplebits = fl.getsampwidth()*8
+            samplebits = fl.getsampwidth() * 8
             framerate = fl.getframerate()
             markers = fl.getmarkers()
             fl.close()
@@ -443,20 +461,20 @@ class AifcLoader(SampleLoader):
         loopstart = -1
         loopend = -1
 
-        if (not (markers is None)):
+        if not (markers is None):
             for (mark, pos, name) in markers:
-                if (mark == 1):
+                if mark == 1:
                     loopstart = pos
-                elif (mark == 2):
+                elif mark == 2:
                     loopend = pos
-        if (loopstart < 0 or loopend < 0):
+        if loopstart < 0 or loopend < 0:
             loopstart = -1
             loopend = -1
 
         params = (framerate, numframes, dat, loopstart, loopend, numchannels, samplebits, 1, 1)
         res = cboodle.load_sample(csamp, params)
 
-        if (not res):
+        if not res:
             raise SampleError('unable to load aiff data')
 
 
@@ -467,7 +485,7 @@ class WavLoader(SampleLoader):
     suffixlist = ['.wav']
 
     def raw_load(self, filename, csamp):
-        if (isinstance(filename, boopak.pinfo.File)):
+        if isinstance(filename, boopak.pinfo.File):
             afl = filename.open(True)
         else:
             afl = open(filename, 'rb')
@@ -476,7 +494,7 @@ class WavLoader(SampleLoader):
             numframes = fl.getnframes()
             dat = fl.readframes(numframes)
             numchannels = fl.getnchannels()
-            samplebits = fl.getsampwidth()*8
+            samplebits = fl.getsampwidth() * 8
             framerate = fl.getframerate()
             fl.close()
         finally:
@@ -484,16 +502,18 @@ class WavLoader(SampleLoader):
 
         params = (framerate, numframes, dat, -1, -1, numchannels, samplebits, 1, big_endian)
         res = cboodle.load_sample(csamp, params)
-        if (not res):
+        if not res:
             raise SampleError('unable to load wav data')
 
+
 wav_loader = WavLoader()
+
 
 class SunAuLoader(SampleLoader):
     suffixlist = ['.au']
 
     def raw_load(self, filename, csamp):
-        if (isinstance(filename, boopak.pinfo.File)):
+        if isinstance(filename, boopak.pinfo.File):
             afl = filename.open(True)
         else:
             afl = open(filename, 'rb')
@@ -502,7 +522,7 @@ class SunAuLoader(SampleLoader):
             numframes = fl.getnframes()
             dat = fl.readframes(numframes)
             numchannels = fl.getnchannels()
-            samplebits = fl.getsampwidth()*8
+            samplebits = fl.getsampwidth() * 8
             framerate = fl.getframerate()
             fl.close()
         finally:
@@ -510,10 +530,12 @@ class SunAuLoader(SampleLoader):
 
         params = (framerate, numframes, dat, -1, -1, numchannels, samplebits, 1, 1)
         res = cboodle.load_sample(csamp, params)
-        if (not res):
+        if not res:
             raise SampleError('unable to load au data')
 
+
 sunau_loader = SunAuLoader()
+
 
 class MixinLoader(SampleLoader):
     suffixlist = ['.mixin']
@@ -522,7 +544,7 @@ class MixinLoader(SampleLoader):
         dirname = None
         modname = None
 
-        if (isinstance(filename, boopak.pinfo.File)):
+        if isinstance(filename, boopak.pinfo.File):
             afl = filename.open(True)
             modname = filename.package.encoded_name
         else:
@@ -538,24 +560,24 @@ class MixinLoader(SampleLoader):
             tok = line.split()
             if len(tok) == 0:
                 continue
-            if (tok[0].startswith('#')):
+            if tok[0].startswith('#'):
                 continue
-            if (tok[0] == 'range'):
-                if (len(tok) < 4):
+            if tok[0] == 'range':
+                if len(tok) < 4:
                     raise SampleError('range and filename required after range')
                 tup = self.parseparam(filename, dirname, tok[3:])
-                if (tok[1] == '-'):
+                if tok[1] == '-':
                     startval = None
                 else:
                     startval = float(tok[1])
-                if (tok[2] == '-'):
+                if tok[2] == '-':
                     endval = MixIn.MAX
                 else:
                     endval = float(tok[2])
                 rn = MixIn.range(startval, endval, tup[0], pitch=tup[1], volume=tup[2])
                 ranges.append(rn)
-            elif (tok[0] == 'else'):
-                if (len(tok) < 2):
+            elif tok[0] == 'else':
+                if len(tok) < 2:
                     raise SampleError('filename required after else')
                 tup = self.parseparam(filename, dirname, tok[1:])
                 rn = MixIn.default(tup[0], pitch=tup[1], volume=tup[2])
@@ -567,7 +589,7 @@ class MixinLoader(SampleLoader):
         return MixinSample(filename, ranges, defval, modname)
 
     def parseparam(self, filename, dirname, tok):
-        if (dirname is None):
+        if dirname is None:
             pkg = filename.package
             samp = pkg.loader.load_item_by_name(tok[0], package=pkg)
         else:
@@ -578,11 +600,11 @@ class MixinLoader(SampleLoader):
         pitch = None
         volume = None
 
-        if (len(tok) > 2):
-            if (tok[2] != '-'):
+        if len(tok) > 2:
+            if tok[2] != '-':
                 volume = float(tok[2])
-        if (len(tok) > 1):
-            if (tok[1] != '-'):
+        if len(tok) > 1:
+            if tok[1] != '-':
                 pitch = float(tok[1])
 
         return (samp, pitch, volume)
@@ -590,20 +612,14 @@ class MixinLoader(SampleLoader):
     def reload(self, samp):
         pass
 
+
 mixin_loader = MixinLoader()
 
-
-# Late imports.
-
-import boodle
-from boodle import stereo
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle
 
-import boopak
 
 class SampleError(boodle.BoodlerError):
     """SampleError: Represents problems encountered while finding or
     loading sound files.
     """
-    pass

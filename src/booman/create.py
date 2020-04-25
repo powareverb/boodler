@@ -4,6 +4,12 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
+from boopak import pinfo
+import unittest
+import booman
+from boopak import argdef
+from boopak import collect
+from boopak import pload
 import inspect
 import keyword
 import os
@@ -21,6 +27,7 @@ from boodle.agent import Agent
 class ConstructError(CommandError):
     """ConstructError: represents an error during package construction.
     """
+
     def __init__(self, dirname, msg):
         CommandError.__init__(self, 'Creation error: ' + msg)
 
@@ -52,15 +59,15 @@ def examine_directory(loader, dirname, destname=None):
         - a Metadata object.
         - a Resources object.
     """
-    
+
     # Read in the source Metadata file (which may be missing or
     # incomplete)
     metadatafile = os.path.join(dirname, pload.Filename_Metadata)
-    if (os.path.exists(metadatafile)):
+    if os.path.exists(metadatafile):
         fl = open(metadatafile, 'r')
         try:
             try:
-                metadata = pinfo.Metadata('<'+metadatafile+'>', fl)
+                metadata = pinfo.Metadata('<' + metadatafile + '>', fl)
             except pload.PackageLoadError as ex:
                 raise ConstructError(dirname, str(ex))
         finally:
@@ -69,30 +76,30 @@ def examine_directory(loader, dirname, destname=None):
         metadata = pinfo.Metadata('<original>')
 
     # Extract the package name and version (if present)
-        
+
     pkgname = None
     pkgvers = None
-    
+
     ls = metadata.get_all('boodler.package')
-    if (len(ls) > 1):
+    if len(ls) > 1:
         raise ConstructError(dirname, 'Multiple metadata entries: boodler.package')
-    if (ls):
+    if ls:
         pkgname = ls[0]
-        
+
     ls = metadata.get_all('boodler.version')
-    if (len(ls) > 1):
+    if len(ls) > 1:
         raise ConstructError(dirname, 'Multiple metadata entries: boodler.version')
-    if (ls):
+    if ls:
         pkgvers = ls[0]
 
     # Check the validity of these (if present)
 
-    if (pkgname):
+    if pkgname:
         try:
             pinfo.parse_package_name(pkgname)
         except ValueError as ex:
             raise ConstructError(dirname, str(ex))
-    if (pkgvers):
+    if pkgvers:
         try:
             pkgvers = Version(pkgvers)
         except InvalidVersion as ex:
@@ -104,84 +111,93 @@ def examine_directory(loader, dirname, destname=None):
 
     tmpname = None
     tmpvers = None
-        
-    if (destname):
+
+    if destname:
         try:
             (tmpname, tmpvers) = parse_package_filename(destname, False)
         except ValueError as ex:
             pass
-        
-    if (tmpname and not pkgname):
+
+    if tmpname and not pkgname:
         pkgname = tmpname
-    if (tmpvers and not pkgvers):
+    if tmpvers and not pkgvers:
         pkgvers = tmpvers
 
-    if (tmpname and pkgname and (tmpname != pkgname)):
-        warning(dirname, 'Package name is "'+pkgname+'", but the name in the destination file is "'+tmpname+'".')
-    if (tmpvers and pkgvers and (tmpvers != pkgvers)):
-        warning(dirname, 'Package version is "'+str(pkgvers)+'", but the version in the destination file is "'+str(tmpvers)+'".')
+    if tmpname and pkgname and (tmpname != pkgname):
+        warning(
+            dirname,
+            'Package name is "' + pkgname + '", but the name in the destination file is "' +
+            tmpname + '".',
+        )
+    if tmpvers and pkgvers and (tmpvers != pkgvers):
+        warning(
+            dirname,
+            'Package version is "' + str(pkgvers) +
+            '", but the version in the destination file is "' + str(tmpvers) + '".',
+        )
 
-    if (not pkgvers):
+    if not pkgvers:
         pkgvers = Version('1.0')
 
     # Validate package name.
-    if (pkgname is None):
-        raise ConstructError(dirname, 'Package name must be given in Metadata or inferred from directory name')
+    if pkgname is None:
+        raise ConstructError(
+            dirname, 'Package name must be given in Metadata or inferred from directory name')
     ls = pinfo.parse_package_name(pkgname)
-    if (len(ls) < 3):
+    if len(ls) < 3:
         raise ConstructError(dirname, 'Package name must have at least three elements: ' + pkgname)
-    if (ls[0:2] == ['org', 'boodler']):
+    if ls[0:2] == ['org', 'boodler']:
         warning(dirname, 'Package name begins with "org.boodler", which is reserved')
 
-    print('Creating package: ' + booman.command.format_package( (pkgname, pkgvers) ))
+    print('Creating package: ' + booman.command.format_package((pkgname, pkgvers)))
 
     # More sanity checking on the metadata.
-    
+
     ls = metadata.get_all('boodler.requires')
     for val in ls:
         try:
             subls = val.split()
-            if (len(subls) == 1):
+            if len(subls) == 1:
                 reqname = subls[0]
                 reqspec = None
-            elif (len(subls) == 2):
+            elif len(subls) == 2:
                 reqname = subls[0]
                 reqspec = subls[1]
             else:
                 raise ValueError('boodler.requires must have one or two elements.')
-            
+
             pinfo.parse_package_name(reqname)
-            if (not (reqspec is None)):
+            if not (reqspec is None):
                 SpecifierSet(reqspec)
         except Exception as ex:
             warning(dirname, str(ex))
             warning(dirname, 'Invalid boodler.requires: ' + val)
-        
+
     ls = metadata.get_all('boodler.requires_exact')
     for val in ls:
         try:
             subls = val.split()
-            if (len(subls) == 2):
+            if len(subls) == 2:
                 reqname = subls[0]
                 reqspec = subls[1]
             else:
                 raise ValueError('boodler.requires_exact must have two elements.')
-            
+
             pinfo.parse_package_name(reqname)
-            if (not (reqspec is None)):
+            if not (reqspec is None):
                 Version(reqspec)
         except Exception as ex:
             warning(dirname, str(ex))
             warning(dirname, 'Invalid boodler.requires_exact: ' + val)
-        
+
     # Read in the source Resources file (which may be missing or
     # incomplete)
     resourcesfile = os.path.join(dirname, pload.Filename_Resources)
-    if (os.path.exists(resourcesfile)):
+    if os.path.exists(resourcesfile):
         fl = open(resourcesfile, 'r')
         try:
             try:
-                resources = pinfo.Resources('<'+resourcesfile+'>', fl)
+                resources = pinfo.Resources('<' + resourcesfile + '>', fl)
             except pload.PackageLoadError as ex:
                 raise ConstructError(dirname, str(ex))
         finally:
@@ -192,33 +208,33 @@ def examine_directory(loader, dirname, destname=None):
     # Some resource sanity checking.
     for res in resources.resources():
         val = res.get_one('boodler.filename')
-        if (val is None):
+        if val is None:
             continue
-        if ('\\' in val):
+        if '\\' in val:
             raise ConstructError(dirname, 'boodler.filename cannot contain backslashes: ' + val)
         try:
             fil = pinfo.build_safe_pathname(dirname, val)
         except ValueError as ex:
             raise ConstructError(dirname, str(ex))
-        if (not os.path.exists(fil)):
+        if not os.path.exists(fil):
             warning(dirname, 'boodler.filename refers to nonexistent file: ' + val)
-        if (os.path.isdir(fil)):
+        if os.path.isdir(fil):
             warning(dirname, 'boodler.filename refers to directory: ' + val)
-                
+
     # Create a handy reverse mapping from boodler.filename to resource
     # entries.
 
     revmap = {}
     for res in resources.resources():
         resfilename = res.get_one('boodler.filename')
-        if (resfilename):
+        if resfilename:
             revmap[resfilename] = res
 
     # Now we walk the source directory tree, looking for files that need
     # to be copied into the final zip file. We also look for files that look
     # like resources. If the file is already listed as a resource, great;
     # if not, we generate an appropriate resource name.
-    ### smartify for the fact that not all resources are files
+    # smartify for the fact that not all resources are files
 
     # list of (realname, archivename)
     contents = []
@@ -226,39 +242,39 @@ def examine_directory(loader, dirname, destname=None):
     for (dir, subdirs, files) in os.walk(dirname):
         mods = []
         tmpdir = dir
-        while (tmpdir != dirname):
-            if (not tmpdir):
-                raise ConstructError(dirname, 'Unable to figure out subdirectory while walking: ' + dir)
+        while tmpdir != dirname:
+            if not tmpdir:
+                raise ConstructError(dirname,
+                                     'Unable to figure out subdirectory while walking: ' + dir)
             (tmphead, tmptail) = os.path.split(tmpdir)
-            if (not tmptail):
-                raise ConstructError(dirname, 'Unable to figure out subdirectory while walking: ' + dir)
+            if not tmptail:
+                raise ConstructError(dirname,
+                                     'Unable to figure out subdirectory while walking: ' + dir)
             tmpdir = tmphead
             mods.insert(0, tmptail)
-            
+
         for file in subdirs:
             # Ignore dot subdirectories, but print a warning about them.
-            if (file.startswith('.')):
-                warning(dirname, 'subdir begins with a dot: ' + '/'.join(mods+[file]))
-                
+            if file.startswith('.'):
+                warning(dirname, 'subdir begins with a dot: ' + '/'.join(mods + [file]))
+
         for file in files:
-            if ((not mods) and (file in [pload.Filename_Metadata, pload.Filename_Resources])):
+            if (not mods) and (file in [pload.Filename_Metadata, pload.Filename_Resources]):
                 # Ignore Metadata and Resources entirely
                 continue
 
             filelow = file.lower()
-            if (filelow.endswith('.pyc')):
+            if filelow.endswith('.pyc'):
                 # Package directories always wind up with .pyc files;
                 # silently ignore
                 continue
 
-            if (filelow.endswith('.pyo')
-                or filelow.endswith('.so')
-                or filelow.endswith('.o')):
+            if filelow.endswith('.pyo') or filelow.endswith('.so') or filelow.endswith('.o'):
                 # Noisily ignore any code file that is not transparent
                 warning(dirname, 'skipping file which looks like compiled code: ' + file)
                 continue
 
-            if (filelow.endswith('~')):
+            if filelow.endswith('~'):
                 # Print a warning, but allow it
                 warning(dirname, 'file looks temporary: ' + file)
 
@@ -268,63 +284,74 @@ def examine_directory(loader, dirname, destname=None):
             resfilename = '/'.join(mods + [file])
 
             # Add to our list of files.
-            contents.append( (realfilename, resfilename) )
+            contents.append((realfilename, resfilename))
 
             # Now we see if this is a resource file.
 
             # Ignore dot files, but print a warning about them.
-            if (file.startswith('.')):
+            if file.startswith('.'):
                 warning(dirname, 'file begins with a dot: ' + resfilename)
                 continue
-                
+
             resuse = None
             filebase = file
-            if (file.endswith('.aiff')):
+            if file.endswith('.aiff'):
                 resuse = 'sound'
-                filebase = file[ : -5 ]
-            if (file.endswith('.wav')):
+                filebase = file[:-5]
+            if file.endswith('.wav'):
                 resuse = 'sound'
-                filebase = file[ : -4 ]
-            if (file.endswith('.mixin')):
+                filebase = file[:-4]
+            if file.endswith('.mixin'):
                 resuse = 'sound'
-                filebase = file[ : -6 ]
+                filebase = file[:-6]
 
-            if (not resuse):
+            if not resuse:
                 continue
 
             # This file is a resource.
 
             res = revmap.get(resfilename)
-            if (not res):
+            if not res:
                 # We have to create the resource.
                 reskey = '.'.join(mods + [filebase])
                 try:
                     ls = pinfo.parse_resource_name(reskey)
                     for el in ls:
-                        if (keyword.iskeyword(el)):
-                            warning(dirname, resfilename + ' contains Python reserved word "' + el + '"')
+                        if keyword.iskeyword(el):
+                            warning(
+                                dirname,
+                                resfilename + ' contains Python reserved word "' + el + '"',
+                            )
                 except ValueError:
-                    warning(dirname, resfilename + ' looks like a resource, but ' + reskey + ' is not a valid resource name.')
+                    warning(
+                        dirname,
+                        resfilename + ' looks like a resource, but ' + reskey +
+                        ' is not a valid resource name.',
+                    )
                     continue
 
                 res = resources.get(reskey)
-                if (res is None):
+                if res is None:
                     try:
                         res = resources.create(reskey)
                     except ValueError as ex:
                         warning(dirname, resfilename + ' looks like a resource, but: ' + str(ex))
                         continue
-                    
+
                     revmap[resfilename] = res
 
                 val = res.get_one('boodler.filename')
-                if (not val):
+                if not val:
                     res.add('boodler.filename', resfilename)
                 else:
-                    if (val != resfilename):
-                        warning(dirname, resfilename + ' looks like a resource, but ' + reskey + ' already has filename: ' + val)
+                    if val != resfilename:
+                        warning(
+                            dirname,
+                            resfilename + ' looks like a resource, but ' + reskey +
+                            ' already has filename: ' + val,
+                        )
 
-            if (not res.get_one('boodler.use')):
+            if not res.get_one('boodler.use'):
                 res.add('boodler.use', resuse)
 
     try:
@@ -337,10 +364,14 @@ def examine_directory(loader, dirname, destname=None):
         # We will now try importing the package. This has two goals:
         # to locate Agent resources, and to keep a record of all imports
         # so that we can notate dependencies.
-        
+
         tup = loader.add_external_package(dirname, metadata, resources)
-        if (tup != (pkgname, pkgvers)):
-            raise ConstructError(dirname, 'Attempted to import, but got wrong version: ' + booman.command.format_package(tup))
+        if tup != (pkgname, pkgvers):
+            raise ConstructError(
+                dirname,
+                'Attempted to import, but got wrong version: ' +
+                booman.command.format_package(tup),
+            )
 
         loader.start_import_recording()
         pkg = loader.load(pkgname, pkgvers)
@@ -349,30 +380,30 @@ def examine_directory(loader, dirname, destname=None):
 
         loader.currently_creating = pkg
 
-        if (mod.__name__ != pkg.encoded_name):
+        if mod.__name__ != pkg.encoded_name:
             raise ConstructError(dirname, 'Module name does not match package: ' + mod.__name__)
 
         context = WalkContext(pkg)
         walk_module(context, mod)
 
-        resolve_dependency_metadata(dirname, pkgname, pkgvers,
-            resources, metadata, import_record, context)
-        
+        resolve_dependency_metadata(dirname, pkgname, pkgvers, resources, metadata, import_record,
+                                    context)
+
         for key in context.agents:
             (ag, origloc) = context.agents[key]
             res = resources.get(key)
-            if (not res):
+            if not res:
                 continue
-                
+
             # Inspect the agent to discover its argument metadata.
-            ### Skip if argument metadata is already declared
-    
+            # Skip if argument metadata is already declared
+
             arglist = resolve_argument_list(dirname, key, ag)
-                
-            if (not (arglist is None)):
+
+            if not (arglist is None):
                 try:
                     nod = arglist.to_node()
-                    #print '### created agent', key, ':', nod.serialize()
+                    # print '### created agent', key, ':', nod.serialize()
                     res.add('boodler.arguments', nod.serialize())
                 except Exception as ex:
                     warning(dirname, key + ' argument list error: ' + str(ex))
@@ -389,20 +420,21 @@ def examine_directory(loader, dirname, destname=None):
 
     # More sanity checking: every sound resource should now have a filename.
     # Agent resources should not.
-    
+
     for res in resources.resources():
         use = res.get_one('boodler.use')
-        if (use == 'sound'):
+        if use == 'sound':
             val = res.get_one('boodler.filename')
-            if (val is None):
+            if val is None:
                 warning(dirname, 'no filename found for sound resource: ' + res.key)
-        if (use == 'agent'):
+        if use == 'agent':
             val = res.get_one('boodler.filename')
-            if (not (val is None)):
+            if not (val is None):
                 warning(dirname, 'filename found for agent resource: ' + res.key)
 
     # Done.
     return ((pkgname, pkgvers), contents, metadata, resources)
+
 
 def walk_module(context, mod, prefix=''):
     """walk_module(context, mod, prefix='') -> None
@@ -417,114 +449,122 @@ def walk_module(context, mod, prefix=''):
     # We respect the standard Python rules for which identifiers are
     # private. If mod.__all__ exists, anything listed in it is public.
     # If not, anything beginning with an underscore is private.
-    
+
     alllist = getattr(mod, '__all__', None)
-    
+
     for key in dir(mod):
         isprivate = False
-        if (alllist is None):
-            isprivate = (key.startswith('_'))
+        if alllist is None:
+            isprivate = key.startswith('_')
         else:
-            isprivate = (not (key in alllist))
+            isprivate = not (key in alllist)
 
-        if (isprivate):
+        if isprivate:
             continue
-            
-        val = getattr(mod, key)
-        
-        if (isinstance(val, types.ModuleType)):
-            if (mod.__name__+'.'+key == val.__name__):
-                walk_module(context, val, prefix+key+'.')
 
-        if (isinstance(val, type) and issubclass(val, Agent)):
-            if (val == Agent):
+        val = getattr(mod, key)
+
+        if isinstance(val, types.ModuleType):
+            if mod.__name__ + '.' + key == val.__name__:
+                walk_module(context, val, prefix + key + '.')
+
+        if isinstance(val, type) and issubclass(val, Agent):
+            if val == Agent:
                 continue
-            if (not (val.__module__ == context.root_module_name
-                or val.__module__.startswith(context.root_module_name+'.'))):
+            if not (val.__module__ == context.root_module_name or
+                    val.__module__.startswith(context.root_module_name + '.')):
                 # Not defined in this package
                 continue
 
             # Is this the Agent's defined location?
-            origloc = (mod.__name__ == val.__module__
-                and key == val.__name__)
-            
-            context.agents[prefix+key] = (val, origloc)
-    
+            origloc = mod.__name__ == val.__module__ and key == val.__name__
+
+            context.agents[prefix + key] = (val, origloc)
+
+
 class WalkContext:
     """WalkContext: context structure used by walk_module().
     """
+
     def __init__(self, pkg):
         self.pkg = pkg
         self.root_module_name = pkg.encoded_name
-        
+
         # Maps resource keys to (Agent, bool); the bool indicates whether
         # the agent is in its defined location. An Agent copied out of its
         # defined location will show up more than once.
         self.agents = {}
 
 
-def resolve_dependency_metadata(dirname, pkgname, pkgvers,
-    resources, metadata, import_record, context):
+def resolve_dependency_metadata(dirname, pkgname, pkgvers, resources, metadata, import_record,
+                                context):
 
     # Add the dependencies to the metadata.
-    ls = import_record.get( (pkgname, pkgvers) )
-    if (ls):
+    ls = import_record.get((pkgname, pkgvers))
+    if ls:
         entls = []
         for (reqname, reqspec) in ls:
-            if (reqspec is None):
-                entls.append( ('boodler.requires', reqname) )
-            elif (isinstance(reqspec, SpecifierSet)):
-                entls.append( ('boodler.requires', reqname+' '+str(reqspec)) )
-            elif (isinstance(reqspec, Version)):
-                entls.append( ('boodler.requires_exact', reqname+' '+str(reqspec)) )
+            if reqspec is None:
+                entls.append(('boodler.requires', reqname))
+            elif isinstance(reqspec, SpecifierSet):
+                entls.append(('boodler.requires', reqname + ' ' + str(reqspec)))
+            elif isinstance(reqspec, Version):
+                entls.append(('boodler.requires_exact', reqname + ' ' + str(reqspec)))
         for (key, val) in entls:
-            if (val in metadata.get_all(key)):
+            if val in metadata.get_all(key):
                 # This exact line is already present.
-                warning(dirname, 'skipping dependency which already exists in Metadata: "' + key + ': ' + val + '"')
+                warning(
+                    dirname,
+                    'skipping dependency which already exists in Metadata: "' + key + ': ' + val +
+                    '"',
+                )
                 continue
             metadata.add(key, val)
 
     # Warn about packages which appear in the dependencies twice.
     dic = {}
-    for val in (metadata.get_all('boodler.requires') + metadata.get_all('boodler.requires_exact')):
+    for val in metadata.get_all('boodler.requires') + metadata.get_all('boodler.requires_exact'):
         ls = val.split()
-        if (ls):
+        if ls:
             pinfo.dict_accumulate(dic, ls[0], True)
     for reqname in list(dic.keys()):
         val = len(dic[reqname])
-        if (val > 1):
-            warning(dirname, 'package dependency appears in ' + str(val)
-                + ' different forms: ' + reqname)
-            
+        if val > 1:
+            warning(
+                dirname,
+                'package dependency appears in ' + str(val) + ' different forms: ' + reqname,
+            )
+
     revmap = {}
-        
+
     for key in context.agents:
         res = resources.get(key)
-        if (res):
+        if res:
             (ag, origloc) = context.agents[key]
 
-            realname = ag.__module__+'.'+ag.__name__
-            if (realname in revmap):
-                warning(dirname, 'Agent appears as two different resources: ' +
-                    key + ', ' + revmap[realname])
+            realname = ag.__module__ + '.' + ag.__name__
+            if realname in revmap:
+                warning(
+                    dirname,
+                    'Agent appears as two different resources: ' + key + ', ' + revmap[realname],
+                )
             else:
                 revmap[realname] = key
 
             use = res.get_one('boodler.use')
-            if (not use):
+            if not use:
                 res.add('boodler.use', 'agent')
             else:
-                if (use != 'agent'):
-                    warning(dirname, 'Agent resource conflicts with use: ' +
-                        key)
-                
+                if use != 'agent':
+                    warning(dirname, 'Agent resource conflicts with use: ' + key)
+
     for key in context.agents:
         (ag, origloc) = context.agents[key]
-        if (not origloc):
+        if not origloc:
             continue
 
-        realname = ag.__module__+'.'+ag.__name__
-        if (realname in revmap):
+        realname = ag.__module__ + '.' + ag.__name__
+        if realname in revmap:
             continue
 
         try:
@@ -532,19 +572,20 @@ def resolve_dependency_metadata(dirname, pkgname, pkgvers,
         except ValueError as ex:
             warning(dirname, key + ' looks like an Agent, but: ' + str(ex))
             continue
-            
+
         revmap[realname] = key
-        
+
         res.add('boodler.use', 'agent')
+
 
 def resolve_argument_list(dirname, key, ag):
     arglist = None
-    
+
     argspec = inspect.getargspec(ag.init)
     # argspec is (args, varargs, varkw, defaults)
     maxinitargs = None
     mininitargs = None
-    
+
     try:
         arglist = argdef.ArgList.from_argspec(*argspec)
         maxinitargs = arglist.max_accepted()
@@ -552,43 +593,57 @@ def resolve_argument_list(dirname, key, ag):
     except argdef.ArgDefError as ex:
         warning(dirname, key + '.init() could not be inspected: ' + str(ex))
 
-    if (not (ag._args is None)):
+    if not (ag._args is None):
         try:
             arglist = argdef.ArgList.merge(ag._args, arglist)
         except argdef.ArgDefError as ex:
             warning(dirname, key + '.init() does not match _args: ' + str(ex))
             arglist = ag._args
 
-    if (not (arglist is None)):
-        ls = [ arg for arg in arglist.args if (arg.index is None) ]
+    if not (arglist is None):
+        ls = [arg for arg in arglist.args if (arg.index is None)]
         unindexed = len(ls)
         indexed = len(arglist.args) - unindexed
-        ls = [ arg.index for arg in arglist.args ]
-        if (ls[ : indexed] != list(range(1,1+indexed))):
-            ls1 = [ str(val) for val in ls[ : indexed] ]
-            ls2 = [ str(val) for val in range(1,1+indexed) ]
-            warning(dirname, 'found arguments ' + (', '.join(ls1))
-                + '; should have been ' + (', '.join(ls2)))
+        ls = [arg.index for arg in arglist.args]
+        if ls[:indexed] != list(range(1, 1 + indexed)):
+            ls1 = [str(val) for val in ls[:indexed]]
+            ls2 = [str(val) for val in range(1, 1 + indexed)]
+            warning(
+                dirname,
+                'found arguments ' + (', '.join(ls1)) + '; should have been ' + (', '.join(ls2)),
+            )
         else:
-            if (ls[ indexed : ] != [ None ] * unindexed):
+            if ls[indexed:] != [None] * unindexed:
                 warning(dirname, 'the ' + str(unindexed) + ' unindexed arguments must be last')
 
         val = arglist.max_accepted()
-        if ((val is None) and (not (maxinitargs is None))):
-            warning(dirname, key + '.init() takes at most ' + str(maxinitargs) + ' arguments, but _args describes extra arguments')
-        if ((not (val is None)) and (not (maxinitargs is None))):
-            if (val > maxinitargs):
-                warning(dirname, key + '.init() takes at most ' + str(maxinitargs) + ' arguments, but including _args describes ' + str(val))
-        
+        if (val is None) and (not (maxinitargs is None)):
+            warning(
+                dirname,
+                key + '.init() takes at most ' + str(maxinitargs) +
+                ' arguments, but _args describes extra arguments',
+            )
+        if (not (val is None)) and (not (maxinitargs is None)):
+            if val > maxinitargs:
+                warning(
+                    dirname,
+                    key + '.init() takes at most ' + str(maxinitargs) +
+                    ' arguments, but including _args describes ' + str(val),
+                )
+
         val = arglist.min_accepted()
-        if ((not (val is None)) and (not (mininitargs is None))):
-            if (val < mininitargs):
-                warning(dirname, key + '.init() takes at least ' + str(mininitargs) + ' arguments, but including _args describes ' + str(val))
+        if (not (val is None)) and (not (mininitargs is None)):
+            if val < mininitargs:
+                warning(
+                    dirname,
+                    key + '.init() takes at least ' + str(mininitargs) +
+                    ' arguments, but including _args describes ' + str(val),
+                )
 
     return arglist
-        
-def construct_zipfile(fl, tup, dirname, contents,
-    metadatafile, resourcesfile=None):
+
+
+def construct_zipfile(fl, tup, dirname, contents, metadatafile, resourcesfile=None):
     """construct_zipfile(fl, (pkgname, pkgvers), dirname, contents,
         metadatafile, resourcesfile=None) -> None
 
@@ -599,20 +654,20 @@ def construct_zipfile(fl, tup, dirname, contents,
     (Not Metadata and Resources objects, but rather the files
     produced by dump()ing them.)
     """
-    
+
     (pkgname, pkgvers) = tup
 
     fl.write(metadatafile, pload.Filename_Metadata)
-    if (resourcesfile):
+    if resourcesfile:
         fl.write(resourcesfile, pload.Filename_Resources)
 
     # Copy in the files, as described in the contents list.
 
     for (realname, resname) in contents:
-        if (resname in [pload.Filename_Metadata, pload.Filename_Resources]):
+        if resname in [pload.Filename_Metadata, pload.Filename_Resources]:
             raise Exception('Should not happen; contents list contains ' + resname)
         fl.write(realname, resname)
-            
+
 
 def warning(dirname, msg):
     """warning(dirname, msg) -> None
@@ -620,6 +675,7 @@ def warning(dirname, msg):
     Print a warning.
     """
     print('Warning: ' + msg)
+
 
 def build_package_filename(pkgname, pkgvers):
     """build_package_filename(pkgname, pkgvers) -> str
@@ -640,11 +696,13 @@ def build_package_filename(pkgname, pkgvers):
     # This would more naturally live in command.py.
     val = str(pkgvers)
     val = pinfo.capital_letter_regexp.sub('^\\1', val)
-    res = pkgname+'.'+val+collect.Suffix_PackageArchive
+    res = pkgname + '.' + val + collect.Suffix_PackageArchive
     return res
 
+
 version_start_regexp = re.compile('\\.[0-9]')
-        
+
+
 def parse_package_filename(val, assume_1=True):
     """parse_package_filename(val, assume_1) -> (str, VersionNumber)
 
@@ -659,47 +717,37 @@ def parse_package_filename(val, assume_1=True):
 
     # We can't trust the case of filenames on Windows.
     val = val.lower()
-    if ('^' in val):
+    if '^' in val:
+
         def reconstruct_caps(match):
             return match.group(1).upper()
+
         val = pinfo.caret_letter_regexp.sub(reconstruct_caps, val)
 
     suffix = collect.Suffix_PackageArchive
-    if (not val.endswith(suffix)):
+    if not val.endswith(suffix):
         raise ValueError('filename does not end with ' + suffix + ': ' + val)
-    base = val[ : -len(suffix) ]
+    base = val[:-len(suffix)]
 
     match = version_start_regexp.search(base)
-    if (not match):
+    if not match:
         pkgname = base
         pkgvers = None
     else:
         pos = match.start()
-        pkgname = base[ : pos ]
-        pkgvers = base[ pos+1 : ]
+        pkgname = base[:pos]
+        pkgvers = base[pos + 1:]
 
     pinfo.parse_package_name(pkgname)
-    if (pkgvers):
+    if pkgvers:
         pkgvers = Version(pkgvers)
     else:
-        if (assume_1):
+        if assume_1:
             pkgvers = Version('1.0')
         else:
             pkgvers = None
 
     return (pkgname, pkgvers)
-
-# Late imports
-
-from boopak import pinfo
-from boopak import pload
-from boopak import collect
-from boopak import argdef
-import booman
-
-# Unit tests
-
-import unittest
 
 
 class TestCreate(unittest.TestCase):
@@ -737,17 +785,17 @@ class TestCreate(unittest.TestCase):
         self.assertEqual(str(resvers), '1.0')
         (resname, resvers) = parse_package_filename('foo.boop', False)
         self.assertEqual(resvers, None)
-    
+
         (resname, resvers) = parse_package_filename('foo.1.0.boop')
         self.assertEqual(str(resvers), '1.0')
         (resname, resvers) = parse_package_filename('foo.1.0.boop', False)
         self.assertEqual(str(resvers), '1.0')
-    
+
         (resname, resvers) = parse_package_filename('foo.2.5.boop')
         self.assertEqual(str(resvers), '2.5')
         (resname, resvers) = parse_package_filename('foo.2.5.boop', False)
         self.assertEqual(str(resvers), '2.5')
-    
+
     def test_parse_package_filename_bad(self):
         ls = [
             ('', ValueError),

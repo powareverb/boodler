@@ -1,24 +1,15 @@
 #!/usr/bin/env python
 
 # Distutils setup script for Boodler.
-#
-# This has clever logic to build only the driver modules for which
-# native libraries are available. (That is, it only builds the LAME
-# driver if libmp3lame is installed, and so on.)
 
+import distutils.log
 import os
 import os.path
 import re
+import subprocess
 import sys
 
 from setuptools import setup, Command, Extension
-
-from distutils.command.build_ext import build_ext
-from distutils.command.build_scripts import build_scripts
-from distutils.errors import *
-from distutils.util import convert_path
-
-import distutils.log
 
 
 def append_if(cond, list1, list2):
@@ -29,7 +20,7 @@ def append_if(cond, list1, list2):
     """
 
     res = list(list1)
-    if (cond):
+    if cond:
         res.extend(list2)
     return res
 
@@ -60,7 +51,7 @@ def check_header_available(path):
     def resfunc(ls):
         for dir in ls:
             filename = os.path.join(dir, *pathels)
-            if (os.path.isfile(filename)):
+            if os.path.isfile(filename):
                 return True
         distutils.log.info("unable to locate header '%s'", path)
         return False
@@ -87,9 +78,10 @@ def check_all_available(*funcs):
 
     def resfunc(ls):
         for func in funcs:
-            if (not func(ls)):
+            if not func(ls):
                 return False
         return True
+
     return resfunc
 
 
@@ -110,76 +102,18 @@ class BooExtension(Extension):
 
     def __init__(self, key, **opts):
         self.boodler_key = key
-        modname = 'boodle.cboodle_'+key
+        modname = 'boodle.cboodle_' + key
 
-        ls = ['audev-'+key, 'cboodle-'+key, 'noteq', 'sample']
+        ls = ['audev-' + key, 'cboodle-' + key, 'noteq', 'sample']
         ls = [('src/cboodle/' + val + '.c') for val in ls]
 
-        avail = opts.pop('available', None)
-        if (avail):
-            self.ext_available = avail
-
-        Extension.__init__(self, modname, ls, **opts)
-
-    def ext_available(self, headerlist):
-        return True
+        super().__init__(modname, ls, **opts)
 
 
 # The list of driver extensions.
 all_extensions = [
     BooExtension('stdout'),
 ]
-
-
-class local_build_ext(build_ext):
-    """local_build_ext: A customization of the distutils build_ext
-    command.
-
-    This command understands these additional arguments:
-
-        --with-drivers=LIST (force building these Boodler output drivers)
-        --without-drivers=LIST (forbid building these Boodler output drivers)
-
-    You can pass these arguments on the command line, or modify setup.cfg.
-
-    This command also checks each extension before building, to make
-    sure the appropriate headers are available. (Or whatever test
-    the extension provides.)
-
-    If you list a driver in the --with-drivers argument, the command will
-    try to build it without any checking. (This could result in compilation
-    errors.) If you list a driver in the --without-drivers argument, it
-    will not be built at all. The format of these arguments is a
-    comma-separated list of driver names; for example:
-
-        setup.py build_ext --with-drivers=macosx --without-drivers=vorbis,shout
-    """
-
-    def initialize_options(self):
-        build_ext.initialize_options(self)
-        self.with_driver_set = {}
-        self.without_driver_set = {}
-
-    def finalize_options(self):
-        build_ext.finalize_options(self)
-
-    def build_extension(self, ext):
-        # First check whether the extension is buildable. Mostly this
-        # involves looking at the available headers, so put together
-        # a list of include dirs.
-        ls = ['/usr/include', '/usr/local/include']
-
-        if (sys.platform == 'darwin'):
-            ls.append('/System/Library/Frameworks')
-        ls = ls + self.include_dirs + ext.include_dirs
-
-        use = ext.ext_available(ls)
-
-        if (not use):
-            distutils.log.info("skipping '%s' extension", ext.name)
-            return
-
-        build_ext.build_extension(self, ext)
 
 
 class local_generate_pydoc(Command):
@@ -197,11 +131,11 @@ class local_generate_pydoc(Command):
     be rewritten, but they won't be any different.
     """
 
-    description = "generate pydoc HTML (not needed for build/install)"
+    description = 'generate pydoc HTML (not needed for build/install)'
     user_options = [
-        ('build-dir=', 'b', "build directory (.py files)"),
-        ('pydoc-dir=', 'd', "output directory"),
-        ('index-template=', None, "template for index.html"),
+        ('build-dir=', 'b', 'build directory (.py files)'),
+        ('pydoc-dir=', 'd', 'output directory'),
+        ('index-template=', None, 'template for index.html'),
     ]
 
     def initialize_options(self):
@@ -211,9 +145,11 @@ class local_generate_pydoc(Command):
 
     def finalize_options(self):
         self.set_undefined_options('build', ('build_lib', 'build_dir'))
-        if (self.index_template is None):
+
+        if self.index_template is None:
             self.index_template = 'doc/pydoc_template'
-        if (self.pydoc_dir is None):
+
+        if self.pydoc_dir is None:
             self.pydoc_dir = 'doc/pydoc'
 
     def run(self):
@@ -228,24 +164,41 @@ class local_generate_pydoc(Command):
             os.chdir(curdir)
 
     def _generate(self, buildpath, templatepath):
-        try:
-            import subprocess
-        except:
-            print('generate_pydoc requires Python 3.7 or later.')
-            return
-
         packages = ['boodle', 'boopak', 'booman']
         PYTHON_DOC_URL = 'http://www.python.org/doc/current/library/'
 
         sysmodules = [
-            '__builtin__', 'aifc', 'bisect', 'codecs',
-            'cStringIO', 'errno', 'exceptions',
-            'fcntl', 'fileinput',
-            'imp', 'inspect', 'keyword', 'logging', 'math',
-            'os', 're', 'readline', 'select', 'sets',
-            'socket', 'StringIO', 'struct', 'sunau',
-            'sys', 'tempfile', 'time', 'traceback', 'types', 'unittest',
-            'wave', 'zipfile',
+            '__builtin__',
+            'aifc',
+            'bisect',
+            'codecs',
+            'cStringIO',
+            'errno',
+            'exceptions',
+            'fcntl',
+            'fileinput',
+            'imp',
+            'inspect',
+            'keyword',
+            'logging',
+            'math',
+            'os',
+            're',
+            'readline',
+            'select',
+            'sets',
+            'socket',
+            'StringIO',
+            'struct',
+            'sunau',
+            'sys',
+            'tempfile',
+            'time',
+            'traceback',
+            'types',
+            'unittest',
+            'wave',
+            'zipfile',
         ]
         sysmodules = dict([(key, True) for key in sysmodules])
 
@@ -255,7 +208,7 @@ class local_generate_pydoc(Command):
 
         pos = template.find('<!-- CONTENT -->')
 
-        if (pos < 0):
+        if pos < 0:
             raise Exception('template does not contain <!-- CONTENT --> line')
 
         index_head = template[:pos]
@@ -265,75 +218,79 @@ class local_generate_pydoc(Command):
 
         for pkg in packages:
             path = os.path.join(buildpath, pkg)
-            if (not os.path.isdir(path)):
+            if not os.path.isdir(path):
                 raise Exception('package does not exist: ' + path)
 
             modules.append(pkg)
 
             files = sorted(os.listdir(path))
             for file in files:
-                if (file.startswith('_')):
+                if file.startswith('_'):
                     continue
-                if (file.startswith('test_')):
+                if file.startswith('test_'):
                     continue
-                if (not file.endswith('.py')):
+                if not file.endswith('.py'):
                     continue
-                modules.append(pkg+'.'+file[:-3])
+                modules.append(pkg + '.' + file[:-3])
 
         fileurl_regex = re.compile('href="file:([^"]*)"')
         sysmod_regex = re.compile('href="([a-zA-Z_]*).html(#[a-zA-Z_]*)?"')
         testmod_regex = re.compile('<a href="[a-z]*.test_[a-z]*.html">([a-z_]*)</a>')
         cboodlemod_regex = re.compile('<a href="[a-z]*.cboodle_[a-z]*.html">([a-z_]*)</a>')
-        agentinherit_regex = re.compile('Methods inherited from <a href="boodle.agent.html#Agent">boodle.agent.Agent</a>:.*?</td>', re.DOTALL)
+        agentinherit_regex = re.compile(
+            'Methods inherited from <a href="boodle.agent.html#Agent">boodle.agent.Agent</a>:.*?</td>',
+            re.DOTALL,
+        )
         memaddress_regex = re.compile(' at 0x[a-f0-9]*&gt;')
         whitecolor_regex = re.compile('"#fffff"')
 
         def fileurl_func(match):
             val = match.group(1)
             pos = val.find(buildpath)
-            if (pos < 0):
+            if pos < 0:
                 raise Exception('buildpath not in fileurl')
-            srcname = val[ pos+len(buildpath) : ]
+            srcname = val[pos + len(buildpath):]
             return 'href="../../src%s"' % (srcname,)
 
         def sysmod_func(match):
             val = match.group(1)
-            if (val not in sysmodules):
-                if (not (val in packages)):
-                    print('Warning: link to "%s.html" unmunged.' % (val,))
+            if val not in sysmodules:
+                if not (val in packages):
+                    print('Warning: link to "%s.html" unmunged. %s' % (val, match))
                 return match.group(0)
             val = val.lower()
-            if (val == 'cstringio'):
+            if val == 'cstringio':
                 val = 'stringio'
             fragment = match.group(2)
-            if (fragment is None):
+            if fragment is None:
                 fragment = ''
             return 'href="%s%s.html%s"' % (PYTHON_DOC_URL, val, fragment)
 
         newenv = dict(os.environ)
         val = buildpath
-        if ('PYTHONPATH' in newenv):
+        if 'PYTHONPATH' in newenv:
             val = val + ':' + newenv['PYTHONPATH']
         newenv['PYTHONPATH'] = val
 
         for mod in modules:
-            ret = subprocess.call(['pydoc', '-w', mod], env=newenv)
-            if (ret):
+            ret = subprocess.call(['python', '-m', 'pydoc', '-w', mod], env=newenv)
+
+            if ret:
                 print('pydoc failed on', mod, ':', ret)
                 sys.exit(1)
 
-            file = mod+'.html'
+            file = mod + '.html'
             fl = open(file)
             dat = fl.read()
             fl.close()
 
             newdat = dat + '\n'
             newdat = fileurl_regex.sub(fileurl_func, newdat)
-            newdat = newdat.replace(buildpath+'/', '')
+            newdat = newdat.replace(buildpath + '/', '')
             newdat = sysmod_regex.sub(sysmod_func, newdat)
             newdat = testmod_regex.sub('\\1', newdat)
             newdat = cboodlemod_regex.sub('\\1', newdat)
-            if (mod == 'boodle.builtin'):
+            if mod == 'boodle.builtin':
                 newdat = agentinherit_regex.sub('</td>', newdat)
             newdat = newdat.replace('href="."', 'href="index.html"')
             newdat = memaddress_regex.sub('&gt;', newdat)
@@ -345,7 +302,7 @@ class local_generate_pydoc(Command):
 
         modsets = []
         for mod in modules:
-            if (not ('.' in mod)):
+            if not ('.' in mod):
                 modsets.append([])
             modsets[-1].append(mod)
 
@@ -354,7 +311,7 @@ class local_generate_pydoc(Command):
         for ls in modsets:
             fl.write('<td width="25%" valign=top>\n')
             for mod in ls:
-                if (not ('.' in mod)):
+                if not ('.' in mod):
                     fl.write('<strong><a href="%s.html">%s</a></strong><br>\n' % (mod, mod))
                 else:
                     fl.write('<a href="%s.html">%s</a><br>\n' % (mod, mod))
@@ -364,25 +321,26 @@ class local_generate_pydoc(Command):
         print('build index.html')
 
 
-setup(name='Boodler',
-      version='2.0.4',
-      description='A programmable soundscape tool',
-      author='Andrew Plotkin',
-      author_email='erkyrath@eblong.com',
-      url='http://boodler.org/',
-      license='GNU LGPL',
-      platforms=['MacOS X', 'POSIX'],
-      classifiers=[
-          'Topic :: Multimedia :: Sound/Audio :: Mixers',
-          'Development Status :: 5 - Production/Stable',
-          'Environment :: Console',
-          'Intended Audience :: End Users/Desktop',
-          'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
-          'Operating System :: POSIX',
-          'Operating System :: MacOS :: MacOS X',
-          'Programming Language :: Python :: 3',
-      ],
-      long_description="""
+setup(
+    name='Boodler',
+    version='3.0.0',
+    description='A programmable soundscape tool',
+    author='Andrew Plotkin',
+    author_email='erkyrath@eblong.com',
+    url='http://boodler.org/',
+    license='GNU LGPL',
+    platforms=['MacOS X', 'POSIX'],
+    classifiers=[
+        'Topic :: Multimedia :: Sound/Audio :: Mixers',
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: End Users/Desktop',
+        'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
+        'Operating System :: POSIX',
+        'Operating System :: MacOS :: MacOS X',
+        'Programming Language :: Python :: 3',
+    ],
+    long_description="""
 Boodler is a tool for creating soundscapes -- continuous, infinitely
 varying streams of sound. Boodler is designed to run in the background
 on a computer, maintaining whatever sound environment you desire.
@@ -394,24 +352,24 @@ switch between them, fade them in and out. This package comes with
 many example soundscapes. You can use these, modify them, combine them
 to arbitrary levels of complexity, or write your own.
 """,
-      install_requires=[
-          'packaging',
-      ],
-      packages=[
-          'boodle',
-          'boopak',
-          'booman',
-      ],
-      package_dir={
-          '': 'src',
-      },
-      scripts=[
-          'script/boodler',
-          'script/boodle-mgr',
-          'script/boodle-event',
-      ],
-      ext_modules=list(all_extensions),
-      cmdclass={
-          'build_ext': local_build_ext,
-          'generate_pydoc': local_generate_pydoc,
-      })
+    install_requires=[
+        'packaging',
+    ],
+    packages=[
+        'boodle',
+        'booman',
+        'boopak',
+    ],
+    package_dir={
+        '': 'src',
+    },
+    scripts=[
+        'script/boodler',
+        'script/boodle-mgr',
+        'script/boodle-event',
+    ],
+    ext_modules=list(all_extensions),
+    cmdclass={
+        'generate_pydoc': local_generate_pydoc,
+    },
+)

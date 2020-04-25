@@ -19,38 +19,47 @@ from boopak import pload
 import boodle
 
 collection = {}
+
+
 def list_collection():
     ls = []
     for name in collection:
         vers = max(collection[name].keys())
-        ls.append( (name, vers) )
+        ls.append((name, vers))
     return ls
+
+
 def list_allvers_collection():
     ls = []
     for name in collection:
         versls = sorted(list(collection[name].keys()))
         versls.reverse()
-        ls.append( (name, versls) )
+        ls.append((name, versls))
     return ls
 
-def build_package(loader, name, vers='1.0',
-    mod_content = None,
-    mod_main = None,
-    external_path = None,
-    resources = None,
-    depends = None,
-    metadata = None):
 
-    if (type(vers) in [str]):
+def build_package(
+    loader,
+    name,
+    vers='1.0',
+    mod_content=None,
+    mod_main=None,
+    external_path=None,
+    resources=None,
+    depends=None,
+    metadata=None,
+):
+
+    if type(vers) in [str]:
         vers = Version(vers)
 
-    if (not external_path):
+    if not external_path:
         path = loader.generate_package_path(name)
-        if (not os.path.isdir(path)):
+        if not os.path.isdir(path):
             os.makedirs(path)
 
         fl = open(os.path.join(path, pload.Filename_Versions), 'a')
-        fl.write(str(vers)+'\n')
+        fl.write(str(vers) + '\n')
         fl.close()
 
         path = loader.generate_package_path(name, vers)
@@ -59,10 +68,10 @@ def build_package(loader, name, vers='1.0',
 
     os.mkdir(path)
 
-    if (mod_main or mod_content):
-        if (not mod_main):
+    if mod_main or mod_content:
+        if not mod_main:
             mod_main = 'main'
-        if (not mod_content):
+        if not mod_content:
             mod_content = []
 
     fl = open(os.path.join(path, pload.Filename_Metadata), 'w')
@@ -70,42 +79,42 @@ def build_package(loader, name, vers='1.0',
     fl.write('boodler.package: ' + name + '\n')
     fl.write('boodler.version: ' + str(vers) + '\n')
 
-    if (mod_main):
-        if (mod_main == '__init__'):
+    if mod_main:
+        if mod_main == '__init__':
             fl.write('boodler.main: .\n')
         else:
             fl.write('boodler.main: ' + mod_main + '\n')
-    if (depends):
-        if (not isinstance(depends, list)):
-            depends = [ depends ]
+    if depends:
+        if not isinstance(depends, list):
+            depends = [depends]
         for (val1, val2) in depends:
-            if (val2 is None):
+            if val2 is None:
                 fl.write('boodler.requires: ' + val1 + '\n')
-            elif (isinstance(val2, SpecifierSet)):
+            elif isinstance(val2, SpecifierSet):
                 fl.write('boodler.requires: ' + val1 + ' ' + str(val2) + '\n')
-            elif (isinstance(val2, Version)):
+            elif isinstance(val2, Version):
                 fl.write('boodler.requires_exact: ' + val1 + ' ' + str(val2) + '\n')
             else:
                 fl.write('boodler.requires: ' + val1 + ' ' + val2 + '\n')
-    if (metadata):
+    if metadata:
         for key in metadata:
             fl.write(key + ': ' + metadata[key] + '\n')
     fl.close()
 
-    if (mod_main):
-        fl = open(os.path.join(path, mod_main+'.py'), 'w')
-        if (depends):
+    if mod_main:
+        fl = open(os.path.join(path, mod_main + '.py'), 'w')
+        if depends:
             fl.write('from boopak import package\n')
             count = 1
             for (val1, val2) in depends:
-                fl.write('imp'+str(count)+'=')
+                fl.write('imp' + str(count) + '=')
                 fl.write('package.bimport')
-                if (not val2):
+                if not val2:
                     fl.write('("' + val1 + '")\n')
                 else:
                     fl.write('("' + val1 + '", "' + val2 + '")\n')
                 count += 1
-        if (isinstance(mod_content, dict)):
+        if isinstance(mod_content, dict):
             for key in mod_content:
                 val = mod_content[key]
                 fl.write(key + ' = ' + repr(val) + '\n')
@@ -114,38 +123,40 @@ def build_package(loader, name, vers='1.0',
                 fl.write(val + '\n')
         fl.close()
 
-    if (resources):
+    if resources:
         fl = open(os.path.join(path, pload.Filename_Resources), 'w')
         for reskey in resources:
             resfile = resources[reskey]
-            fl.write(':'+reskey+'\n')
+            fl.write(':' + reskey + '\n')
 
-            if (isinstance(resfile, dict)):
+            if isinstance(resfile, dict):
                 for key in resfile:
                     fl.write(key + ': ' + resfile[key] + '\n')
                 continue
 
-            content = 'content='+reskey
-            if (isinstance(resfile, tuple)):
+            content = 'content=' + reskey
+            if isinstance(resfile, tuple):
                 (resfile, content) = resfile
 
-            fl.write('boodler.filename: '+resfile+'\n')
+            fl.write('boodler.filename: ' + resfile + '\n')
             val = os.path.join(path, *resfile.split('/'))
-            if (not os.path.isdir(os.path.dirname(val))):
+            if not os.path.isdir(os.path.dirname(val)):
                 os.makedirs(os.path.dirname(val))
             subfl = open(val, 'w')
             subfl.write(content)
             subfl.close()
         fl.close()
 
-    if (not external_path):
+    if not external_path:
         dic = collection.get(name)
-        if (not dic):
+        if not dic:
             dic = {}
             collection[name] = dic
         dic[vers] = path
 
+
 class TestPLoad(unittest.TestCase):
+
     def setUp(self):
         basedir = tempfile.mkdtemp(prefix='test_pload')
         self.basedir = basedir
@@ -157,10 +168,12 @@ class TestPLoad(unittest.TestCase):
 
         build_package(self.loader, 'simple.test', '1.0')
 
-        build_package(self.loader, 'import.module',
-            mod_content={'key':'val'}, mod_main='main')
-        build_package(self.loader, 'import.module', '2.0',
-            mod_content={'key':'val2'}, mod_main='__init__')
+        build_package(self.loader, 'import.module', mod_content={'key': 'val'}, mod_main='main')
+        build_package(self.loader,
+                      'import.module',
+                      '2.0',
+                      mod_content={'key': 'val2'},
+                      mod_main='__init__')
 
         build_package(self.loader, 'version.specs', '1.2')
         build_package(self.loader, 'version.specs', '1.5')
@@ -171,32 +184,47 @@ class TestPLoad(unittest.TestCase):
         os.mkdir(self.empty_dir_path)
 
         self.external_one_path = os.path.join(basedir, 'external-one')
-        build_package(self.loader, 'external.one', '1.0',
+        build_package(
+            self.loader,
+            'external.one',
+            '1.0',
             external_path=self.external_one_path,
-            metadata={'key':'ext1'})
+            metadata={'key': 'ext1'},
+        )
 
-        build_package(self.loader, 'external.two', '2.5',
-            mod_content={'key':'orig'})
+        build_package(self.loader, 'external.two', '2.5', mod_content={'key': 'orig'})
         self.external_two_path = os.path.join(basedir, 'external-two')
-        build_package(self.loader, 'external.two', '2.5',
+        build_package(
+            self.loader,
+            'external.two',
+            '2.5',
             external_path=self.external_two_path,
-            mod_content={'key':'replacement'})
+            mod_content={'key': 'replacement'},
+        )
 
-        build_package(self.loader, 'external.three', '2.0',
-            mod_content={'key':'orig'})
+        build_package(self.loader, 'external.three', '2.0', mod_content={'key': 'orig'})
         self.external_three_path = os.path.join(basedir, 'external-three')
-        build_package(self.loader, 'external.three', '2.5',
+        build_package(
+            self.loader,
+            'external.three',
+            '2.5',
             external_path=self.external_three_path,
-            mod_content={'key':'replacement'})
+            mod_content={'key': 'replacement'},
+        )
 
-        build_package(self.loader, 'only.files',
+        build_package(
+            self.loader,
+            'only.files',
             resources={
-                'one':'one.txt',
-                'dir.two':'dir/two.txt',
-                'dir.three':'dir/three.txt',
-            })
+                'one': 'one.txt',
+                'dir.two': 'dir/two.txt',
+                'dir.three': 'dir/three.txt',
+            },
+        )
 
-        build_package(self.loader, 'mod.and.files',
+        build_package(
+            self.loader,
+            'mod.and.files',
             mod_content=[
                 'from boopak import package',
                 'package.bexport("one")',
@@ -204,66 +232,96 @@ class TestPLoad(unittest.TestCase):
                 'package.bexport("alt.four")',
             ],
             resources={
-                'zero':'zero.txt',
-                'one':'one.txt',
-                'dir.two':'dir/two.txt',
-                'dir.three':'dir/three.txt',
-                'alt.four':'alt/four.txt',
-                'alt.five':'alt/five.txt',
-            })
+                'zero': 'zero.txt',
+                'one': 'one.txt',
+                'dir.two': 'dir/two.txt',
+                'dir.three': 'dir/three.txt',
+                'alt.four': 'alt/four.txt',
+                'alt.five': 'alt/five.txt',
+            },
+        )
 
-        build_package(self.loader, 'depend.one', '1.0',
-            mod_content={'key':11})
-        build_package(self.loader, 'depend.one', '2.0',
-            mod_content={'key':12})
-        build_package(self.loader, 'depend.two',
-            depends=('depend.one', '1.0'),
-            mod_content={'key':21})
-        build_package(self.loader, 'depend.two', '2.0',
+        build_package(self.loader, 'depend.one', '1.0', mod_content={'key': 11})
+        build_package(self.loader, 'depend.one', '2.0', mod_content={'key': 12})
+        build_package(self.loader,
+                      'depend.two',
+                      depends=('depend.one', '1.0'),
+                      mod_content={'key': 21})
+        build_package(
+            self.loader,
+            'depend.two',
+            '2.0',
             depends=('depend.one', '2.0'),
-            mod_content={'key':22})
-        build_package(self.loader, 'depend.three',
-            depends=('depend.two', None),
-            mod_content={'key':3})
+            mod_content={'key': 22},
+        )
+        build_package(self.loader,
+                      'depend.three',
+                      depends=('depend.two', None),
+                      mod_content={'key': 3})
 
-        build_package(self.loader, 'self.depend', '1.0',
+        build_package(
+            self.loader,
+            'self.depend',
+            '1.0',
             depends=('self.depend', '1.0'),
-            mod_content={'key':1})
-        build_package(self.loader, 'self.depend', '2.0',
+            mod_content={'key': 1},
+        )
+        build_package(
+            self.loader,
+            'self.depend',
+            '2.0',
             depends=('self.depend', '1.0'),
-            mod_content={'key':2})
+            mod_content={'key': 2},
+        )
 
-        build_package(self.loader, 'mutual.depend.one',
+        build_package(
+            self.loader,
+            'mutual.depend.one',
             depends=('mutual.depend.two', None),
-            mod_content={'key':1})
-        build_package(self.loader, 'mutual.depend.two',
+            mod_content={'key': 1},
+        )
+        build_package(
+            self.loader,
+            'mutual.depend.two',
             depends=('mutual.depend.one', None),
-            mod_content={'key':2})
+            mod_content={'key': 2},
+        )
 
-        build_package(self.loader, 'depend.on.fail',
-            depends=('external.one', None),
-            mod_content={'key':1})
+        build_package(self.loader,
+                      'depend.on.fail',
+                      depends=('external.one', None),
+                      mod_content={'key': 1})
 
-        build_package(self.loader, 'depend.on.cases',
+        build_package(
+            self.loader,
+            'depend.on.cases',
             depends=[
                 ('depend.one', None),
                 ('missing.nospec', None),
                 ('missing.spec', SpecifierSet('~=2.0')),
                 ('missing.num', Version('3')),
-            ])
+            ],
+        )
 
-        build_package(self.loader, 'unicode.metadata',
+        build_package(
+            self.loader,
+            'unicode.metadata',
             metadata={
-                'test.plain':'result',
-                'test.unicode':'alpha is \xce\xb1',
-            })
+                'test.plain': 'result',
+                'test.unicode': 'alpha is \xce\xb1',
+            },
+        )
 
-        build_package(self.loader, 'mixin.static',
+        build_package(
+            self.loader,
+            'mixin.static',
             resources={
-                'zero':'zero.txt',
-                'one':'one.txt',
-                'two':'two.txt',
-                'mixer': { 'dc.title':'Mix-In' },
+                'zero': 'zero.txt',
+                'one': 'one.txt',
+                'two': 'two.txt',
+                'mixer': {
+                    'dc.title': 'Mix-In'
+                },
             },
             mod_content=[
                 'from boopak.package import bexport',
@@ -276,29 +334,34 @@ class TestPLoad(unittest.TestCase):
                 '    MixIn.range(1.0, zero),',
                 '  ]',
                 '  default = MixIn.default(zero)',
-            ])
+            ],
+        )
 
-        build_package(self.loader, 'mixin.file',
+        build_package(
+            self.loader,
+            'mixin.file',
             resources={
-                'zero':'zero.txt',
-                'one':'one.txt',
-                'two':'two.txt',
-                'mixer':('mixer.mixin', """
+                'zero': 'zero.txt',
+                'one': 'one.txt',
+                'two': 'two.txt',
+                'mixer': (
+                    'mixer.mixin',
+                    """
 # Comment.
 range 2 2.1 two - 1.4
 range - 1.5 one 1.3
 range - 1.0 zero
 else two
-"""),
-            })
+""",
+                ),
+            },
+        )
 
     def tearDown(self):
         collect.remove_recursively(self.basedir)
 
     def test_all(self):
-        subtests = sorted([
-            val for val in dir(self) if val.startswith('subtest_')
-        ])
+        subtests = sorted([val for val in dir(self) if val.startswith('subtest_')])
 
         for val in subtests:
             func = getattr(self, val)
@@ -338,7 +401,7 @@ else two
         fl = file.open()
         dat = fl.read()
         fl.close()
-        self.assertEqual(dat, 'content='+key)
+        self.assertEqual(dat, 'content=' + key)
 
     def subtest_import_files(self):
         pkg = self.loader.load('only.files')
@@ -366,16 +429,13 @@ else two
         self.assertEqual(pkg.key, ('version.specs', '1.5.3'))
         pkg = self.loader.load('version.specs', '1.3')
         self.assertEqual(pkg.key, ('version.specs', '1.5.3'))
-        self.assertRaises(pload.PackageNotFoundError,
-            self.loader.load, 'version.specs', '1.6')
+        self.assertRaises(pload.PackageNotFoundError, self.loader.load, 'version.specs', '1.6')
         pkg = self.loader.load('version.specs', '2.0')
         self.assertEqual(pkg.key, ('version.specs', '2.5'))
         pkg = self.loader.load('version.specs', '2.4')
         self.assertEqual(pkg.key, ('version.specs', '2.5'))
-        self.assertRaises(pload.PackageNotFoundError,
-            self.loader.load, 'version.specs', '2.6')
-        self.assertRaises(pload.PackageNotFoundError,
-            self.loader.load, 'version.specs', '3')
+        self.assertRaises(pload.PackageNotFoundError, self.loader.load, 'version.specs', '2.6')
+        self.assertRaises(pload.PackageNotFoundError, self.loader.load, 'version.specs', '3')
         pkg = self.loader.load('version.specs', '1.2')
         self.assertEqual(pkg.key, ('version.specs', '1.5.3'))
         pkg = self.loader.load('version.specs', Version('1.2'))
@@ -411,12 +471,10 @@ else two
         self.assertEqual(type(mod), types.ModuleType)
         self.assertEqual(mod, pkg.get_content())
 
-        self.assertRaises(pload.PackageNotFoundError,
-            self.loader.load_item_by_name, 'only.files:1.1/dir.two')
-        self.assertRaises(ValueError,
-            self.loader.load_item_by_name, 'dir.two')
-        self.assertRaises(ValueError,
-            self.loader.load_item_by_name, 'only.files/none.such')
+        self.assertRaises(pload.PackageNotFoundError, self.loader.load_item_by_name,
+                          'only.files:1.1/dir.two')
+        self.assertRaises(ValueError, self.loader.load_item_by_name, 'dir.two')
+        self.assertRaises(ValueError, self.loader.load_item_by_name, 'only.files/none.such')
 
         val = self.loader.load_item_by_name('/boopak.test_pload.TestPLoad')
         self.assertEqual(self.__class__, val)
@@ -431,8 +489,7 @@ else two
         self.assertEqual(res.get_one('boodler.filename'), 'dir/two.txt')
 
     def subtest_external_dir(self):
-        self.assertRaises(pload.PackageNotFoundError,
-            self.loader.load, 'external.one')
+        self.assertRaises(pload.PackageNotFoundError, self.loader.load, 'external.one')
 
         tup = self.loader.add_external_package(self.external_one_path)
         self.assertEqual(tup, ('external.one', Version('1.0')))
@@ -441,8 +498,7 @@ else two
         self.assertEqual(pkg.key, tup)
 
         self.loader.remove_external_package(self.external_one_path)
-        self.assertRaises(pload.PackageNotFoundError,
-            self.loader.load, 'external.one')
+        self.assertRaises(pload.PackageNotFoundError, self.loader.load, 'external.one')
 
         self.loader.remove_external_package('nonexistent')
 
@@ -450,8 +506,7 @@ else two
         self.assertEqual(tup, ('external.one', Version('1.0')))
 
         self.loader.clear_external_packages()
-        self.assertRaises(pload.PackageNotFoundError,
-            self.loader.load, 'external.one')
+        self.assertRaises(pload.PackageNotFoundError, self.loader.load, 'external.one')
 
     def subtest_external_dir_shadow(self):
         pkg = self.loader.load('external.two')
@@ -498,11 +553,10 @@ else two
         ress = pinfo.Resources('<override>')
         ress.create('res.name')
 
-        self.assertRaises(pload.PackageLoadError,
-            self.loader.add_external_package, self.empty_dir_path)
+        self.assertRaises(pload.PackageLoadError, self.loader.add_external_package,
+                          self.empty_dir_path)
 
-        tup = self.loader.add_external_package(self.empty_dir_path,
-            meta, ress)
+        tup = self.loader.add_external_package(self.empty_dir_path, meta, ress)
         self.assertEqual(tup, ('external.one', Version('1.1')))
         pkg = self.loader.load('external.one')
         val = pkg.metadata.get_one('key')
@@ -511,8 +565,7 @@ else two
 
         self.loader.clear_external_packages()
 
-        tup = self.loader.add_external_package(self.external_one_path,
-            meta, ress)
+        tup = self.loader.add_external_package(self.external_one_path, meta, ress)
         self.assertEqual(tup, ('external.one', Version('1.1')))
         pkg = self.loader.load('external.one')
         val = pkg.metadata.get_one('key')
@@ -577,7 +630,7 @@ else two
         self.loader.clear_external_packages()
 
     def packages_to_set(self, ls):
-        ls = [ (name, Version(vers)) for (name, vers) in ls ]
+        ls = [(name, Version(vers)) for (name, vers) in ls]
         return set(ls)
 
     def subtest_dependencies(self):
@@ -656,8 +709,7 @@ else two
 
         deplist = [('depend.on.fail', '1.0')]
         tup = self.loader.load_package_dependencies(pkg)
-        self.assertEqual(tup,
-            (self.packages_to_set(deplist), {'external.one': [None]}, 0))
+        self.assertEqual(tup, (self.packages_to_set(deplist), {'external.one': [None]}, 0))
 
         self.assertRaises(pload.PackageNotFoundError, pkg.get_content)
 
@@ -666,8 +718,7 @@ else two
         pkg = self.loader.load('depend.on.fail')
         deplist = [('depend.on.fail', '1.0'), ('external.one', '1.0')]
         tup = self.loader.load_package_dependencies(pkg)
-        self.assertEqual(tup,
-            (self.packages_to_set(deplist), {}, 0))
+        self.assertEqual(tup, (self.packages_to_set(deplist), {}, 0))
         pkg.get_content()
         self.loader.clear_external_packages()
 
@@ -681,15 +732,19 @@ else two
             ('missing.num', Version('3.0')),
         ])
 
-        baddict = dict([ (key,[val]) for (key,val) in badls ])
+        baddict = dict([(key, [val]) for (key, val) in badls])
 
-        self.assertEqual(tup,
-            (self.packages_to_set([
-                ('depend.on.cases', '1.0'),
-                ('depend.one', '2.0'),
-            ]),
-            baddict,
-            0))
+        self.assertEqual(
+            tup,
+            (
+                self.packages_to_set([
+                    ('depend.on.cases', '1.0'),
+                    ('depend.one', '2.0'),
+                ]),
+                baddict,
+                0,
+            ),
+        )
 
         bad = self.loader.find_all_dependencies()[2]
         ls = bad[('depend.on.cases', Version('1.0'))]
@@ -711,8 +766,8 @@ else two
         mixer = mod.mixer
 
         self.assertTrue(isinstance(mixer, boodle.sample.MixinSample))
-        ls = [ (rn.min, rn.max) for rn in mixer.ranges ]
-        self.assertEqual(ls, [(0.0,1.0), (1.0,1.5), (2.0,2.1)])
+        ls = [(rn.min, rn.max) for rn in mixer.ranges]
+        self.assertEqual(ls, [(0.0, 1.0), (1.0, 1.5), (2.0, 2.1)])
 
         self.assertEqual(mixer.ranges[1].pitch, 1.3)
         self.assertEqual(mixer.ranges[2].volume, 1.4)
@@ -733,8 +788,8 @@ else two
         mixer = boodle.sample.get(mod.mixer)
         self.assertTrue(isinstance(mixer, boodle.sample.MixinSample))
 
-        ls = [ (rn.min, rn.max) for rn in mixer.ranges ]
-        self.assertEqual(ls, [(0.0,1.0), (1.0,1.5), (2.0,2.1)])
+        ls = [(rn.min, rn.max) for rn in mixer.ranges]
+        self.assertEqual(ls, [(0.0, 1.0), (1.0, 1.5), (2.0, 2.1)])
 
         self.assertEqual(mixer.ranges[1].pitch, 1.3)
         self.assertEqual(mixer.ranges[2].volume, 1.4)

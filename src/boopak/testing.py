@@ -3,7 +3,6 @@
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
-
 """testing: Unit tests for Boodler.
 
 To run all tests:
@@ -35,20 +34,22 @@ testlist = [
     ('stereo', boodle.stereo.TestStereo),
 ]
 
+
 def run(arglist=[]):
-    if (isinstance(arglist, str)):
+    if isinstance(arglist, str):
         arglist = arglist.split()
 
-    if (not arglist):
+    if not arglist:
         tests = testlist
     else:
         tests = [(key, case) for (key, case) in testlist if key in arglist]
 
-    ls = [ case for (key, case) in tests ]
-    print('Running:', (' '.join([ key for (key, case) in tests ])))
-    suitels = [ unittest.makeSuite(case) for case in ls ]
+    ls = [case for (key, case) in tests]
+    print('Running:', (' '.join([key for (key, case) in tests])))
+    suitels = [unittest.makeSuite(case) for case in ls]
     suite = unittest.TestSuite(suitels)
     unittest.TextTestRunner().run(suite)
+
 
 if __name__ == '__main__':
     run(sys.argv[1:])

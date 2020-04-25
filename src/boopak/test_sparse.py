@@ -8,6 +8,7 @@ import unittest
 
 from boopak.sparse import parse, ID, List, ParseError
 
+
 class TestSParse(unittest.TestCase):
 
     def test_id_compare(self):
@@ -58,13 +59,34 @@ class TestSParse(unittest.TestCase):
 
     def test_id_completeness(self):
         ls = [
-            '', 'a', 'Abd', '    ', ' $ # ^ ',
-            'a(b', 'a)b', 'a()b', 'a=b',
-            '"', ' " ', "'", " ' ", ' \' " ', ' "\' \'" ',
-            '\\', ' \\ \\ ', '\\\'', '\\"', '\\" \\\'',
-            'a(\')b', 'a(")b', 'a("\')b', 'a("\')b\\c',
+            '',
+            'a',
+            'Abd',
+            '    ',
+            ' $ # ^ ',
+            'a(b',
+            'a)b',
+            'a()b',
+            'a=b',
+            '"',
+            ' " ',
+            "'",
+            " ' ",
+            ' \' " ',
+            ' "\' \'" ',
+            '\\',
+            ' \\ \\ ',
+            '\\\'',
+            '\\"',
+            '\\" \\\'',
+            'a(\')b',
+            'a(")b',
+            'a("\')b',
+            'a("\')b\\c',
             'tab\tnew\nspace ',
-            'unicode', 'unic\u00F8de', 'unic\u0153de',
+            'unicode',
+            'unic\u00F8de',
+            'unic\u0153de',
         ]
 
         for val in ls:
@@ -119,7 +141,7 @@ class TestSParse(unittest.TestCase):
         self.assertTrue(nod.get_attr('bar') is None)
         self.assertTrue(isinstance(nod.attrs['foo'], ID))
         self.assertEqual(nod.attrs['foo'], 'x')
-    
+
     def test_node_list(self):
         nod = List(ID('1'), ID('x'), ID('a'))
         self.assertEqual(len(nod), 3)
@@ -130,9 +152,9 @@ class TestSParse(unittest.TestCase):
         self.assertTrue('x' in nod)
         self.assertFalse('2' in nod)
 
-        ls = [ val for val in nod ]
+        ls = [val for val in nod]
         self.assertEqual(ls, ['1', 'x', 'a'])
-    
+
     def test_parse_simple(self):
         ls = [
             ('1', '1'),
@@ -162,20 +184,20 @@ class TestSParse(unittest.TestCase):
             self.assertEqual(nod, res)
 
     def compare(self, nod, ls):
-        if (not isinstance(nod, List)):
+        if not isinstance(nod, List):
             return False
-        if (not isinstance(ls, list)):
+        if not isinstance(ls, list):
             return False
-        if (len(nod) != len(ls)):
+        if len(nod) != len(ls):
             return False
 
         for (el, val) in zip(nod.list, ls):
-            if (isinstance(el, List)):
-                if (not self.compare(el, val)):
+            if isinstance(el, List):
+                if not self.compare(el, val):
                     return False
                 continue
-            if (isinstance(el, ID)):
-                if (el != val):
+            if isinstance(el, ID):
+                if el != val:
                     return False
                 continue
             return False
@@ -187,7 +209,7 @@ class TestSParse(unittest.TestCase):
             ('()', []),
             ('  (  )    ', []),
             ('(1 "2" _3)', ['1', '2', '_3']),
-            ('(()(()))', [[],[[]]]),
+            ('(()(()))', [[], [[]]]),
             ('(1()a()"x")', ['1', [], 'a', [], 'x']),
             ('(123()aa()"xx")', ['123', [], 'aa', [], 'xx']),
             ('( 45 ( 1 abc ( ) "$#$" ) ) ', ['45', ['1', 'abc', [], '$#$']]),
@@ -202,7 +224,7 @@ class TestSParse(unittest.TestCase):
         nod = parse('(a=1 b=2 c="three" d=())')
         self.assertTrue(isinstance(nod, List))
         self.assertEqual(len(nod), 0)
-        
+
         self.assertEqual(len(nod.attrs), 4)
         self.assertEqual(nod.get_attr('a'), '1')
         self.assertTrue(isinstance(nod.get_attr('a'), ID))
@@ -228,31 +250,46 @@ class TestSParse(unittest.TestCase):
         self.assertEqual(len(nod), 1)
         self.assertEqual(nod[0], "#=$")
         self.assertEqual(nod.get_attr('$'), '#')
-        
+
         nod = parse('(a = x)')
         self.assertEqual(len(nod), 0)
         self.assertEqual(nod.get_attr('a'), 'x')
-        
+
         nod = parse('("a" = x)')
         self.assertEqual(len(nod), 0)
         self.assertEqual(nod.get_attr('a'), 'x')
-        
+
         nod = parse('("a"=x)')
         self.assertEqual(len(nod), 0)
         self.assertEqual(nod.get_attr('a'), 'x')
-        
+
     def test_parse_bad(self):
         ls = [
-            '', '   ', '    \n',
-            '\\', 'x\\y', '=',
+            '',
+            '   ',
+            '    \n',
+            '\\',
+            'x\\y',
+            '=',
             '"\\n"',
-            '(', ')', '((1)', '(1))', '"', "'", '"waooo ',
-            '1 2', '() 1',
-            'a=z', '123=456',
-            '(a123=)', '( a123= )', '(a=b=c)',
-            '(a=', '(=1)', '(()=1)',
+            '(',
+            ')',
+            '((1)',
+            '(1))',
+            '"',
+            "'",
+            '"waooo ',
+            '1 2',
+            '() 1',
+            'a=z',
+            '123=456',
+            '(a123=)',
+            '( a123= )',
+            '(a=b=c)',
+            '(a=',
+            '(=1)',
+            '(()=1)',
         ]
 
         for val in ls:
             self.assertRaises(ParseError, parse, val)
-
