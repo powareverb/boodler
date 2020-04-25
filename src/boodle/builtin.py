@@ -17,10 +17,11 @@ FadeInOutAgent -- creates a channel that fades up, holds, and fades out
 TestSoundAgent -- plays a little test melody
 """
 
+import io
+
+from boodle import agent
 from boodle import stereo
 from boopak import pinfo
-import io
-from boodle import agent
 
 # Declare the imports list, so that "from boodle.builtin import *"
 # is practical.
