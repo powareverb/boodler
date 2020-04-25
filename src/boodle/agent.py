@@ -11,6 +11,10 @@ unit of Boodler.
 import logging
 import types
 
+from functools import total_ordering
+
+
+@total_ordering
 class Agent:
     """Agent: base class for Boodler agents.
 
@@ -48,7 +52,7 @@ class Agent:
     load_described() -- load a named module or agent
 
     Class methods:
-    
+
     get_title() -- return a string which describes the agent
     get_argument_list() -- return the argument specification for the agent
     get_class_name() -- return the qualified names of the module and Agent
@@ -60,7 +64,7 @@ class Agent:
     inited = False
     # Another default value; subclasses can override this.
     selected_event = None
-    
+
     # Another default value. A subclass can override this to specify
     # extra information about its argument types (more information than
     # can be inferred by inspecting the init() method).
@@ -75,7 +79,7 @@ class Agent:
 
     # Maps Agent subclasses to ArgLists; see get_argument_list().
     cached_argument_lists = {}
-    
+
     def __init__(self, *args, **kwargs):
         self.inited = True
         self.queued = False
@@ -84,18 +88,27 @@ class Agent:
         self.generator = None
         self.channel = None
         self.origdelay = None
-        
+
         tup = self.get_class_name()
+
         if (tup[2]):
             val = 'pkg.' + tup[0] + '.' + tup[1]
         else:
             val = tup[0] + '.' + tup[1]
+
         self.logger = logging.getLogger(val)
 
         try:
             self.init(*args, **kwargs)
-        except TypeError, ex:
+        except TypeError as ex:
             raise boodle.BoodlerError(str(ex))
+
+    def __eq__(self, other):
+        return id(self) == id(other)
+
+    # XXX how should Agents be ordered relative to one another?
+    def __lt__(self, other):
+        return id(self) < id(other)
 
     def sched_note(self, samp, pitch=1.0, volume=1.0, delay=0, chan=None):
         """sched_note(sample, pitch=1, volume=1, delay=0, chan=self.channel)
@@ -152,11 +165,11 @@ class Agent:
         delay=0, chan=None):
         """sched_note_duration(sample, duration, pitch=1, volume=1, delay=0,
             chan=self.channel) -> duration
-        
-        Schedule a note to play, extending the original sound sample to a
-        longer period of time. The duration is given in seconds. 
 
-        The sound is loaded from samp (which can be a filename, 
+        Schedule a note to play, extending the original sound sample to a
+        longer period of time. The duration is given in seconds.
+
+        The sound is loaded from samp (which can be a filename,
         File, or Sample object). The pitch is given as a multiple of the
         sound's original frequency; the volume is given as a fraction
         of the sound's original volume. The delay is a time (in seconds)
@@ -186,9 +199,9 @@ class Agent:
         to delay before the note is played. The channel, if None or not
         supplied, defaults to the same channel the agent is running in.
 
-        This extends the original sound sample to a longer period of time. 
-        The duration is given in seconds. This returns the expected duration 
-        of the sound, in seconds. Due to the way sounds are looped, this may 
+        This extends the original sound sample to a longer period of time.
+        The duration is given in seconds. This returns the expected duration
+        of the sound, in seconds. Due to the way sounds are looped, this may
         be slightly longer than the given duration.
         """
 
@@ -210,7 +223,7 @@ class Agent:
 
     def sched_note_params(self, samp, **args):
         """sched_note_params(sample, param=value, param=value...) -> duration
-        
+
         Schedule a note to play. This method understands all the arguments
         used by the other sched_note methods, but they must be supplied as
         named keywords. The arguments may be in any order.
@@ -234,7 +247,7 @@ class Agent:
         return self.sched_note_duration_pan(samp, duration, pan, pitch, volume, delay, chan)
 
     def listen(self, event=None, handle=None, hold=None, chan=None):
-        """listen(event=self.selected_event, handle=self.receive, hold=None, 
+        """listen(event=self.selected_event, handle=self.receive, hold=None,
             chan=self.channel) -> Handler
 
         Begin listening for events. The event should be a string, or a
@@ -254,7 +267,7 @@ class Agent:
 
         The hold value indicates whether the agent's channel will be kept
         alive for as long as it listens. If this is False/None, the channel
-        will follow the usual rule and expire as soon as nothing is scheduled 
+        will follow the usual rule and expire as soon as nothing is scheduled
         on it. (A listening agent does not automatically count as scheduled!)
         If the listening channel is not the same as the agent's own channel,
         you may pass one of the constants HoldRun or HoldListen, to keep
@@ -264,7 +277,7 @@ class Agent:
         for later use; it has a cancel() method which may be used to stop
         listening.
         """
-        
+
         if (not self.inited):
             raise generator.ScheduleError('agent is uninitialized')
         if (self.generator is None or self.channel is None):
@@ -273,7 +286,7 @@ class Agent:
             chan = self.channel
         if (not chan.active):
             raise generator.ChannelError('cannot listen to inactive channel')
-            
+
         if (event is None):
             event = self.selected_event
         if (event is None):
@@ -291,7 +304,7 @@ class Agent:
         gen = self.generator
         han = Handler(self, handle, event, chan, hold)
         gen.addhandler(han)
-        
+
         return han
 
     def unlisten(self, event=None):
@@ -301,7 +314,7 @@ class Agent:
         all events. If an event is given, stop listening for that specific
         event.
         """
-        
+
         if (self.generator is None or self.channel is None):
             raise generator.ScheduleError('listener has never been scheduled')
 
@@ -313,17 +326,17 @@ class Agent:
 
         if (not ls):
             return
-            
+
         gen = self.generator
         gen.remhandlers(ls)
-        
-    def post_listener_agent(self, ag, chan=None, event=None, handle=None, 
+
+    def post_listener_agent(self, ag, chan=None, event=None, handle=None,
         hold=None, listenchan=None):
-        """post_listener_agent(agent, chan=self.channel, 
-            event=ag.selected_event, handle=ag.receive, hold=None, 
+        """post_listener_agent(agent, chan=self.channel,
+            event=ag.selected_event, handle=ag.receive, hold=None,
             listenchan=chan)
 
-        Post an agent to listen for events. This is equivalent to 
+        Post an agent to listen for events. This is equivalent to
             sched_agent(ag, handle=ag.listen(...))
 
         That is, the agent must not currently be scheduled. It runs
@@ -367,7 +380,7 @@ class Agent:
     def sched_agent(self, ag, delay=0, chan=None, handle=None):
         """sched_agent(agent, delay=0, chan=self.channel, handle=self.run)
 
-        Schedule an agent to run. This may be the current agent (self) or 
+        Schedule an agent to run. This may be the current agent (self) or
         a newly-created agent. The delay is a time (in seconds) to delay
         before the agent runs. The channel, if None or not supplied,
         defaults to the same channel that self is running in. The agent's
@@ -402,10 +415,10 @@ class Agent:
         running in.
 
         If delay is not supplied, it defaults to the delay used when this
-        agent was first scheduled. Note that if this value was zero, 
+        agent was first scheduled. Note that if this value was zero,
         you will probably cause an infinite loop.
 
-        The agent's run() method will be called, unless you specify a 
+        The agent's run() method will be called, unless you specify a
         handle different function.
         """
 
@@ -447,7 +460,7 @@ class Agent:
             raise generator.ChannelError('creator is not in a channel')
         if (parent is None):
             parent = self.channel
-        
+
         pan = stereo.cast(pan)
         chan = generator.Channel(parent, self.generator, self, startvolume, pan)
         return chan
@@ -462,34 +475,34 @@ class Agent:
     def get_prop(self, key, default=None):
         """get_prop(key, default=None) -> any
 
-        Get a property from the agent's channel. If none is set, see if 
-        one is inherited from the parent. If there is no inherited value 
+        Get a property from the agent's channel. If none is set, see if
+        one is inherited from the parent. If there is no inherited value
         either, return None, or the given default.
 
         Note that None is a legal property value. To distinguish between
         no property and a property set to None, use has_prop().
         """
         return self.channel.get_prop(key, default)
-            
+
     def has_prop(self, key):
         """has_prop(key) -> bool
 
-        See whether the agent's channel has a given property. If none is 
+        See whether the agent's channel has a given property. If none is
         set, see if one is inherited from the parent.
         """
         return self.channel.has_prop(key)
-            
+
     def set_prop(self, key, val):
         """set_prop(key, val) -> None
 
         Set a property on the agent's channel.
         """
         return self.channel.set_prop(key, val)
-            
+
     def del_prop(self, key):
         """del_prop(key) -> None
 
-        Delete a property from the agent's channel. If none is set, this 
+        Delete a property from the agent's channel. If none is set, this
         has no effect.
 
         Note that this does not affect parent channels. So get_prop(key)
@@ -527,11 +540,11 @@ class Agent:
 
         loader = self.generator.loader
         return load_described(loader, val, wantmodule)
-    
+
     def init(self):
         """init(...)
 
-        Set the agent up. The arguments are passed along from the 
+        Set the agent up. The arguments are passed along from the
         constructor call. Each subclass of Agent may override
         this method; if it wants to accept constructor arguments, it
         must override this.
@@ -549,10 +562,10 @@ class Agent:
     def receive(self, event):
         """receive(event)
 
-        Perform the agent's action when an appropriate event arrives. 
+        Perform the agent's action when an appropriate event arrives.
         Each subclass of Agent which listens for events must override this
         method (or provide an alternative handler).
-        
+
         The event is a tuple, starting with a string, followed (possibly)
         by more values.
         """
@@ -570,14 +583,14 @@ class Agent:
         information). If the value is false, the module came from
         sys.path.
         """
-        
+
         res = Agent.cached_class_names.get(cla)
         if (res):
             return res
 
         # Default value
         res = (cla.__module__, cla.__name__, False)
-        
+
         loader = pload.PackageLoader.global_loader
         if (loader):
             try:
@@ -585,18 +598,18 @@ class Agent:
                 res = (pkg.name, resource.key, True)
             except:
                 pass
-            
+
         Agent.cached_class_names[cla] = res
         return res
-            
+
     get_class_name = classmethod(get_class_name)
-    
+
     def get_argument_list(cla):
         """get_argument_list() -> ArgList
 
         Return the argument list specification for the class.
         """
-        
+
         res = Agent.cached_argument_lists.get(cla)
         if (not (res is None)):
             return res
@@ -604,7 +617,7 @@ class Agent:
         # Default value
         res = None
         nodestr = None
-        
+
         loader = pload.PackageLoader.global_loader
         if (loader):
             try:
@@ -616,12 +629,12 @@ class Agent:
         if (nodestr):
             node = sparse.parse(nodestr)
             res = argdef.ArgList.from_node(node)
-            
+
         Agent.cached_argument_lists[cla] = res
         return res
-            
+
     get_argument_list = classmethod(get_argument_list)
-    
+
     def get_title(cla):
         """get_title() -> string
 
@@ -649,7 +662,7 @@ class Agent:
 HoldRun = 'run'
 HoldListen = 'listen'
 HoldBoth = True
-        
+
 class Handler:
     """Handler: Represents the state of one agent listening for one event.
 
@@ -691,7 +704,7 @@ class Handler:
 
         Shut down the Handler object and drop all references.
 
-        This is an internal call. It should only be called by 
+        This is an internal call. It should only be called by
         Generator.remhandlers(), and only after the listen has been
         cancelled.
         """
@@ -740,14 +753,14 @@ def load_described(loader, args, wantmodule=False):
     module which another depends on). It bypasses Boodler's dependency
     tracking.
     """
-        
-    if (type(args) in [str, unicode]):
+
+    if (type(args) in [str]):
         argstr = args
         args = [ '(', args, ')' ]
-    elif (type(args) == list):
+    elif (isinstance(args, list)):
         argstr = ' '.join(args)
         args = [ '(' ] + args + [ ')' ]
-    elif (type(args) == tuple):
+    elif (isinstance(args, tuple)):
         argstr = ' '.join(args)
         args = [ '(' ] + list(args) + [ ')' ]
     elif (isinstance(args, sparse.Tree)):
@@ -766,7 +779,7 @@ def load_described(loader, args, wantmodule=False):
     if (len(args) == 0):
         # default to the null agent, if none was given
         args = sparse.List(sparse.ID('/boodle.builtin.NullAgent'))
-    
+
     classarg = args[0]
     if (not isinstance(classarg, sparse.ID)):
         raise ValueError('arguments must begin with a class name')
@@ -775,15 +788,15 @@ def load_described(loader, args, wantmodule=False):
         ### clumsy!
         mod = loader.load_item_by_name(classarg.as_string()+'/')
 
-        if (type(mod) != types.ModuleType):
+        if (not isinstance(mod, types.ModuleType)):
             raise TypeError(argstr + ' is not a module')
         if (len(args) > 1):
             raise ValueError('modules cannot have arguments')
         return mod
-    
+
     clas = loader.load_item_by_name(classarg.as_string())
 
-    if (type(clas) != type(Agent)):
+    if (not isinstance(clas, type(Agent))):
         raise TypeError(argstr + ' is not a class')
     if (not issubclass(clas, Agent)):
         raise TypeError(argstr + ' is not an Agent class')
@@ -794,7 +807,7 @@ def load_described(loader, args, wantmodule=False):
     (valls, valdic) = arglist.resolve(args)
     wrapper = argdef.ArgClassWrapper(clas, valls, valdic)
     return wrapper
-    
+
 # Late imports.
 
 import boodle
@@ -803,7 +816,7 @@ from boodle import generator, sample, stereo
 cboodle = boodle.cboodle
 from boodle.generator import FrameCount # imported for users to see
 
-from boopak import version, pload, pinfo, sparse, argdef
+from boopak import pload, pinfo, sparse, argdef
 
 argdef.Agent = Agent
 argdef.load_described = load_described

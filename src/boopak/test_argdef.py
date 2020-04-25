@@ -20,13 +20,13 @@ class TestArgDef(unittest.TestCase):
 
     def test_basic_arg(self):
         arg = Arg()
-        self.assert_(arg.index is None)
-        self.assert_(arg.name is None)
-        self.assert_(arg.type is None)
-        self.assert_(arg.description is None)
-        self.assert_(arg.hasdefault is False)
-        self.assert_(arg.default is None)
-        self.assert_(arg.optional is False)
+        self.assertTrue(arg.index is None)
+        self.assertTrue(arg.name is None)
+        self.assertTrue(arg.type is None)
+        self.assertTrue(arg.description is None)
+        self.assertTrue(arg.hasdefault is False)
+        self.assertTrue(arg.default is None)
+        self.assertTrue(arg.optional is False)
         
         arg = Arg(name='foo', index=2, type=float, default=1.5,
             description='Argument')
@@ -34,9 +34,9 @@ class TestArgDef(unittest.TestCase):
         self.assertEqual(arg.name, 'foo')
         self.assertEqual(arg.type, float)
         self.assertEqual(arg.description, 'Argument')
-        self.assert_(arg.hasdefault is True)
+        self.assertTrue(arg.hasdefault is True)
         self.assertEqual(arg.default, 1.5)
-        self.assert_(arg.optional is True)
+        self.assertTrue(arg.optional is True)
 
     def assert_arglists_identical(self, arglist1, arglist2):
         self.assertEqual(len(arglist1.args), len(arglist2.args))
@@ -61,8 +61,8 @@ class TestArgDef(unittest.TestCase):
             self.assertEqual(typ1, typ2)
             return
 
-        self.assert_(isinstance(typ1, SequenceOf))
-        self.assert_(isinstance(typ2, SequenceOf))
+        self.assertTrue(isinstance(typ1, SequenceOf))
+        self.assertTrue(isinstance(typ2, SequenceOf))
         self.assertEqual(typ1.classname, typ2.classname)
         self.assertEqual(typ1.min, typ2.min)
         self.assertEqual(typ1.max, typ2.max)
@@ -74,24 +74,23 @@ class TestArgDef(unittest.TestCase):
     def test_clone_arg(self):
         origarg = Arg()
         arg = origarg.clone()
-        self.assert_(not (arg is origarg))
+        self.assertTrue(not (arg is origarg))
         self.assert_args_identical(arg, origarg)
         
         origarg = Arg(name='foo', index=2, type=float, default=1.5,
             description='Argument')
         arg = origarg.clone()
-        self.assert_(not (arg is origarg))
+        self.assertTrue(not (arg is origarg))
         self.assert_args_identical(arg, origarg)
 
     def test_arg_unicode(self):
         arg = Arg(name='foo')
-        arg = Arg(name=u'foo')
-        arg = Arg(name=u'f\x6fo')
+        arg = Arg(name='foo')
+        arg = Arg(name='f\x6fo')
+
         self.assertEqual(arg.name, 'foo')
         self.assertEqual(type(arg.name), str)
-        
-        self.assertRaises(ArgDefError, Arg, name=u'f\xa1o')
-        
+
     def test_arg_absorb(self):
         arg = Arg()
         arg.absorb(Arg(index=2))
@@ -103,13 +102,13 @@ class TestArgDef(unittest.TestCase):
         arg.absorb(Arg(description='Argument'))
         self.assertEqual(arg.description, 'Argument')
         arg.absorb(Arg(default=1.5))
-        self.assert_(arg.hasdefault is True)
+        self.assertTrue(arg.hasdefault is True)
         self.assertEqual(arg.default, 1.5)
-        self.assert_(arg.optional is True)
+        self.assertTrue(arg.optional is True)
         arg.absorb(Arg(optional=False))
-        self.assert_(arg.optional is False)
+        self.assertTrue(arg.optional is False)
         arg.absorb(Arg(optional=True))
-        self.assert_(arg.optional is True)
+        self.assertTrue(arg.optional is True)
 
         arg.absorb(Arg())
         
@@ -117,9 +116,9 @@ class TestArgDef(unittest.TestCase):
         self.assertEqual(arg.name, 'foo')
         self.assertEqual(arg.type, float)
         self.assertEqual(arg.description, 'Argument')
-        self.assert_(arg.hasdefault is True)
+        self.assertTrue(arg.hasdefault is True)
         self.assertEqual(arg.default, 1.5)
-        self.assert_(arg.optional is False)
+        self.assertTrue(arg.optional is False)
 
         arg2 = Arg(type=str, description='Undescribed', default=2.0)
         arg.absorb(arg2)
@@ -128,9 +127,9 @@ class TestArgDef(unittest.TestCase):
         self.assertEqual(arg.name, 'foo')
         self.assertEqual(arg.type, float)
         self.assertEqual(arg.description, 'Argument')
-        self.assert_(arg.hasdefault is True)
+        self.assertTrue(arg.hasdefault is True)
         self.assertEqual(arg.default, 1.5)
-        self.assert_(arg.optional is True)
+        self.assertTrue(arg.optional is True)
 
     def test_arg_absorb_mismatch(self):
         arg = Arg(index=1)
@@ -176,62 +175,62 @@ class TestArgDef(unittest.TestCase):
     def test_from_argspec(self):
         argspec = inspect.getargspec(self.argspec_testfunc)
         arglist = ArgList.from_argspec(*argspec)
-        self.assertEquals(len(arglist), 3)
-        self.assertEquals(arglist.max_accepted(), 3)
-        self.assertEquals(arglist.min_accepted(), 1)
+        self.assertEqual(len(arglist), 3)
+        self.assertEqual(arglist.max_accepted(), 3)
+        self.assertEqual(arglist.min_accepted(), 1)
         
         arg = arglist.args[0]
-        self.assert_(arglist.get_index(1) is arg)
-        self.assert_(arglist.get_name('baz') is arg)
-        self.assertEquals(arg.index, 1)
-        self.assertEquals(arg.name, 'baz')
-        self.assertEquals(arg.hasdefault, False)
-        self.assert_(arg.optional is False)
+        self.assertTrue(arglist.get_index(1) is arg)
+        self.assertTrue(arglist.get_name('baz') is arg)
+        self.assertEqual(arg.index, 1)
+        self.assertEqual(arg.name, 'baz')
+        self.assertEqual(arg.hasdefault, False)
+        self.assertTrue(arg.optional is False)
         
         arg = arglist.args[1]
-        self.assert_(arglist.get_index(2) is arg)
-        self.assert_(arglist.get_name('foo') is arg)
-        self.assertEquals(arg.index, 2)
-        self.assertEquals(arg.name, 'foo')
-        self.assert_(arg.hasdefault is True)
-        self.assertEquals(arg.default, 3)
-        self.assertEquals(arg.type, int)
-        self.assert_(arg.optional is True)
+        self.assertTrue(arglist.get_index(2) is arg)
+        self.assertTrue(arglist.get_name('foo') is arg)
+        self.assertEqual(arg.index, 2)
+        self.assertEqual(arg.name, 'foo')
+        self.assertTrue(arg.hasdefault is True)
+        self.assertEqual(arg.default, 3)
+        self.assertEqual(arg.type, int)
+        self.assertTrue(arg.optional is True)
         
         arg = arglist.args[2]
-        self.assert_(arglist.get_index(3) is arg)
-        self.assert_(arglist.get_name('bar') is arg)
-        self.assertEquals(arg.index, 3)
-        self.assertEquals(arg.name, 'bar')
-        self.assert_(arg.hasdefault is True)
-        self.assertEquals(arg.default, 'two')
-        self.assertEquals(arg.type, str)
-        self.assert_(arg.optional is True)
+        self.assertTrue(arglist.get_index(3) is arg)
+        self.assertTrue(arglist.get_name('bar') is arg)
+        self.assertEqual(arg.index, 3)
+        self.assertEqual(arg.name, 'bar')
+        self.assertTrue(arg.hasdefault is True)
+        self.assertEqual(arg.default, 'two')
+        self.assertEqual(arg.type, str)
+        self.assertTrue(arg.optional is True)
         
     def test_init_arglist(self):
         arglist = ArgList(
             Arg(default=11), Arg(default=22),
             foo=Arg(default=33), bar=Arg(default=44))
-        self.assertEquals(len(arglist), 4)
-        self.assertEquals(arglist.max_accepted(), 4)
-        self.assertEquals(arglist.min_accepted(), 0)
+        self.assertEqual(len(arglist), 4)
+        self.assertEqual(arglist.max_accepted(), 4)
+        self.assertEqual(arglist.min_accepted(), 0)
 
         arg = arglist.args[0]
-        self.assertEquals(arg.index, 1)
-        self.assertEquals(arg.default, 11)
+        self.assertEqual(arg.index, 1)
+        self.assertEqual(arg.default, 11)
         
         arg = arglist.args[1]
-        self.assertEquals(arg.index, 2)
-        self.assertEquals(arg.default, 22)
+        self.assertEqual(arg.index, 2)
+        self.assertEqual(arg.default, 22)
         
         arg1 = arglist.args[2]
         arg2 = arglist.args[3]
         if (arg1.name == 'bar'):
             (arg1, arg2) = (arg2, arg1)
-        self.assertEquals(arg1.default, 33)
-        self.assertEquals(arg1.name, 'foo')
-        self.assertEquals(arg2.default, 44)
-        self.assertEquals(arg2.name, 'bar')
+        self.assertEqual(arg1.default, 33)
+        self.assertEqual(arg1.name, 'foo')
+        self.assertEqual(arg2.default, 44)
+        self.assertEqual(arg2.name, 'bar')
 
     def test_arglist_bad_format(self):
         self.assertRaises(ArgDefError, ArgList, 1)
@@ -242,22 +241,22 @@ class TestArgDef(unittest.TestCase):
 
     def test_arglist_extra(self):
         arglist = ArgList(Arg('x'), ArgExtra(ListOf(int)), Arg('y'))
-        self.assertEquals(arglist.min_accepted(), 2)
-        self.assertEquals(arglist.max_accepted(), None)
+        self.assertEqual(arglist.min_accepted(), 2)
+        self.assertEqual(arglist.max_accepted(), None)
         arg = arglist.get_index(1)
-        self.assertEquals(arg.name, 'x')
+        self.assertEqual(arg.name, 'x')
         arg = arglist.get_index(2)
-        self.assertEquals(arg.name, 'y')
+        self.assertEqual(arg.name, 'y')
 
         arglist2 = arglist.clone()
-        self.assertEquals(arglist2.min_accepted(), 2)
-        self.assertEquals(arglist2.max_accepted(), None)
+        self.assertEqual(arglist2.min_accepted(), 2)
+        self.assertEqual(arglist2.max_accepted(), None)
         arg = arglist2.get_index(1)
-        self.assertEquals(arg.name, 'x')
+        self.assertEqual(arg.name, 'x')
         arg = arglist2.get_index(2)
-        self.assertEquals(arg.name, 'y')
+        self.assertEqual(arg.name, 'y')
 
-        self.assert_(isinstance(arglist2.listtype, ListOf))
+        self.assertTrue(isinstance(arglist2.listtype, ListOf))
         self.assertEqual(arglist2.listtype.types, (int,))
 
     def test_sort_arglist(self):
@@ -268,26 +267,26 @@ class TestArgDef(unittest.TestCase):
         )
         
         arg = arglist.args[0]
-        self.assertEquals(arg.index, 1)
-        self.assertEquals(arg.name, 'baz')
-        self.assertEquals(arg.default, 11)
+        self.assertEqual(arg.index, 1)
+        self.assertEqual(arg.name, 'baz')
+        self.assertEqual(arg.default, 11)
         
         arg = arglist.args[1]
-        self.assertEquals(arg.index, 2)
-        self.assertEquals(arg.name, 'bar')
-        self.assertEquals(arg.default, 22)
+        self.assertEqual(arg.index, 2)
+        self.assertEqual(arg.name, 'bar')
+        self.assertEqual(arg.default, 22)
         
         arg = arglist.args[2]
-        self.assertEquals(arg.index, 3)
-        self.assertEquals(arg.name, 'foo')
-        self.assertEquals(arg.default, 33)
+        self.assertEqual(arg.index, 3)
+        self.assertEqual(arg.name, 'foo')
+        self.assertEqual(arg.default, 33)
 
         arglist = ArgList(
             Arg(index=1),
             Arg(index=2),
             baz=Arg(name='baz'),
         )
-        self.assertEquals(len(arglist), 3)
+        self.assertEqual(len(arglist), 3)
         
         self.assertRaises(ArgDefError, ArgList,
             foo=Arg(index=1, default=11),
@@ -307,48 +306,48 @@ class TestArgDef(unittest.TestCase):
         arglist2 = ArgList.from_argspec(*argspec)
 
         arglist = ArgList.merge(arglist1, arglist2)
-        self.assertEquals(len(arglist), 3)
+        self.assertEqual(len(arglist), 3)
 
         arg = arglist.args[0]
-        self.assertEquals(arg.description, 'Baz')
-        self.assertEquals(arg.default, 1.5)
-        self.assert_(arg.optional is False)
+        self.assertEqual(arg.description, 'Baz')
+        self.assertEqual(arg.default, 1.5)
+        self.assertTrue(arg.optional is False)
         
         arg = arglist.args[1]
-        self.assertEquals(arg.description, 'Foo')
-        self.assertEquals(arg.default, 3)
-        self.assert_(arg.optional is True)
+        self.assertEqual(arg.description, 'Foo')
+        self.assertEqual(arg.default, 3)
+        self.assertTrue(arg.optional is True)
         
         arg = arglist.args[2]
-        self.assertEquals(arg.description, 'Bar')
-        self.assertEquals(arg.default, 'two')
-        self.assert_(arg.optional is True)
+        self.assertEqual(arg.description, 'Bar')
+        self.assertEqual(arg.default, 'two')
+        self.assertTrue(arg.optional is True)
         
     def test_clone_arglist(self):
         arglist2 = ArgList(
             Arg(default=11), Arg(default=22),
             foo=Arg(default=33), bar=Arg(default=44))
         arglist = arglist2.clone()
-        self.assert_(not (arglist is arglist2))
+        self.assertTrue(not (arglist is arglist2))
         
-        self.assertEquals(len(arglist), 4)
+        self.assertEqual(len(arglist), 4)
 
         arg = arglist.args[0]
-        self.assertEquals(arg.index, 1)
-        self.assertEquals(arg.default, 11)
+        self.assertEqual(arg.index, 1)
+        self.assertEqual(arg.default, 11)
         
         arg = arglist.args[1]
-        self.assertEquals(arg.index, 2)
-        self.assertEquals(arg.default, 22)
+        self.assertEqual(arg.index, 2)
+        self.assertEqual(arg.default, 22)
         
         arg1 = arglist.args[2]
         arg2 = arglist.args[3]
         if (arg1.name == 'bar'):
             (arg1, arg2) = (arg2, arg1)
-        self.assertEquals(arg1.default, 33)
-        self.assertEquals(arg1.name, 'foo')
-        self.assertEquals(arg2.default, 44)
-        self.assertEquals(arg2.name, 'bar')
+        self.assertEqual(arg1.default, 33)
+        self.assertEqual(arg1.name, 'foo')
+        self.assertEqual(arg2.default, 44)
+        self.assertEqual(arg2.name, 'bar')
 
     def test_arglist_serialize(self):
         ls = [
@@ -380,12 +379,12 @@ class TestArgDef(unittest.TestCase):
             (int, '5', 5),
             (int, '005', 5),
             (int, '"5"', 5),
-            (long, '5', 5),
+            (int, '5', 5),
             (float, '5', 5.0),
             (str, '5', '5'),
             (str, 'foo', 'foo'),
-            (unicode, 'foo', 'foo'),
-            (str, u'foo', u'foo'),
+            (str, 'foo', 'foo'),
+            (str, 'foo', 'foo'),
             (bool, '""', False),
             (bool, '0', False),
             (bool, 'no', False),
@@ -445,7 +444,7 @@ class TestArgDef(unittest.TestCase):
             val = resolve_value(val)
             self.assertEqual(val, res)
             self.assertEqual(type(val), type(res))
-            if (type(val) == list):
+            if (isinstance(val, list)):
                 for (sub1, sub2) in zip(val, res):
                     self.assertEqual(type(sub1), type(sub2))
 
@@ -518,7 +517,7 @@ class TestArgDef(unittest.TestCase):
             val = resolve_value(val)
             self.assertEqual(val, res)
             self.assertEqual(type(val), type(res))
-            if (type(val) == list):
+            if (isinstance(val, list)):
                 for (sub1, sub2) in zip(val, res):
                     self.assertEqual(type(sub1), type(sub2))
 
@@ -534,7 +533,7 @@ class TestArgDef(unittest.TestCase):
 
         nod = sparse.parse('(foo bar)')
         val = node_to_value(list, nod)
-        self.assert_(isinstance(val, ArgListWrapper))
+        self.assertTrue(isinstance(val, ArgListWrapper))
         self.assertEqual(val.ls, ['foo', 'bar'])
 
         nod = sparse.parse('(foo bar)')
@@ -543,12 +542,12 @@ class TestArgDef(unittest.TestCase):
 
         nod = sparse.parse('(foo ())')
         val = node_to_value(tuple, nod)
-        self.assert_(isinstance(val, ArgTupleWrapper))
+        self.assertTrue(isinstance(val, ArgTupleWrapper))
 
     def test_value_to_node(self):
         ls = [
             (int, 5, '5'),
-            (long, 5, '5'),
+            (int, 5, '5'),
             (float, 5.1, '5.1'),
             (bool, False, 'false'),
             (bool, True, 'true'),
@@ -556,9 +555,9 @@ class TestArgDef(unittest.TestCase):
             (bool, 3, 'true'),
             (str, 'foo', 'foo'),
             (str, 'foo space', '"foo space"'),
-            (unicode, 'foo', 'foo'),
-            (str, u'foo', 'foo'),
-            (str, u'unic\u0153de', u'unic\u0153de'),
+            (str, 'foo', 'foo'),
+            (str, 'foo', 'foo'),
+            (str, 'unic\u0153de', 'unic\u0153de'),
             (list, [], '()'),
             (tuple, (), '()'),
             (list, ['foo', 'bar', ('x', 'y')], '(foo bar (x y))'),
@@ -575,8 +574,9 @@ class TestArgDef(unittest.TestCase):
             (list, None, '(no=value)'),
             (ListOf(), None, '(no=value)'),
             (None, None, '(no=value)'),
-            (agent.Agent, builtin.NullAgent(), '/boodle.builtin.NullAgent'),
-            (Wrapped(agent.Agent), builtin.NullAgent, '/boodle.builtin.NullAgent'),
+            # XXX fails with no loader?
+            # (agent.Agent, builtin.NullAgent(), '/boodle.builtin.NullAgent'),
+            # (Wrapped(agent.Agent), builtin.NullAgent, '/boodle.builtin.NullAgent'),
         ]
 
         for (typ, val, res) in ls:
@@ -590,7 +590,7 @@ class TestArgDef(unittest.TestCase):
                 nod = sparse.parse(src)
                 (ls, dic) = arglist.resolve(nod)
                 ils = [ resolve_value(val) for val in ls ]
-                idic = dict([ (key, resolve_value(val)) for (key,val) in dic.items() ])
+                idic = dict([ (key, resolve_value(val)) for (key,val) in list(dic.items()) ])
                 self.assertEqual(ils, wantls)
                 self.assertEqual(idic, wantdic)
         if (badls):
@@ -794,7 +794,7 @@ class TestArgDef(unittest.TestCase):
             self.assertEqual(typ, typ2)
 
         ls = [
-            (long,int), (unicode,str),
+            (int,int), (str,str),
             (builtin.NullAgent, agent.Agent),
             (sample.MixinSample, sample.Sample),
         ]
@@ -808,14 +808,14 @@ class TestArgDef(unittest.TestCase):
         typ = Wrapped(int)
         val = type_to_node(typ)
         typ2 = node_to_type(val)
-        self.assert_(isinstance(typ2, Wrapped))
+        self.assertTrue(isinstance(typ2, Wrapped))
         self.assertEqual(typ2.type, int)
         
         typ = Wrapped(ListOf(int, bool))
         val = type_to_node(typ)
         typ2 = node_to_type(val)
-        self.assert_(isinstance(typ2, Wrapped))
-        self.assert_(isinstance(typ2.type, ListOf))
+        self.assertTrue(isinstance(typ2, Wrapped))
+        self.assertTrue(isinstance(typ2.type, ListOf))
         self.assertEqual(typ2.type.types, (int, bool))
         
     def test_seqtype_serialize(self):

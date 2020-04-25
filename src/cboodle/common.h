@@ -6,7 +6,8 @@
    See the LGPL or GPL documents, or the above URL, for details.
 */
 
-/* We define our own TRUE and FALSE and NULL, because ANSI is a strange world. */
+/* We define our own TRUE and FALSE and NULL, because ANSI is a strange world.
+ */
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -26,10 +27,10 @@ typedef struct stereo_struct stereo_t;
 typedef struct sample_struct sample_t;
 typedef struct note_struct note_t;
 
-typedef int (*generate_func_t)(long curtime, void *rock);
-typedef int (*mix_func_t)(long *buffer, generate_func_t genfunc, void *rock);
+typedef int (*generate_func_t)(long curtime, void* rock);
+typedef int (*mix_func_t)(long* buffer, generate_func_t genfunc, void* rock);
 
 typedef struct extraopt_struct {
-  char *key;
-  char *val;
+  wchar_t* key;
+  wchar_t* val;
 } extraopt_t;

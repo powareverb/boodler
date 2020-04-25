@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <wchar.h>
 
 #include "common.h"
 #include "audev.h"
@@ -47,7 +48,7 @@ int audev_init_device(char* devname,
   format = -1;
 
   for (opt = extra; opt->key; opt++) {
-    if (!strcmp(opt->key, "listdevices")) {
+    if (!wcscmp(opt->key, L"listdevices")) {
       fprintf(stderr, "Device list: not applicable.\n");
     }
   }
@@ -68,7 +69,8 @@ int audev_init_device(char* devname,
 
   if (verbose) {
     fprintf(stderr,
-            "%d channels, %d frames per second, 16-bit samples (signed, little-endian)\n",
+            "%d channels, %d frames per second, 16-bit samples (signed, "
+            "little-endian)\n",
             channels, rate);
   }
 

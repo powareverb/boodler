@@ -12,6 +12,9 @@ except:
 
 import os.path
 
+from packaging.version import InvalidVersion, Version
+
+
 class Token:
     """Token: represents a command element to be parsed.
 
@@ -64,7 +67,7 @@ class YesNoToken(Token):
                 return True
             if (ln.startswith('n')):
                 return False
-            print '(Type "yes" or "no")'
+            print('(Type "yes" or "no")')
 
 class PathToken(Token):
     """PathToken: Grab the name of a file or directory.
@@ -128,7 +131,7 @@ class PackageToken(Token):
     """
 
     prompt = 'package'
-    
+
     def accept(self, source):
         val = source.pop_word(self)
         try:
@@ -136,6 +139,7 @@ class PackageToken(Token):
         except:
             raise CommandError('Invalid package name: ' + val)
         return val
+
 
 class PackageOptVersionToken(Token):
     """PackageOptVersionToken: Grab the name of a package, and also
@@ -146,17 +150,17 @@ class PackageOptVersionToken(Token):
     prompt = 'package'
 
     greedy = True
-    
+
     def accept(self, source):
         val = source.pop_word(self)
-        
+
         if (':' in val):
             try:
                 (pkgname, vers) = pinfo.parse_package_version_spec(val)
                 return (pkgname, vers)
             except:
                 raise CommandError('Invalid package name: ' + val)
-            
+
         try:
             pinfo.parse_package_name(val)
         except:
@@ -169,13 +173,14 @@ class PackageOptVersionToken(Token):
         if (not source.is_empty()):
             val = source.pop_word(self)
             try:
-                vers = version.VersionNumber(val)
-            except version.VersionFormatError:
+                vers = Version(val)
+            except InvalidVersion:
                 if (self.greedy):
                     raise CommandError('Invalid version number: ' + val)
                 if (not (val is None)):
                     source.push_word(val)
         return (pkgname, vers)
+
 
 class PackageFileURLToken(Token):
     """PackageFileURLToken: Grab the name of a package (including version
@@ -206,14 +211,14 @@ class PackageFileURLToken(Token):
 
         if (val.endswith('.zip') or val.endswith(collect.Suffix_PackageArchive)):
             return (collect.Source_FILE, val)
-        
+
         if (':' in val):
             try:
                 (pkgname, vers) = pinfo.parse_package_version_spec(val)
                 return (collect.Source_PACKAGE, (pkgname, vers))
             except:
                 pass
-        
+
         try:
             pinfo.parse_package_name(val)
         except:
@@ -226,13 +231,14 @@ class PackageFileURLToken(Token):
         if (not source.is_empty()):
             val = source.pop_word(self)
             try:
-                vers = version.VersionNumber(val)
-            except version.VersionFormatError:
+                vers = Version(val)
+            except InvalidVersion:
                 if (self.greedy):
                     raise CommandError('Invalid version number: ' + val)
                 if (not (val is None)):
                     source.push_word(val)
         return (collect.Source_PACKAGE, (pkgname, vers))
+
 
 class ResourceToken(Token):
     """ResourceToken: Grab the name of a resource. This must be
@@ -380,7 +386,7 @@ def input_line(prompt=''):
     (EOF on stdin also appears as a KeyboardInterrupt.)
     """
     try:
-        ln = raw_input(prompt+'> ')
+        ln = input(prompt+'> ')
         ln = ln.strip()
         if (not ln):
             raise CommandCancelled()
@@ -389,7 +395,6 @@ def input_line(prompt=''):
         raise KeyboardInterrupt()
 
 # Late imports
-from boopak import version
 from boopak import pinfo
 from boopak import collect
 from booman import CommandError, CommandCancelled

@@ -4,19 +4,16 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-import sys
-import os.path
-import zipfile
-import time
 import codecs
+import os.path
+import sys
+import time
+import zipfile
 
-try:
-    set
-except:
-    import sets
-    set = sets.Set
+from packaging.version import Version
 
 from booman import token
+
 
 class CommandToken(token.Token):
     """CommandToken: a Token which grabs one of the command words.
@@ -133,12 +130,11 @@ or a URL to download and inspect.
         ensure_fetched(srctype, loc)
         pkg = frame.loader.find_source(srctype, loc)
 
-        print 'Package:', pkg.name, '   Version:', str(pkg.version)
+        print('Package:', pkg.name, '   Version:', str(pkg.version))
         ress = pkg.resources
 
-        ls = ress.keys()
-        ls.sort()
-        print 'Resources:', len(ls)
+        ls = sorted(list(ress.keys()))
+        print('Resources:', len(ls))
         
         for key in ls:
             res = ress.get(key)
@@ -146,7 +142,7 @@ or a URL to download and inspect.
             typval = ''
             if (typ):
                 typval = '['+typ+']'
-            print '  ', key, typval
+            print('  ', key, typval)
         
 class DescribeCmd(Command):
     name = 'describe'
@@ -172,23 +168,22 @@ version of the package you have installed.
         ensure_fetched(srctype, loc)
         pkg = frame.loader.find_source(srctype, loc)
 
-        print 'Package:', pkg.name, '   Version:', str(pkg.version)
+        print('Package:', pkg.name, '   Version:', str(pkg.version))
         meta = pkg.metadata
 
-        ls = meta.keys()
-        ls.sort()
-        print 'Metadata entries:', len(ls)
+        ls = sorted(list(meta.keys()))
+        print('Metadata entries:', len(ls))
 
         for key in ls:
             vals = meta.get_all(key)
             if (not vals):
                 continue
             if (len(vals) == 1):
-                print '  ', key+':', vals[0]
+                print('  ', key+':', vals[0])
             else:
-                print '  ', key+':'
+                print('  ', key+':')
                 for val in vals:
-                    print '    ', val
+                    print('    ', val)
 
 class ExamineCmd(Command):
     name = 'examine'
@@ -224,7 +219,7 @@ Install a package from the Boodler web site.
 
         if (srctype == collect.Source_PACKAGE):
             (pkgname, vers) = loc
-            if (isinstance(vers, version.VersionSpec)):
+            if (isinstance(vers, Version)):
                 ### really this should query boodler.org for matching version
                 raise CommandError('You must supply an exact version number')
             if (vers is None):
@@ -233,7 +228,7 @@ Install a package from the Boodler web site.
             destfile = create.build_package_filename(pkgname, vers)
             srctype = collect.Source_URL
             loc = collect.REPOSITORY_URL + destfile
-            print 'Downloading package from:', loc
+            print('Downloading package from:', loc)
 
         ensure_fetched(srctype, loc)
         try:
@@ -245,8 +240,8 @@ Install a package from the Boodler web site.
             already_got = False
 
         if (already_got and (not frame.is_force)):
-            print ('The package ' + pkg.name
-                + ' (version ' + str(pkg.version) + ') is already installed. Do you want to reinstall it?')
+            print(('The package ' + pkg.name
+                + ' (version ' + str(pkg.version) + ') is already installed. Do you want to reinstall it?'))
             tok = token.YesNoToken()
             res = tok.accept(source)
             if (not res):
@@ -254,9 +249,9 @@ Install a package from the Boodler web site.
         
         pkg = frame.loader.install_source(srctype, loc)
 
-        print 'Package:', pkg.name, '   Version:', str(pkg.version)
+        print('Package:', pkg.name, '   Version:', str(pkg.version))
         meta = pkg.metadata
-        print 'Title:', meta.get_one('dc.title', '<not available>')
+        print('Title:', meta.get_one('dc.title', '<not available>'))
 
         ### check dependencies!
         
@@ -272,11 +267,10 @@ entry.
     def perform(self, source):
         self.assert_done(source)
 
-        ls = frame.loader.list_all_current_packages()
-        ls.sort()
+        ls = sorted(frame.loader.list_all_current_packages())
         for key in ls:
-            print '  ', format_package(key, False)
-        print len(ls), 'packages installed (ignoring multiple versions)'
+            print('  ', format_package(key, False))
+        print(len(ls), 'packages installed (ignoring multiple versions)')
 
 class ListAllCmd(Command):
     name = 'listall'
@@ -289,8 +283,7 @@ you have multiple versions of a package, this displays that fact.
     def perform(self, source):
         self.assert_done(source)
 
-        ls = frame.loader.list_all_packages()
-        ls.sort()
+        ls = sorted(frame.loader.list_all_packages())
         count = 0
         for (pkgname, verslist) in ls:
             count += len(verslist)
@@ -299,8 +292,8 @@ you have multiple versions of a package, this displays that fact.
             if (verslist):
                 verslist = [ str(vers) for vers in verslist ]
                 versions += (' (also ' + ', '.join(verslist) + ')')
-            print '  ', pkgname, versions
-        print count, 'packages installed (including multiple versions)'
+            print('  ', pkgname, versions)
+        print(count, 'packages installed (including multiple versions)')
 
 class ObsoleteCmd(Command):
     name = 'obsolete'
@@ -340,11 +333,11 @@ can be deleted.
 
         res = obsolete.difference(found_ok)
         if (not res):
-            print 'No obsolete packages found.'
+            print('No obsolete packages found.')
             return
-        print 'The following versions can be deleted safely:'
+        print('The following versions can be deleted safely:')
         for key in res:
-            print '  ', format_package(key)
+            print('  ', format_package(key))
 
 class VersionsCmd(Command):
     name = 'versions'
@@ -367,10 +360,9 @@ List all the versions of package that are installed.
             frame.note_backtrace()
             raise CommandError('Unable to read package: ' + pkgname)
 
-        ls = [(pkgname, vers) for vers in pgroup.versions ]
-        ls.sort()
+        ls = sorted([(pkgname, vers) for vers in pgroup.versions ])
         for key in ls:
-            print '  ', format_package(key)
+            print('  ', format_package(key))
 
 class RequiresCmd(Command):
     name = 'requires'
@@ -415,10 +407,10 @@ one you named.
         found_ok.discard(pkg.key)
 
         ls = list(found_ok)
-        print len(ls), 'packages require', format_package(pkg)
+        print(len(ls), 'packages require', format_package(pkg))
         ls.sort()
         for key in ls:
-            print '  ', format_package(key)
+            print('  ', format_package(key))
 
 class DeleteCmd(Command):
     name = 'delete'
@@ -456,28 +448,28 @@ Delete a particular version of a package from your collection.
                 except:
                     pass
                 
-                print ('Are you sure you want to delete' + desc + ' '
-                    + pkgname + '?')
+                print(('Are you sure you want to delete' + desc + ' '
+                    + pkgname + '?'))
                 tok = token.YesNoToken()
                 res = tok.accept(source)
                 if (not res):
                     raise CommandCancelled()
 
             frame.loader.delete_group(pkgname)
-            print 'All of package', pkgname, 'deleted.'
+            print('All of package', pkgname, 'deleted.')
         else:
             pkg = frame.loader.load(pkgname, vers)
         
             if (not frame.is_force):
-                print ('Are you sure you want to delete ' + pkg.name
-                    + ' (version ' + str(pkg.version) + ')?')
+                print(('Are you sure you want to delete ' + pkg.name
+                    + ' (version ' + str(pkg.version) + ')?'))
                 tok = token.YesNoToken()
                 res = tok.accept(source)
                 if (not res):
                     raise CommandCancelled()
 
             frame.loader.delete_package(pkg.name, pkg.version)
-            print 'Package', format_package(pkg), 'deleted.'
+            print('Package', format_package(pkg), 'deleted.')
 
 class DeleteAllCmd(Command):
     name = 'deleteall'
@@ -490,14 +482,14 @@ Delete every package in your collection.
         self.assert_done(source)
         
         if (not frame.is_force):
-            print 'Are you sure you want to delete every package in your collection?'
+            print('Are you sure you want to delete every package in your collection?')
             tok = token.YesNoToken()
             res = tok.accept(source)
             if (not res):
                 raise CommandCancelled()
 
         frame.loader.delete_whole_collection()
-        print 'All packages deleted.'
+        print('All packages deleted.')
 
 class CreateCmd(Command):
     name = 'create'
@@ -554,7 +546,7 @@ the command line. You should only use --import when you intend to use the
             destname = os.path.join(destname, destfile)
 
         if (os.path.exists(destname) and not frame.is_force):
-            print 'Are you sure you want to overwrite ' + destname + '?'
+            print('Are you sure you want to overwrite ' + destname + '?')
             tok = token.YesNoToken()
             res = tok.accept(source)
             if (not res):
@@ -594,7 +586,7 @@ the command line. You should only use --import when you intend to use the
                 (pkgname, pkgvers), absdirname, contents, metafile, ressfile)
         finally:
             fl.close()
-        print 'Package created:', destname
+        print('Package created:', destname)
 
 class ReloadCmd(Command):
     name = 'reload'
@@ -609,7 +601,7 @@ collection directory while boodle-mgr was running.
         self.assert_done(source)
         frame.loader.clear_cache()
         frame.loader.clean_temp()
-        print 'Done.'
+        print('Done.')
         
 class HelpCmd(Command):
     name = 'help'
@@ -633,20 +625,20 @@ Show some help on the given command.
             extra = ''
             if (cmd.synonyms):
                 extra = ' ("' + '", "'.join(cmd.synonyms) + '")'
-            print 'Command "' + cmd.name + '"' + extra + ':'
+            print('Command "' + cmd.name + '"' + extra + ':')
 
             helptext = cmd.help
             if (not helptext):
                 helptext = cmd.description + '.'
-            print
-            print helptext.strip()
+            print()
+            print(helptext.strip())
             return
 
         self.assert_done(source)
 
         maxlen = 1 + max([ len(cmd.name) for cmd in command_list ])
         for cmd in command_list:
-            print (cmd.name+':').ljust(maxlen), cmd.description
+            print((cmd.name+':').ljust(maxlen), cmd.description)
 
 class LastErrorCmd(Command):
     name = 'lasterror'
@@ -662,7 +654,7 @@ exists to aid debugging of boodle-mgr.
         val = frame.get_last_backtrace()
         if (val is None):
             val = 'No Python exceptions have occurred.'
-        print val
+        print(val)
 
 # All the Command subclasses defined above. This list is used to
 # make the CommandToken.verb_map table, and also when listing the
@@ -716,7 +708,7 @@ def ensure_fetched(srctype, loc):
     fetcher = frame.loader.fetch_source(srctype, loc)
     if (fetcher is None):
         return
-    print 'Loading...',
+    print('Loading...', end=' ')
     count = 0
     while (not fetcher.is_done()):
         fetcher.work()
@@ -724,12 +716,11 @@ def ensure_fetched(srctype, loc):
         if (count % 2 == 0):
             sys.stdout.write('.')
             sys.stdout.flush()
-    print '.'
+    print('.')
 
 # Late imports
 from boopak import pinfo
 from boopak import collect
-from boopak import version
 from booman import CommandError, CommandCancelled
 from booman import frame
 from booman import create

@@ -60,7 +60,7 @@ if (not dldir):
     dldir = os.environ.get('BOODLER_DOWNLOAD')
 
 if (not args):
-    print 'Welcome to Boodle-Manager. Type "help" for a list of commands.'
+    print('Welcome to Boodle-Manager. Type "help" for a list of commands.')
 
 # Prepare the package manager.      
 frame.setup_loader(basedir, coldir, dldir, importing_ok=options.importing_ok)
@@ -76,9 +76,9 @@ try:
         frame.set_interactive(True)
         while (not frame.quit_yet()):
             frame.handle([])
-        print '<exiting>'
+        print('<exiting>')
 except KeyboardInterrupt:
-    print '<interrupted>'
+    print('<interrupted>')
 
 # Shut down the package manager.        
 frame.cleanup()

@@ -182,64 +182,6 @@ class local_build_ext(build_ext):
         build_ext.build_extension(self, ext)
 
 
-class local_generate_source(Command):
-    """local_generate_source: A special command to generate cboodle-*.c
-    source files.
-
-    Every driver module needs a different cboodle-*.c source file. They
-    are nearly identical; the only difference is a few symbol names.
-    It is therefore convenient to generate them from a template, called
-    cboodle.c.
-
-    The generate_source command is not in the "build" or "install" pipeline,
-    because I ran it before I distributed the source. You should already
-    have a bunch of cboodle-*.c files. If you run this command, they'll
-    be rewritten, but they won't be any different.
-    """
-
-    description = "generate extra source files (not needed for build/install)"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        # Generate all the extensions, not just the available ones.
-        for ext in all_extensions:
-            key = ext.boodler_key
-            barename = 'cboodle-'+key+'.c'
-            destfile = None
-            for val in ext.sources:
-                if (val.endswith(barename)):
-                    destfile = val
-                    break
-            if (not destfile):
-                raise DistutilsSetupError(
-                    'Boodler extension ' + key +
-                    ' does not have a ' + barename + ' source.')
-
-            srcfile = destfile[:-len(barename)] + 'cboodle.c'
-
-            distutils.log.info(
-                "building '%s' extension at '%s'", key, destfile)
-
-            infl = open(srcfile, 'rU')
-            outfl = open(destfile, 'w')
-
-            while True:
-                ln = infl.readline()
-                if (not ln):
-                    break
-                ln = ln.replace('$MODBASE$', key)
-                outfl.write(ln)
-
-            outfl.close()
-            infl.close()
-
-
 class local_generate_pydoc(Command):
     """local_generate_pydoc: A special command to generate pydoc HTML files
     for each module.
@@ -289,7 +231,7 @@ class local_generate_pydoc(Command):
         try:
             import subprocess
         except:
-            print 'generate_pydoc requires Python 2.4 or later.'
+            print('generate_pydoc requires Python 3.7 or later.')
             return
 
         packages = ['boodle', 'boopak', 'booman']
@@ -328,8 +270,7 @@ class local_generate_pydoc(Command):
 
             modules.append(pkg)
 
-            files = os.listdir(path)
-            files.sort()
+            files = sorted(os.listdir(path))
             for file in files:
                 if (file.startswith('_')):
                     continue
@@ -357,9 +298,9 @@ class local_generate_pydoc(Command):
 
         def sysmod_func(match):
             val = match.group(1)
-            if (not sysmodules.has_key(val)):
+            if (val not in sysmodules):
                 if (not (val in packages)):
-                    print 'Warning: link to "%s.html" unmunged.' % (val,)
+                    print('Warning: link to "%s.html" unmunged.' % (val,))
                 return match.group(0)
             val = val.lower()
             if (val == 'cstringio'):
@@ -371,14 +312,14 @@ class local_generate_pydoc(Command):
 
         newenv = dict(os.environ)
         val = buildpath
-        if (newenv.has_key('PYTHONPATH')):
+        if ('PYTHONPATH' in newenv):
             val = val + ':' + newenv['PYTHONPATH']
         newenv['PYTHONPATH'] = val
 
         for mod in modules:
             ret = subprocess.call(['pydoc', '-w', mod], env=newenv)
             if (ret):
-                print 'pydoc failed on', mod, ':', ret
+                print('pydoc failed on', mod, ':', ret)
                 sys.exit(1)
 
             file = mod+'.html'
@@ -420,7 +361,7 @@ class local_generate_pydoc(Command):
             fl.write('</td>\n')
         fl.write(index_tail)
         fl.close()
-        print 'build index.html'
+        print('build index.html')
 
 
 setup(name='Boodler',
@@ -439,7 +380,7 @@ setup(name='Boodler',
           'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
           'Operating System :: POSIX',
           'Operating System :: MacOS :: MacOS X',
-          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 3',
       ],
       long_description="""
 Boodler is a tool for creating soundscapes -- continuous, infinitely
@@ -453,6 +394,9 @@ switch between them, fade them in and out. This package comes with
 many example soundscapes. You can use these, modify them, combine them
 to arbitrary levels of complexity, or write your own.
 """,
+      install_requires=[
+          'packaging',
+      ],
       packages=[
           'boodle',
           'boopak',
@@ -469,6 +413,5 @@ to arbitrary levels of complexity, or write your own.
       ext_modules=list(all_extensions),
       cmdclass={
           'build_ext': local_build_ext,
-          'generate_source': local_generate_source,
           'generate_pydoc': local_generate_pydoc,
       })

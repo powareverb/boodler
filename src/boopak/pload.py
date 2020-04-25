@@ -18,17 +18,13 @@ import os.path
 import imp
 import types
 
-try:
-    set
-except:
-    import sets
-    set = sets.Set
-
-from boopak import version
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
+from packaging.version import Version
 
 Filename_Versions = 'Versions'
 Filename_Metadata = 'Metadata'
 Filename_Resources = 'Resources'
+
 
 class PackageLoader:
     """PackageLoader: manages a package collection, loading packages as
@@ -119,10 +115,11 @@ class PackageLoader:
     import_recorder = None
 
     def __init__(self, collecdir, boodler_api_vers=None, importing_ok=False):
-        if (type(boodler_api_vers) in [str, unicode]):
-            boodler_api_vers = version.VersionNumber(boodler_api_vers)
+        if (type(boodler_api_vers) in [str]):
+            boodler_api_vers = Version(boodler_api_vers)
+
         self.boodler_api_vers = boodler_api_vers
-            
+
         if (collecdir is None):
             raise ValueError('PackageLoader requires a collection directory')
 
@@ -131,7 +128,7 @@ class PackageLoader:
         #if (not os.path.isdir(collecdir)):
         #   raise ValueError('PackageLoader collection directory is not readable: '
         #       + collecdir)
-        
+
         self.collecdir = collecdir
 
         self.importing_ok = False
@@ -168,22 +165,25 @@ class PackageLoader:
         is available. It generates PackageLoadError if the package
         was malformed in some way which prevented loading.
         """
-        
-        if (type(versionspec) in [str, unicode]):
-            versionspec = version.VersionSpec(versionspec)
-            
+
+        if isinstance(versionspec, str):
+            try:
+                versionspec = SpecifierSet(versionspec)
+            except InvalidSpecifier:
+                versionspec = Version(versionspec)
+
         pgroup = self.load_group(pkgname)
         if (not pgroup.get_num_versions()):
             raise PackageNotFoundError(pkgname,
                 'no versions available')
 
-        if (isinstance(versionspec, version.VersionNumber)):
+        if (isinstance(versionspec, Version)):
             if (not pgroup.has_version(versionspec)):
                 raise PackageNotFoundError(pkgname,
                     'version \'' + str(versionspec) + '\' not available')
             vers = versionspec
         elif ((versionspec is None)
-            or isinstance(versionspec, version.VersionSpec)):
+            or isinstance(versionspec, SpecifierSet)):
             vers = pgroup.find_version_match(versionspec)
         else:
             raise PackageLoadError(pkgname,
@@ -192,7 +192,7 @@ class PackageLoader:
         if (not vers):
             raise PackageNotFoundError(pkgname,
                 'no version matching \'' + str(versionspec) + '\'')
-        
+
         pkg = self.load_specific(pkgname, vers)
         if (self.currently_importing):
             # Record what package imported this one, and with what spec
@@ -208,7 +208,7 @@ class PackageLoader:
         can call it if you want. A PackageGroup represents all the
         available versions of a particular package.
         """
-        
+
         pgroup = self.package_groups.get(pkgname)
         if (pgroup):
             return pgroup
@@ -226,7 +226,7 @@ class PackageLoader:
         
         # Create a list of external versions.
         external_versions = []
-        for (name, vers) in self.external_dirs.keys():
+        for (name, vers) in list(self.external_dirs.keys()):
             if (pkgname == name):
                 external_versions.append(vers)
 
@@ -259,7 +259,7 @@ class PackageLoader:
         fl = None
         try:
             if (dirname and versionfile):
-                fl = open(versionfile, 'rbU')
+                fl = open(versionfile, 'r')
             # Go through the Versions file and the external versions list
             # (either of which may be nonexistent).
             pgroup.discover_versions(fl, external_versions)
@@ -287,8 +287,8 @@ class PackageLoader:
         leave the cache in a confusing state.)
         """
         
-        if (type(vers) in [str, unicode]):
-            vers = version.VersionNumber(vers)
+        if (type(vers) in [str]):
+            vers = Version(vers)
             
         pkg = self.packages.get( (pkgname, vers) )
         if (pkg):
@@ -324,7 +324,7 @@ class PackageLoader:
                 raise PackageLoadError(pkgname,
                     'package has no metadata file')
 
-            fl = open(metadatafile, 'rbU')
+            fl = open(metadatafile, 'r')
             try:
                 metadata = boopak.pinfo.Metadata(pkgname, fl)
             finally:
@@ -338,7 +338,7 @@ class PackageLoader:
         else:
             resourcesfile = os.path.join(dirname, Filename_Resources)
             if (os.path.isfile(resourcesfile)):
-                fl = open(resourcesfile, 'rbU')
+                fl = open(resourcesfile, 'r')
                 try:
                     resources = boopak.pinfo.Resources(pkgname, fl)
                 finally:
@@ -445,7 +445,7 @@ class PackageLoader:
                 raise PackageLoadError(label,
                     'package has no metadata file')
         
-            fl = open(metadatafile, 'rbU')
+            fl = open(metadatafile, 'r')
             try:
                 metadata = boopak.pinfo.Metadata(label, fl)
             finally:
@@ -460,9 +460,9 @@ class PackageLoader:
         
         val = metadata.get_one('boodler.version')
         if (not val):
-            vers = version.VersionNumber()
+            vers = Version('1.0')
         else:
-            vers = version.VersionNumber(val)
+            vers = Version(val)
 
         # Add this to the external directory table. (We have not actually
         # loaded the package.)
@@ -482,7 +482,7 @@ class PackageLoader:
         it implicitly invokes clear_cache().
         """
 
-        keys = [ key for key in self.external_dirs.keys()
+        keys = [ key for key in list(self.external_dirs.keys())
             if (self.external_dirs[key].dirname == dirname) ]
         if (not keys):
             return
@@ -545,8 +545,8 @@ class PackageLoader:
         # method is smart enough to find it, even though there is no
         # matching directory in the collection tree.)
 
-        for (name, vers) in self.external_dirs.keys():
-            if (not self.package_groups.has_key(name)):
+        for (name, vers) in list(self.external_dirs.keys()):
+            if (name not in self.package_groups):
                 try:
                     self.load_group(name)
                 except:
@@ -587,7 +587,7 @@ class PackageLoader:
 
         # Iterate through every version of every group.
         
-        for (pkgname, pgroup) in self.package_groups.items():
+        for (pkgname, pgroup) in list(self.package_groups.items()):
             for vers in pgroup.versions:
                 try:
                     pkg = self.load_specific(pkgname, vers)
@@ -596,9 +596,9 @@ class PackageLoader:
                             dep = self.load(deppkg, depspec)
                             dict_accumulate(forward, pkg.key, dep.key)
                             dict_accumulate(backward, dep.key, pkg.key)
-                        except PackageLoadError, ex:
+                        except PackageLoadError as ex:
                             dict_accumulate(bad, pkg.key, (deppkg, depspec))
-                except PackageLoadError, ex:
+                except PackageLoadError as ex:
                     pass
 
         self.all_deps = (forward, backward, bad)
@@ -620,13 +620,13 @@ class PackageLoader:
         
         self.discover_all_groups()
         res = []
-        for (pkgname, pgroup) in self.package_groups.items():
+        for (pkgname, pgroup) in list(self.package_groups.items()):
             ls = []
             for vers in pgroup.get_versions():
                 try:
                     self.load_specific(pkgname, vers)
                     ls.append(vers)
-                except PackageLoadError, ex:
+                except PackageLoadError as ex:
                     pass
             if (ls):
                 res.append( (pkgname, ls) )
@@ -648,12 +648,12 @@ class PackageLoader:
         
         self.discover_all_groups()
         res = []
-        for (pkgname, pgroup) in self.package_groups.items():
+        for (pkgname, pgroup) in list(self.package_groups.items()):
             vers = pgroup.find_version_match()
             try:
                 self.load_specific(pkgname, vers)
                 res.append( (pkgname, vers) )
-            except PackageLoadError, ex:
+            except PackageLoadError as ex:
                 pass
         return res
 
@@ -701,7 +701,7 @@ class PackageLoader:
                     if (not (dep.key in found_ok)):
                         found_ok.add(dep.key)
                         to_check.append(dep)
-                except PackageLoadError, ex:
+                except PackageLoadError as ex:
                     if (not isinstance(ex, PackageNotFoundError)):
                         errors += 1
                     dict_accumulate(not_found, deppkg, depspec)
@@ -835,9 +835,9 @@ class PackageLoader:
                 pkgname = pkgname[ : pos ]
                 if (val.startswith(':')):
                     val = val[ 1 : ]
-                    pkgspec = version.VersionNumber(val)
+                    pkgspec = Version(val)
                 else:
-                    pkgspec = version.VersionSpec(val)
+                    pkgspec = SpecifierSet(val)
 
             package = self.load(pkgname, pkgspec)
             mod = package.get_content()
@@ -852,7 +852,7 @@ class PackageLoader:
             for el in namels:
                 res = getattr(res, el)
             return res
-        except AttributeError, ex:
+        except AttributeError as ex:
             raise ValueError('unable to load ' + name + ' (' + str(ex) + ')')
 
     def find_item_resources(self, obj):
@@ -941,7 +941,7 @@ class PackageLoader:
                         fl.close()
                 setattr(mod, key, submod)
                 
-            if (type(submod) != types.ModuleType):
+            if (not isinstance(submod, types.ModuleType)):
                 raise ValueError('resource key based on non-module: ' + wholekey)
             if (mod.__name__+'.'+key != submod.__name__):
                 raise ValueError('resource key based on imported module: ' + wholekey)

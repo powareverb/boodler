@@ -18,7 +18,7 @@ FadeInOutAgent -- creates a channel that fades up, holds, and fades out
 TestSoundAgent -- plays a little test melody
 """
 
-import cStringIO
+import io
 from boodle import agent
 
 # Declare the imports list, so that "from boodle.builtin import *"
@@ -198,7 +198,7 @@ class TestSoundAgent(agent.Agent):
         center = stereo.scale(0)
         leftright = 1
         for val in pitches:
-            if (type(val) == tuple):
+            if (isinstance(val, tuple)):
                 for pitch in val:
                     self.sched_note_pan(snd, pitch=music.get_pitch(pitch), pan=center, delay=pos)
             else:
@@ -222,7 +222,7 @@ class SafeStringIO:
     is moved to realclose().
     """
     def __init__(self):
-        self.fl = cStringIO.StringIO()
+        self.fl = io.StringIO()
         self.read = self.fl.read
         self.write = self.fl.write
         self.seek = self.fl.seek

@@ -10,7 +10,7 @@ This is used by PackageCollection to fetch packages from an archive
 server.
 """
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 class Fetcher:
     """Fetcher: represents a file which is being downloaded from a web
@@ -75,7 +75,7 @@ class URLFetcher(Fetcher):
         self.outfl = None
 
         try:
-            self.infl = urllib2.urlopen(url)
+            self.infl = urllib.request.urlopen(url)
             self.outfl = open(filename, 'wb')
             self.done = False
         finally:

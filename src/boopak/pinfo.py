@@ -23,28 +23,22 @@ parse_resource_name() -- parse a resource name into a list of elements
 build_safe_pathname() -- turn a relative pathname into an absolute one, safely
 dict_accumulate() -- build a dict which maps keys to arrays
 dict_all_values() -- get list of all the values in a dict, recursively
-deunicode() -- decode a UTF-8 string into a unicode object
 """
 
-import sys
-import os.path
-import types
-import re
 import codecs
-import cStringIO
+import io
+import os.path
+import re
+import sys
 
-try:
-    set
-except:
-    import sets
-    set = sets.Set
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
+from packaging.version import Version
 
-from boopak import version
 
 class PackageInfo:
     """PackageInfo: represents a single package.
 
-    A PackageInfo is not the imported module object which a Boodler module 
+    A PackageInfo is not the imported module object which a Boodler module
     sees from the inside. It's a wrapper around that.
 
     PackageInfo(loader, name, vers, dir, metadata, resources,
@@ -117,13 +111,13 @@ class PackageInfo:
         if (val != pkgname):
             raise PackageLoadError(pkgname,
                 'boodler.package does not match package location: ' + val)
-                
+
         val = metadata.get_one('boodler.version')
         if (not val):
             val = '(missing, 1.0 assumed)'
-            vers = version.VersionNumber()
+            vers = Version('1.0')
         else:
-            vers = version.VersionNumber(val)
+            vers = Version(val)
         if (vers != self.version):
             raise PackageLoadError(pkgname,
                 'boodler.version does not match package version: ' + val)
@@ -138,10 +132,12 @@ class PackageInfo:
         else:
             raise PackageLoadError(pkgname,
                 'boodler.main is not a module or . :' + val)
-                
+
         val = metadata.get_one('boodler.api_required')
+
         if (val):
-            spec = version.VersionSpec(val)
+            spec = SpecifierSet(val)
+
             if (self.loader.boodler_api_vers):
                 if (not spec.match(self.loader.boodler_api_vers)):
                     raise PackageLoadError(pkgname,
@@ -151,19 +147,27 @@ class PackageInfo:
         for val in metadata.get_all('boodler.requires'):
             try:
                 pos = val.find(' ')
+
                 if (pos < 0):
                     deppkg = val
                     depspec = None
                 else:
                     deppkg = val[:pos].strip()
                     depspec = val[pos+1:].strip()
-                    depspec = version.VersionSpec(depspec)
+
+                    try:
+                        depspec = SpecifierSet(depspec)
+                    except InvalidSpecifier:
+                        depspec = Version(depspec)
+
                 parse_package_name(deppkg)
+
                 deppkg = str(deppkg)
-                self.dependencies.add( (deppkg, depspec) )
-            except ValueError, ex:
+
+                self.dependencies.add((deppkg, depspec))
+            except ValueError as ex:
                 raise PackageLoadError(pkgname,
-                    'boodler.requires line invalid: ' + val)
+                    'boodler.requires line invalid: ' + val) from ex
 
         for val in metadata.get_all('boodler.requires_exact'):
             try:
@@ -173,17 +177,17 @@ class PackageInfo:
                 else:
                     deppkg = val[:pos].strip()
                     depspec = val[pos+1:].strip()
-                    depspec = version.VersionNumber(depspec)
+                    depspec = Version(depspec)
                 parse_package_name(deppkg)
                 deppkg = str(deppkg)
                 self.dependencies.add( (deppkg, depspec) )
-            except ValueError, ex:
+            except ValueError as ex:
                 raise PackageLoadError(pkgname,
                     'boodler.requires_exact line invalid: ' + val)
 
         try:
             self.resource_tree = self.resources.build_tree()
-        except ValueError, ex:
+        except ValueError as ex:
             raise PackageLoadError(pkgname,
                 'unable to map resources: ' + str(ex))
 
@@ -319,19 +323,18 @@ class PackageGroup:
                 ln = fl.readline()
                 if (not ln):
                     break
-                ln = deunicode(ln)
                 ln = ln.strip()
                 if (not ln):
                     continue
                 if (ln.startswith('#')):
                     continue
-                vers = version.VersionNumber(ln)
+                vers = Version(ln)
                 res[vers] = False
 
         if (external_versions):
             for vers in external_versions:
                 res[vers] = True
-            
+
         self.versions = list(res.keys())
         self.versions.sort()
         self.versions.reverse()
@@ -352,11 +355,11 @@ class PackageGroup:
 
     def has_version(self, vers):
         """has_version(vers) -> bool
-        
+
         Return whether the package has the given version number available.
         The argument must be a VersionNumber.
         """
-        return (vers in self.versions)
+        return vers in self.versions
 
     def find_version_match(self, spec=None):
         """find_version_match(spec=None) -> VersionNumber
@@ -367,9 +370,11 @@ class PackageGroup:
         """
 
         for vers in self.versions:
-            if (spec is None or spec.match(vers)):
+            if spec is None or vers in spec:
                 return vers
+
         return None
+
 
 class Metadata:
     """Metadata: represents the contents of a Metadata file.
@@ -381,11 +386,6 @@ class Metadata:
     Metadata file.) It is the caller's responsibility to close the
     file afterwards. If no file is provided, the Metadata will be
     empty.
-
-    (The file should be opened with mode 'rbU'. This is relaxed about
-    newlines, but careful about high-bit characters, so that UTF-8
-    decoding will work. Note that the file should offer bytes, not
-    Unicode characters.)
 
     The first argument is a package name, but this is only used for
     error messages. If the package name is not known when you read the
@@ -415,7 +415,6 @@ class Metadata:
             ln = fl.readline()
             if (not ln):
                 break
-            ln = deunicode(ln)
             ln = ln.strip()
             # Ignore blank lines and comments.
             if (not ln):
@@ -479,7 +478,7 @@ class Metadata:
         """
 
         res = Metadata('<clone>')
-        for key in self.map.keys():
+        for key in list(self.map.keys()):
             res.map[key] = list(self.map[key])
         return res
 
@@ -496,7 +495,7 @@ class Metadata:
         the comment argument.
         """
 
-        if (type(comment) in [str, unicode]):
+        if (type(comment) in [str]):
             comment = [comment]
         if (comment):
             for val in comment:
@@ -505,8 +504,7 @@ class Metadata:
                 fl.write('\n')
             fl.write('\n')
 
-        ls = self.keys()
-        ls.sort()
+        ls = sorted(list(self.keys()))
         for key in ls:
             for val in self.map[key]:
                 fl.write(key)
@@ -534,7 +532,7 @@ class Metadata:
         package should not modify its own metadata.)
         """
 
-        if (self.map.has_key(key)):
+        if (key in self.map):
             self.map.pop(key)
 
 class Resources:
@@ -547,11 +545,6 @@ class Resources:
     Resources file.) It is the caller's responsibility to close the
     file afterwards. If no file is provided, the Resources object will
     be empty.
-
-    (The file should be opened with mode 'rbU'. This is relaxed about
-    newlines, but careful about high-bit characters, so that UTF-8
-    decoding will work. Note that the file should offer bytes, not
-    Unicode characters.)
 
     The first argument is a package name, but this is only used for
     error messages. If the package name is not known when you read the
@@ -587,7 +580,6 @@ class Resources:
             ln = fl.readline()
             if (not ln):
                 break
-            ln = deunicode(ln)
             ln = ln.strip()
             # Ignore blank lines and comments.
             if (not ln):
@@ -604,7 +596,7 @@ class Resources:
                 except ValueError:
                     raise PackageLoadError(pkgname,
                         'invalid resource: ' + key)
-                if (self.map.has_key(key)):
+                if (key in self.map):
                     raise PackageLoadError(pkgname,
                         'duplicate resource: ' + key)
                 curdata = Resource(key)
@@ -656,7 +648,7 @@ class Resources:
 
         Get the Resources contained in this Resources object.
         """
-        return self.map.values()
+        return list(self.map.values())
 
     def build_tree(self):
         """build_tree() -> dict
@@ -681,7 +673,7 @@ class Resources:
         """
 
         res = {}
-        for key in self.keys():
+        for key in list(self.keys()):
             ls = parse_resource_name(key)
             resel = ls.pop()
             grp = res
@@ -690,10 +682,10 @@ class Resources:
                 if (subgrp is None):
                     subgrp = {}
                     grp[el] = subgrp
-                if (type(subgrp) != types.DictType):
+                if (not isinstance(subgrp, dict)):
                     raise ValueError('resource cannot be an attr of another resource: ' + key)
                 grp = subgrp
-            if (grp.has_key(resel)):
+            if (resel in grp):
                 raise ValueError('resource cannot contain an attr of another resource: ' + key)
             grp[resel] = key
 
@@ -712,7 +704,7 @@ class Resources:
         the comment argument.
         """
 
-        if (type(comment) in [str, unicode]):
+        if (type(comment) in [str]):
             comment = [comment]
         if (comment):
             for val in comment:
@@ -721,8 +713,7 @@ class Resources:
                 fl.write('\n')
             fl.write('\n')
 
-        ls = self.keys()
-        ls.sort()
+        ls = sorted(list(self.keys()))
         for key in ls:
             fl.write(':')
             fl.write(key)
@@ -747,7 +738,7 @@ class Resources:
         except ValueError:
             raise ValueError(self.pkgname + ': invalid resource name: ' + key)
             
-        if (self.map.has_key(key)):
+        if (key in self.map):
             raise ValueError(self.pkgname + ': resource already exists: ' + key)
         res = Resource(key)
         self.map[key] = res
@@ -814,8 +805,7 @@ class Resource:
         Write the contents of this Resource object to a file.
         """
 
-        ls = self.keys()
-        ls.sort()
+        ls = sorted(list(self.keys()))
         for key in ls:
             for val in self.map[key]:
                 fl.write(key)
@@ -843,7 +833,7 @@ class Resource:
         package should not modify its own metadata.)
         """
 
-        if (self.map.has_key(key)):
+        if (key in self.map):
             self.map.pop(key)
 
 
@@ -887,12 +877,13 @@ class File:
 
         Open the file for reading. Returns a Python file object.
         If binary is False, the file is opened with newline translation
-        ('rU'); otherwise, in binary mode ('rb').
+        ('r'); otherwise, in binary mode ('rb').
         """
         if (binary):
             mode = 'rb'
         else:
-            mode = 'rU'
+            mode = 'r'
+
         return open(self.pathname, mode)
 
 class MemFile(File):
@@ -923,7 +914,7 @@ class MemFile(File):
     def __repr__(self):
         return '<MemFile <' + self.label + '>>'
     def open(self, binary=False):
-        return cStringIO.StringIO(self.data)
+        return io.StringIO(self.data)
 
 # Regular expression for valid Python identifiers: letters, digits, and
 # underscores. (But not starting with a digit.)
@@ -945,6 +936,7 @@ capital_letter_regexp = re.compile('([A-Z])')
 # Regexp which matches a caret followed by one letter (as a group)
 caret_letter_regexp = re.compile('\\^([A-Za-z])')
 
+
 def parse_package_version_spec(val):
     """parse_package_version_spec(val) -> (pkgname, VersionNumber)
         or (pkgname, VersionSpec) or (pkgname, None)
@@ -953,25 +945,24 @@ def parse_package_version_spec(val):
     (e.g., "org.boodler.sample:1.0") or exact version spec 
     (e.g., "org.boodler.sample::1.0"). If neither is present,
     the second value of the return tuple will be None.
-    
+
     Raises a ValueError if the name was in any way invalid. (Thus,
     this function can be used to ensure that a package name is valid.)
     """
 
     vers = None
-    
-    pos = val.find(':')
-    if (pos >= 0):
-        spec = val[ pos+1 : ]
-        val = val[ : pos ]
-        if (spec.startswith(':')):
-            vers = version.VersionNumber(spec[ 1 : ])
-        else:
-            vers = version.VersionSpec(spec)
+
+    if '::' in val:
+        val, vers = val.split('::')
+        vers = Version(vers)
+    elif ':' in val:
+        val, vers = val.split(':')
+        vers = SpecifierSet(vers)
 
     parse_package_name(val)
 
     return (val, vers)
+
 
 def parse_package_name(pkgname):
     """parse_package_name(pkgname) -> list of str
@@ -1104,28 +1095,13 @@ def dict_all_values(dic, ls=None):
 
     if (ls is None):
         ls = []
-    if (type(dic) != dict):
+    if (not isinstance(dic, dict)):
         ls.append(dic)
     else:
-        for val in dic.values():
+        for val in list(dic.values()):
             dict_all_values(val, ls)
     return ls
-        
-utf8_decoder = codecs.getdecoder('utf-8')
-def deunicode(ln):
-    """deunicode(ln) -> unicode
 
-    Decode a UTF-8 string into a unicode object. This also strips off the
-    BOM character (byte order mark, U+FEFF) which occurs at the start of
-    some UTF-8 files.
-
-    (The 'utf-8-sig' decoder would take care of the BOM for us, but it
-    doesn't exist in Python 2.3.5)
-    """
-
-    (ln, dummy) = utf8_decoder(ln)
-    return ln.lstrip(u'\ufeff')
 
 # late imports
 from boopak.pload import PackageLoadError, PackageNotFoundError
-

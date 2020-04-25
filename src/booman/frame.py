@@ -5,7 +5,7 @@
 # See the LGPL document, or the above URL, for details.
 
 import traceback
-import StringIO
+import io
 
 # Global state for the command interpreter.
 
@@ -80,7 +80,7 @@ def note_backtrace():
     """
     global last_backtrace
 
-    fl = StringIO.StringIO()
+    fl = io.StringIO()
     traceback.print_exc(None, fl)
     last_backtrace = fl.getvalue().rstrip()
     fl.close()
@@ -113,7 +113,7 @@ def handle(args=None):
     try:
         # Print a blank line between interactive commands.
         if (is_interactive):
-            print
+            print()
 
         # Some ugliness here. If the user types a blank line at an input
         # prompt, it will show up as a CommandCancelled exception. We
@@ -132,17 +132,17 @@ def handle(args=None):
         # Okay, we got a command. Execute it.
         cmd = cmdclass()
         cmd.perform(source)
-    except CommandError, ex:
+    except CommandError as ex:
         # Simple exception: print the message.
         if (str(ex)):
-            print str(ex)
+            print(str(ex))
     except KeyboardInterrupt:
         # EOF or interrupt. Pass it on.
         raise
-    except Exception, ex:
+    except Exception as ex:
         # Unexpected exception: print it, and save a backtrace.
         note_backtrace()
-        print 'Python exception:', ex.__class__.__name__+':', str(ex)
+        print('Python exception:', ex.__class__.__name__+':', str(ex))
 
 def cleanup():
     """cleanup() -> None

@@ -177,12 +177,12 @@ def cast(obj):
     if (objtyp is tuple):
         if (len(obj) in [0,2,4]):
             for val in obj:
-                if (type(val) != float):
+                if (not isinstance(val, float)):
                     raise TypeError('stereo must be a tuple of floats')
             return obj
         raise TypeError('stereo tuple must have length 0, 2, or 4')
         
-    if (objtyp in (int, long, float)):
+    if (objtyp in (int, float)):
         if (obj == 0):
             return ()
         return (1.0, float(obj))
@@ -256,7 +256,7 @@ class TestStereo(unittest.TestCase):
         self.assertStereo(cast(0), ())
         self.assertStereo(cast(0.0), ())
         self.assertStereo(cast(-2), (1,-2))
-        self.assertStereo(cast(-2L), (1,-2))
+        self.assertStereo(cast(-2), (1,-2))
         self.assertStereo(cast(-2.0), (1,-2))
 
     def test_compose(self):

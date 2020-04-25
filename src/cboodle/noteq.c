@@ -347,7 +347,7 @@ int noteq_generate(long* buffer, generate_func_t genfunc, void* rock) {
 
             long endtm;
             double endvol;
-            endtm = PyInt_AsLong(PyTuple_GET_ITEM(vol, 1));
+            endtm = PyLong_AsLong(PyTuple_GET_ITEM(vol, 1));
             endvol = PyFloat_AsDouble(PyTuple_GET_ITEM(vol, 3));
 
             if (current_time >= endtm) {
@@ -356,7 +356,7 @@ int noteq_generate(long* buffer, generate_func_t genfunc, void* rock) {
             } else {
               long starttm;
               double startvol;
-              starttm = PyInt_AsLong(PyTuple_GET_ITEM(vol, 0));
+              starttm = PyLong_AsLong(PyTuple_GET_ITEM(vol, 0));
               startvol = PyFloat_AsDouble(PyTuple_GET_ITEM(vol, 2));
               if (starttm >= end_time) {
                 /* Channel volume is constant across the buffer. */
@@ -402,14 +402,14 @@ int noteq_generate(long* buffer, generate_func_t genfunc, void* rock) {
 
             long starttm = 0;
             PyObject* startpan = NULL;
-            long endtm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 1));
+            long endtm = PyLong_AsLong(PyTuple_GET_ITEM(stereo, 1));
             PyObject* endpan = PyTuple_GET_ITEM(stereo, 3);
 
             if (current_time >= endtm) {
               /* Stereo is constant across the buffer. */
               usepan = endpan;
             } else {
-              starttm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 0));
+              starttm = PyLong_AsLong(PyTuple_GET_ITEM(stereo, 0));
               startpan = PyTuple_GET_ITEM(stereo, 2);
 
               if (starttm >= end_time) {

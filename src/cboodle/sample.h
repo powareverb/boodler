@@ -16,15 +16,21 @@ struct sample_struct {
   long loopstart, loopend; /* frame time */
   long looplen;
 
-  value_t *data; /* numchannels*numframes values, [-0x7FFF..0x7FFF] */
+  value_t* data;    /* numchannels*numframes values, [-0x7FFF..0x7FFF] */
   double framerate; /* 1.0 means SOUNDRATE fps */
 };
 
-extern sample_t *sample_create(void);
-extern void sample_destroy(sample_t *samp);
+extern sample_t* sample_create(void);
+extern void sample_destroy(sample_t* samp);
 
-extern int sample_load(sample_t *samp, int framerate,
-  long numframes, void *data, long loopstart, long loopend,
-  int numchannels, int samplebits,
-  int issigned, int isbigend);
-extern void sample_unload(sample_t *samp);
+extern int sample_load(sample_t* samp,
+                       int framerate,
+                       long numframes,
+                       void* data,
+                       long loopstart,
+                       long loopend,
+                       int numchannels,
+                       int samplebits,
+                       int issigned,
+                       int isbigend);
+extern void sample_unload(sample_t* samp);

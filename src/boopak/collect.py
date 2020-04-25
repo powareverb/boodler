@@ -15,9 +15,11 @@ import os
 import os.path
 import zipfile
 
-from boopak import pload
-from boopak import version
+from packaging.specifiers import SpecifierSet
+from packaging.version import Version
+
 from boopak import fetch
+from boopak import pload
 
 # Filenames of particular significance.
 Filename_Collection = 'Collection'
@@ -257,7 +259,7 @@ class PackageCollection(pload.PackageLoader):
         # version of the package from our temporary workspace. This
         # invalidates the entry in self.unpacked_files, so we will have
         # to remove that entry.
-        download_keys = [ key for key in self.unpacked_files.keys()
+        download_keys = [ key for key in list(self.unpacked_files.keys())
             if (self.unpacked_files[key] == pkg) ]
 
         (pkgname, vers) = pkg.key
@@ -269,7 +271,7 @@ class PackageCollection(pload.PackageLoader):
             if (groupdir != pgroup.dir):
                 raise ValueError('PackageGroup is in wrong directory: ' + pgroup.dir)
             newversions = pgroup.get_versions()
-        except pload.PackageNotFoundError, ex:
+        except pload.PackageNotFoundError as ex:
             # The group does not exist at all, yet.
             newversions = []
         srcdir = pkg.dir
@@ -324,7 +326,7 @@ class PackageCollection(pload.PackageLoader):
         if (srctype == Source_FILE):
             return None
 
-        if (self.downloaded_files.has_key(loc)):
+        if (loc in self.downloaded_files):
             return None
 
         # Create the download directory, if necessary.      
@@ -450,12 +452,12 @@ class PackageCollection(pload.PackageLoader):
         only be called by bimport().
         """
         
-        if (type(spec) in [str, unicode]):
-            spec = version.VersionSpec(spec)
+        if (type(spec) in [str]):
+            spec = SpecifierSet(spec)
             
-        if (isinstance(spec, version.VersionNumber)):
+        if (isinstance(spec, Version)):
             isexact = True
-        elif ((spec is None) or isinstance(spec, version.VersionSpec)):
+        elif ((spec is None) or isinstance(spec, SpecifierSet)):
             # ok
             isexact = False
         else:

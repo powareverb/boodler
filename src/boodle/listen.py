@@ -48,7 +48,7 @@ class SocketListener:
     def __init__(self, handler, listenport=None):
         if (listenport == None):
             listenport = 31863
-        if (type(listenport) in [int, long]):
+        if (type(listenport) in [int]):
             insock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sockaddr = ('localhost', listenport)
         else:
@@ -136,7 +136,7 @@ class StdinListener:
     def poll(self):
         try:
             dat = sys.stdin.read()
-        except IOError, ex:
+        except IOError as ex:
             (errnum, errstr) = ex
             if (errnum in self.blockerrors):
                 return

@@ -19,7 +19,7 @@ import os
 import optparse
 import logging
 import traceback
-import StringIO
+import io
 
 # same as in boodle-mgr
 if ('darwin' in sys.platform.lower()):
@@ -78,7 +78,7 @@ popt.add_option('--prop',     ### -P?
     help='define properties for the root channel')
 popt.add_option('-L', '--log',
     action='store', type='choice', dest='loglevel', metavar='LEVEL',
-    choices=loglevels.keys(),
+    choices=list(loglevels.keys()),
     help='message level to log (default: warning)')
 popt.add_option('--logconfig',
     action='store', type='string', dest='logconfig', metavar='CONFIGFILE',
@@ -220,7 +220,7 @@ class LogFormatter(logging.Formatter):
             if (not limit):
                 limit = None
         
-        fl = StringIO.StringIO()
+        fl = io.StringIO()
         traceback.print_tb(tup[2], limit=limit, file=fl)
         res = fl.getvalue()
         fl.close()
@@ -290,9 +290,9 @@ cboodle = boodle.cboodle
 
 if (opts.listdrivers):
     ls = boodle.list_drivers()
-    print len(ls), 'output drivers available:'
+    print((len(ls), 'output drivers available:'))
     for (key, name) in ls:
-        print '   ', key+':', name
+        print(('   ', key+':', name))
 
 if (opts.driver):
     opts.driver = opts.driver.lower()
@@ -313,7 +313,7 @@ if (opts.verbosehardware or opts.listdevices):
 if (len(args) == 0):
     if (opts.listdrivers):
         sys.exit()
-    print usage.replace('%prog', os.path.basename(sys.argv[0]))
+    print((usage.replace('%prog', os.path.basename(sys.argv[0]))))
     sys.exit()
 
 rootprops = []
@@ -359,7 +359,7 @@ try:
     try:
         clas = agent.load_described(loader, args)
         ag = clas()
-    except Exception, ex:
+    except Exception as ex:
         rootlogger.error(str(ex))
         if (opts.verboseerrors):
             raise
@@ -369,18 +369,13 @@ try:
     gen.addagent(ag, gen.rootchannel, 0, ag.run)
 
     title = ag.get_title()
+
     if (not [True for (key,val) in extraopts if (key == 'title')]):
         # The extraopts get passed into the C extension, which only deals
         # with C (byte) strings. Therefore, we must convert a unicode title
         # to UTF-8.
-        try:
-            strtitle = title
-            if (type(strtitle) is unicode):
-                strtitle = strtitle.encode('UTF-8')
-        except:
-            strtitle = 'unable to encode agent title'
-        extraopts.append( ('title', strtitle) )
-    
+        extraopts.append(('title', title))
+
     cboodle.init(opts.devname, opts.ratewanted, opts.verbosehardware, extraopts)
     extraopts = None
 
@@ -393,7 +388,7 @@ except boodle.StopGeneration:
     pass
 except KeyboardInterrupt:
     rootlogger.warning('keyboard interrupt')
-except Exception, ex:
+except Exception as ex:
     rootlogger.critical('%s: %s', ex.__class__.__name__, ex,
         exc_info=True)
 

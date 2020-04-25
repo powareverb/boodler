@@ -18,7 +18,7 @@ import sys
 import logging
 import traceback
 import bisect
-import StringIO
+import io
 
 class Generator:
     """Generator: A class that stores the internal state of Boodler
@@ -119,7 +119,7 @@ class Generator:
         fps = cboodle.framespersec()
         
         typ = type(delay)
-        if (typ in [float, int, long]):
+        if (typ in [float, int]):
             if (delay < 0):
                 raise ScheduleError('negative delay time')
             if (delay > 3605): 
@@ -132,7 +132,7 @@ class Generator:
             fdelay = delay.frames
             if (fdelay < 0):
                 raise ScheduleError('negative delay time')
-            if (fdelay > 3605L * fps): 
+            if (fdelay > 3605 * fps): 
                 # about one hour
                 ### need to think about this
                 raise ScheduleError('delay too long')
@@ -158,7 +158,7 @@ class Generator:
         fps = cboodle.framespersec()
             
         typ = type(duration)
-        if (typ in [float, int, long]):
+        if (typ in [float, int]):
             if (duration < 0):
                 raise ScheduleError('negative duration time')
             if (duration > 3605): 
@@ -171,7 +171,7 @@ class Generator:
             fduration = duration.frames
             if (fduration < 0):
                 raise ScheduleError('negative duration time')
-            if (fduration > 3605L * fps): 
+            if (fduration > 3605 * fps): 
                 # about one hour
                 ### need to think about this
                 raise ScheduleError('duration too long')
@@ -318,7 +318,7 @@ class Generator:
 
         while (chan):
             subhans = [ han for han in chan.listenhandlers
-                if keydic.has_key(han.event) ]
+                if han.event in keydic ]
             if (subhans):
                 hans.extend(subhans)
             chan = chan.parent
@@ -335,7 +335,7 @@ class Generator:
                     raise BoodleInternalError('listening agent not in active channel')
                 han.func(*ev)
                 ### cancel on return value?
-            except Exception, ex:
+            except Exception as ex:
                 ag.logger.error('%s: %s',
                     ex.__class__.__name__, ex,
                     exc_info=True)
@@ -363,7 +363,7 @@ class Generator:
         numsampunloaded = 0
         numsampvirt = 0
         numnotes = 0
-        for samp in sample.cache.values():
+        for samp in list(sample.cache.values()):
             numnotes = numnotes + samp.refcount
             if (samp.csamp is None):
                 numsampvirt += 1
@@ -531,19 +531,19 @@ class Channel:
         
         agents = [ tup[1] for tup in gen.queue
             if (tup[1].channel is self 
-                or tup[1].channel.ancestors.has_key(self)) ]
+                or self in tup[1].channel.ancestors) ]
         for ag in agents:
             gen.remagent(ag)
 
         hans = [ han for han in gen.allhandlers
             if ((han.runchannel is self
-                    or han.runchannel.ancestors.has_key(self))
+                    or self in han.runchannel.ancestors)
                 or (han.listenchannel is self
-                    or han.listenchannel.ancestors.has_key(self))) ]
+                    or self in han.listenchannel.ancestors)) ]
         gen.remhandlers(hans)
             
         chans = [ ch for ch in gen.channels
-            if (ch is self or ch.ancestors.has_key(self)) ]
+            if (ch is self or self in ch.ancestors) ]
         chans.sort(Channel.compare)
         for ch in chans:
             ch.close()
@@ -693,7 +693,7 @@ class Channel:
         key = boodle.check_prop_name(key)
         chan = self
         while (chan):
-            if (chan.propmap.has_key(key)):
+            if (key in chan.propmap):
                 return chan.propmap[key]
             chan = chan.parent
         return default
@@ -708,7 +708,7 @@ class Channel:
         key = boodle.check_prop_name(key)
         chan = self
         while (chan):
-            if (chan.propmap.has_key(key)):
+            if (key in chan.propmap):
                 return True
             chan = chan.parent
         return False
@@ -733,9 +733,9 @@ class Channel:
         """
 
         key = boodle.check_prop_name(key)
-        if (self.propmap.has_key(key)):
+        if (key in self.propmap):
             self.propmap.pop(key)
-            
+
     def compare(ch1, ch2):
         """compare(ch1, ch2) -> int
 
@@ -743,7 +743,8 @@ class Channel:
         with this comparison function will put the deepest ones first,
         the root last.
         """
-        return cmp(ch2.depth, ch1.depth)
+        return (ch2.depth > ch1.depth) - (ch2.depth < ch1.depth)
+
     compare = staticmethod(compare)
 
 class FrameCount:
@@ -768,7 +769,7 @@ class FrameCount:
     """
 
     def __init__(self, frames):
-        self.frames = long(frames)
+        self.frames = int(frames)
 
 
 TRIMTIME   = 26460000   # ten minutes
@@ -840,7 +841,7 @@ def run_agents(starttime, gen):
     if (not (gen.stats_interval is None)):
         if (gen.last_stats_dump + int(gen.stats_interval * cboodle.framespersec()) < starttime):
             gen.last_stats_dump = starttime
-            fl = StringIO.StringIO()
+            fl = io.StringIO()
             gen.dump_stats(fl)
             gen.statslogger.warning(fl.getvalue())
             fl.close()
@@ -876,7 +877,7 @@ def run_agents(starttime, gen):
                 raise BoodleInternalError('queued agent not in active channel')
             gen.agentruntime = runtime
             handle()
-        except Exception, ex:
+        except Exception as ex:
             ag.logger.error('%s: %s',
                 ex.__class__.__name__, ex,
                 exc_info=True)

@@ -42,18 +42,18 @@ if (opts.port.startswith('/')):
     port = opts.port
     use_tcp = False
     if (host != 'localhost'):
-        print 'Cannot write to a Unix pipe on a different host.'
+        print('Cannot write to a Unix pipe on a different host.')
         sys.exit(1)
 else:
     try:
         port = int(opts.port)
         use_tcp = True
     except:
-        print 'Port must be an absolute pathname or an integer.'
+        print('Port must be an absolute pathname or an integer.')
         sys.exit(1)
 
 if (len(args) == 0):
-    print usage.replace('%prog', os.path.basename(sys.argv[0]))
+    print(usage.replace('%prog', os.path.basename(sys.argv[0])))
     sys.exit()
 
 dat = ' '.join(args) + '\n'

@@ -157,12 +157,17 @@ resolve_value() -- resolve a value or wrapped value
 # included, even though they're not listed as "internal" above.
 
 __all__ = [
-    'Arg', 'ArgDefError', 'ArgExtra', 'ArgList', 
+    'Arg', 'ArgDefError', 'ArgExtra', 'ArgList',
     'ListOf', 'SequenceOf', 'TupleOf', 'Wrapped'
 ]
 
 import sys
 import types
+
+from packaging.specifiers import SpecifierSet
+from packaging.version import Version
+
+from functools import cmp_to_key
 
 # We use "type" as an argument and local variable sometimes, but we need
 # to keep track of the standard type() function.
@@ -206,7 +211,7 @@ class ArgList:
     Internal methods:
 
     sort_args() -- finish constructing the ArgList
-    
+
     Public methods:
 
     get_index() -- return the Arg with the given index number
@@ -218,11 +223,11 @@ class ArgList:
     min_accepted() -- return the minimum number of positional arguments
     resolve() -- match a Tree of argument values against the ArgList
     """
-    
+
     def __init__(self, *ls, **dic):
         self.args = []
         self.listtype = None
-        
+
         pos = 1
         for arg in ls:
             if (isinstance(arg, ArgExtra)):
@@ -234,8 +239,8 @@ class ArgList:
                 arg.index = pos
             pos += 1
             self.args.append(arg)
-            
-        for key in dic.keys():
+
+        for key in list(dic.keys()):
             arg = dic[key]
             if (not isinstance(arg, Arg)):
                 raise ArgDefError('ArgList argument must be Arg')
@@ -258,18 +263,24 @@ class ArgList:
         This is an internal method. It should only be called by methods
         that construct ArgLists.
         """
-        
-        self.args.sort(_argument_sort_func)
+
+        self.args.sort(key=cmp_to_key(_argument_sort_func))
+
         for arg in self.args:
             if (arg.index is None):
                 continue
+
             ls = [ arg2 for arg2 in self.args if arg2.index == arg.index ]
+
             if (len(ls) > 1):
                 raise ArgDefError('more than one argument with index ' + str(arg.index))
+
         for arg in self.args:
             if (arg.name is None):
                 continue
+
             ls = [ arg2 for arg2 in self.args if arg2.name == arg.name ]
+
             if (len(ls) > 1):
                 raise ArgDefError('more than one argument with name ' + str(arg.name))
 
@@ -280,7 +291,7 @@ class ArgList:
     def __len__(self):
         return len(self.args)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True
 
     def get_index(self, val):
@@ -289,7 +300,7 @@ class ArgList:
         Return the Arg with the given index number. If there isn't one,
         returns None.
         """
-        
+
         for arg in self.args:
             if ((not (arg.index is None)) and (arg.index == val)):
                 return arg
@@ -301,7 +312,7 @@ class ArgList:
         Return the Arg with the given name. If there isn't one,
         returns None.
         """
-        
+
         for arg in self.args:
             if ((not (arg.name is None)) and (arg.name == val)):
                 return arg
@@ -312,7 +323,7 @@ class ArgList:
 
         Construct an ArgList identical to this one.
         """
-        
+
         arglist = ArgList()
         arglist.listtype = self.listtype
         for arg in self.args:
@@ -325,7 +336,7 @@ class ArgList:
 
         Construct an S-expression from this ArgList.
         """
-        
+
         nod = sparse.List(sparse.ID('arglist'))
         ls = [ arg.to_node() for arg in self.args ]
         nod.append(sparse.List(*ls))
@@ -339,7 +350,7 @@ class ArgList:
         Print out the ArgList to stdout, or another stream. This method
         prints in a human-readable form; it is intended for debugging.
         """
-        
+
         fl.write('ArgList:\n')
         for arg in self.args:
             fl.write('  Arg:\n')
@@ -366,18 +377,18 @@ class ArgList:
 
         ### this could take listtype.max into account. necessary?
         """
-        
+
         if (self.listtype):
             return None
         return len(self.args)
-        
+
     def min_accepted(self):
         """min_accepted() -> int
 
         Return the minimum number of positional arguments accepted by
         the ArgList.
         """
-        
+
         ls = [ arg for arg in self.args if (not arg.optional) ]
         return len(ls)
 
@@ -394,11 +405,11 @@ class ArgList:
 
         If the function has extra positional arguments -- f(*ls) --
         they are taken to be an arbitrary number of untyped arguments.
-        
+
         If the function has extra named arguments -- f(**dic) --
         then ArgDefError is raised.
         """
-        
+
         if (varkw):
             raise ArgDefError('cannot understand **' + varkw)
         arglist = ArgList()
@@ -410,7 +421,7 @@ class ArgList:
             defstart = len(args)
         else:
             defstart = len(args) - len(defaults)
-        
+
         pos = 1
         for key in args[1:]:
             dic = {}
@@ -422,7 +433,7 @@ class ArgList:
             arg = Arg(name=key, index=pos, **dic)
             pos += 1
             arglist.args.append(arg)
-            
+
         arglist.sort_args()
         return arglist
     from_argspec = staticmethod(from_argspec)
@@ -447,7 +458,7 @@ class ArgList:
         take precedence -- except for the optional flag, which is always
         taken from the second list. (It makes sense, honest.)
         """
-        
+
         arglist = arglist1.clone()
         if (arglist2 is None):
             return arglist
@@ -468,7 +479,7 @@ class ArgList:
         arglist.sort_args()
         return arglist
     merge = staticmethod(merge)
-    
+
     def resolve(self, node):
         """resolve(node) -> (list, dict)
 
@@ -483,7 +494,7 @@ class ArgList:
 
         Raises ArgDefError if the arguments fail to match in any way.
         (Too few, too many, can't be converted to the right type...)
-        
+
         The return values are a list and dict, such as you might expect
         to use in the form f(*ls, **dic). However, you wouldn't actually
         do that, because the contents of the list and dict are wrapped
@@ -494,12 +505,12 @@ class ArgList:
             clas = ArgClassWrapper(f, ls, dic)
             clas()
         """
-        
+
         if (not isinstance(node, sparse.List)):
             raise ArgDefError('arguments must be a list')
         if (len(node) == 0):
             raise ArgDefError('arguments must contain a class name')
-        
+
         valls = node[ 1 : ]
         valdic = node.attrs
 
@@ -559,7 +570,7 @@ class ArgList:
         # are the data that didn't fit any specific argument.
 
         if (extranamed):
-            raise ArgDefError('unknown named argument: ' + (', '.join(extranamed.keys())))
+            raise ArgDefError('unknown named argument: ' + (', '.join(list(extranamed.keys()))))
 
         resultls = []
         resultdic = {}
@@ -589,18 +600,18 @@ class ArgList:
                 exls = exls.ls
             for val in exls:
                 resultls.append(val)
-                
+
         # extranamed are not currently supported
 
         return (resultls, resultdic)
-        
+
     def from_node(node):
         """from_node(node) -> ArgList
 
         Construct an ArgList from an S-expression. The Tree passed in should
         be one generated by the to_node() method.
         """
-        
+
         if (not isinstance(node, sparse.List) or len(node) < 1
             or not isinstance(node[0], sparse.ID)
             or node[0].as_string() != 'arglist'):
@@ -615,7 +626,7 @@ class ArgList:
             res.listtype = node_to_type(node.get_attr('listtype'))
         return res
     from_node = staticmethod(from_node)
-    
+
 def _argument_sort_func(arg1, arg2):
     """_argument_sort_func(arg1, arg2) -> int
 
@@ -623,19 +634,22 @@ def _argument_sort_func(arg1, arg2):
     arguments by their index value. Arguments with no index are sorted
     last.
     """
-    
     ix1 = arg1.index
     ix2 = arg2.index
+
     if (ix1 is None and ix2 is None):
         return 0
+
     if (ix1 is None):
         return 1
+
     if (ix2 is None):
         return -1
-    return cmp(ix1, ix2)
-    
+
+    return (ix1 > ix2) - (ix1 < ix2)
+
 _DummyDefault = object()
-    
+
 class Arg:
     """Arg: represents one argument in an ArgList.
 
@@ -650,7 +664,7 @@ class Arg:
     If you specify a default, that implies optional=True. It also implies
     type=infer_type(defaultvalue). However, both of these may be
     overridden by explicit values.
-    
+
     Static methods:
 
     from_node() -- construct an Arg from an S-expression
@@ -673,27 +687,23 @@ class Arg:
     to_node() -- construct an S-expression from this Arg
     absorb() -- merge the attributes of another Arg into this one
     """
-        
+
     def __init__(self, name=None, index=None,
         type=None, default=_DummyDefault, optional=None,
         description=None):
 
-        if (name is None):
+        if name is None:
             self.name = None
         else:
-            if (_typeof(name) == unicode):
-                try:
-                    name = str(name)
-                except UnicodeEncodeError:
-                    raise ArgDefError('name must be an ASCII string; was ' + repr(name))
-            if (_typeof(name) != str):
+            if not isinstance(name, str):
                 raise ArgDefError('name must be a string; was ' + repr(name))
+
             self.name = name
-            
+
         if (not (index is None) and index <= 0):
             raise ArgDefError('index must be positive; was ' + str(index))
         self.index = index
-        
+
         self.type = type
         self.optional = optional
         if (default is _DummyDefault):
@@ -719,13 +729,13 @@ class Arg:
             val += " '" + self.name + "'"
         val += '>'
         return val
-    
+
     def clone(self):
         """clone() -> Arg
 
         Construct an Arg identical to this one.
         """
-        
+
         if (self.hasdefault):
             default = self.default
         else:
@@ -740,7 +750,7 @@ class Arg:
 
         Construct an S-expression from this Arg.
         """
-        
+
         nod = sparse.List(sparse.ID('arg'))
         if (not (self.name is None)):
             nod.set_attr('name', sparse.ID(self.name))
@@ -775,7 +785,7 @@ class Arg:
         For all other attributes, if the two Args conflict, the first one's
         attribute takes precedence.
         """
-        
+
         attrlist = ['name', 'index']
         for key in attrlist:
             val = getattr(arg, key)
@@ -787,7 +797,7 @@ class Arg:
                 continue
             if (val != sval):
                 raise ArgDefError('argument ' + key + ' does not match: ' + str(val) + ', ' + str(sval))
-            
+
         attrlist = ['type', 'description']
         for key in attrlist:
             val = getattr(arg, key)
@@ -798,7 +808,7 @@ class Arg:
                 setattr(self, key, val)
                 continue
             # No warning if these attrs don't match
-            
+
         if (arg.hasdefault):
             if (not self.hasdefault):
                 self.hasdefault = True
@@ -814,7 +824,7 @@ class Arg:
         Construct an Arg from an S-expression. The Tree passed in should
         be one generated by the to_node() method.
         """
-        
+
         if (not isinstance(node, sparse.List) or len(node) != 1
             or not isinstance(node[0], sparse.ID)
             or node[0].as_string() != 'arg'):
@@ -840,19 +850,19 @@ class Arg:
             ### (but maybe the default value is being instantiated already!)
         return Arg(**dic)
     from_node = staticmethod(from_node)
-    
+
 class ArgExtra:
     """ArgExtra: represents extra positional arguments, when constructing
     an ArgList.
     """
-    
+
     def __init__(self, type=list):
         if (not (type in [list, tuple]
             or isinstance(type, ListOf)
             or isinstance(type, TupleOf))):
             raise ArgDefError('ArgExtra must be a list, tuple, ListOf, or TupleOf: was ' + str(type))
         self.type = type
-        
+
 class ArgDefError(ValueError):
     """ArgDefError: represents an error constructing an ArgList.
     """
@@ -863,7 +873,7 @@ class SequenceOf:
 
     You cannot instantiate this class directly.
     """
-    
+
     classname = None
     def __init__(self, *types, **opts):
         if (not self.classname):
@@ -883,7 +893,7 @@ class SequenceOf:
             self.max = opts.pop('max', None)
             self.repeat = opts.pop('repeat', len(self.types))
             if (opts):
-                raise ArgDefError(self.classname + ' got unknown keyword argument: ' + (', '.join(opts.keys())))
+                raise ArgDefError(self.classname + ' got unknown keyword argument: ' + (', '.join(list(opts.keys()))))
         if (self.min < 0):
             raise ArgDefError(self.classname + ' min is negative')
         if (not (self.max is None)):
@@ -893,7 +903,7 @@ class SequenceOf:
             raise ArgDefError(self.classname + ' repeat is greater than number of types')
         if (self.repeat <= 0):
             raise ArgDefError(self.classname + ' repeat is less than one')
-            
+
     def __repr__(self):
         ls = [ repr(val) for val in self.types ]
         if (self.repeat < len(self.types)):
@@ -915,7 +925,7 @@ class SequenceOf:
 
         Construct an S-expression from this type object.
         """
-        
+
         nod = sparse.List(sparse.ID(self.classname))
         ls = [ type_to_node(val) for val in self.types ]
         nod.append(sparse.List(*ls))
@@ -956,10 +966,10 @@ class ListOf(SequenceOf):
     [1, 'x', True, False, True].
 
     Public method:
-    
+
     to_node() -- construct an S-expression from this ListOf
     """
-    
+
     classname = 'ListOf'
     def default_setup(self, notypes):
         self.min = 0
@@ -998,10 +1008,10 @@ class TupleOf(SequenceOf):
     (1, 'x', True, False, True).
 
     Public method:
-    
+
     to_node() -- construct an S-expression from this TupleOf
     """
-    
+
     classname = 'TupleOf'
     def default_setup(self, notypes):
         if (notypes):
@@ -1056,7 +1066,7 @@ class Wrapped:
         if (isinstance(type, Wrapped)):
             raise ArgDefError('cannot put Wrapped in a Wrapped')
         self.type = type
-        
+
 def infer_type(val):
     """infer_type(val) -> type
 
@@ -1068,30 +1078,30 @@ def infer_type(val):
     types. Longs and unicode values will be represented as int and str
     respectively. File and Sample instances will be represented as the
     Sample class. Classes (as opposed to instances) will be represented
-    as Wrapped classes. 
+    as Wrapped classes.
     """
-    
-    type = _typeof(val)
-    
-    if (type == types.InstanceType):
+
+    _type = _typeof(val)
+
+    if (_type == object):
         if (isinstance(val, pinfo.File)):
             return sample.Sample
         if (isinstance(val, sample.Sample)):
             return sample.Sample
         return val.__class__
-    
-    if (type == types.ClassType):
+
+    if (_type == type):
         return Wrapped(val)
-    
-    return type
+
+    return _type
 
 # These mappings are used for the simple cases of check_valid_type(),
 # type_to_node(), and node_to_type().
 
 _type_to_name_mapping = {
     None: 'none',
-    str: 'str', unicode: 'str',
-    int: 'int', long: 'int',
+    str: 'str', str: 'str',
+    int: 'int', int: 'int',
     float: 'float',
     bool: 'bool',
     list: 'list',
@@ -1108,7 +1118,7 @@ _name_to_type_mapping = {
     'tuple': tuple,
 }
 
-def check_valid_type(type):
+def check_valid_type(_type):
     """check_valid_type(type) -> None
 
     Make sure that type is a valid type for an ArgList entry. If it is not,
@@ -1118,51 +1128,64 @@ def check_valid_type(type):
     ListOf and TupleOf instances; Sample and Agent classes; and valid
     Wrapped types.
     """
-    
-    if (_type_to_name_mapping.has_key(type)):
-        return
-    if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
-        return
-    if (_typeof(type) == types.ClassType):
-        if (issubclass(type, sample.Sample)):
-            return
-        if (issubclass(type, Agent)):
-            return
-    if (isinstance(type, Wrapped)):
-        return
-    raise ArgDefError('unrecognized type: ' + str(type))
 
-def type_to_node(type):
+    if (_type in _type_to_name_mapping):
+        return
+
+    if (isinstance(_type, ListOf) or isinstance(_type, TupleOf)):
+        return
+
+    if (_typeof(_type) == type):
+        if (issubclass(_type, sample.Sample)):
+            return
+
+        if (issubclass(_type, Agent)):
+            return
+
+    if (isinstance(_type, Wrapped)):
+        return
+
+    raise ArgDefError('unrecognized type: ' + str(_type))
+
+
+def type_to_node(_type):
     """type_to_node(type) -> Tree
 
     Construct an S-expression from a type. If the type is not valid
     (as per check_valid_type), this raises ArgDefError.
     """
-    
-    if (_type_to_name_mapping.has_key(type)):
-        name = _type_to_name_mapping[type]
+
+    if (_type in _type_to_name_mapping):
+        name = _type_to_name_mapping[_type]
         return sparse.ID(name)
-    if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
-        return type.to_node()
-    if (_typeof(type) == types.ClassType):
-        if (issubclass(type, sample.Sample)):
+
+    if (isinstance(_type, (ListOf, TupleOf))):
+        return _type.to_node()
+
+    if (_typeof(_type) == type):
+        if (issubclass(_type, sample.Sample)):
             return sparse.ID('Sample')
-        if (issubclass(type, Agent)):
+
+        if (issubclass(_type, Agent)):
             return sparse.ID('Agent')
-    if (isinstance(type, Wrapped)):
-        nod = type_to_node(type.type)
+
+    if (isinstance(_type, Wrapped)):
+        nod = type_to_node(_type.type)
+
         return sparse.List(sparse.ID('Wrapped'), nod)
-    raise ArgDefError('type_to_node: unrecognized type: ' + str(type))
+
+    raise ArgDefError('type_to_node: unrecognized type: ' + str(_type))
+
 
 def node_to_type(nod):
     """node_to_type(nod) -> type
 
     Construct a type from an S-expression.
     """
-    
+
     if (isinstance(nod, sparse.ID)):
         id = nod.as_string()
-        if (_name_to_type_mapping.has_key(id)):
+        if (id in _name_to_type_mapping):
             return _name_to_type_mapping[id]
         if (id == 'Sample'):
             return sample.Sample
@@ -1175,7 +1198,7 @@ def node_to_type(nod):
     if (len(nod) < 1 or (not isinstance(nod[0], sparse.ID))):
         raise ArgDefError('type list must begin with an ID')
     id = nod[0].as_string()
-    
+
     if (id in [ListOf.classname, TupleOf.classname]):
         if (len(nod) != 2 or (not isinstance(nod[1], sparse.List))):
             raise ArgDefError(id + ' must be followed by one list')
@@ -1200,10 +1223,10 @@ def node_to_type(nod):
         if (len(nod) != 2):
             raise ArgDefError('Wrapped must be followed by one type')
         return Wrapped(node_to_type(nod[1]))
-    
+
     raise ArgDefError('node_to_type: unrecognized type: ' + id)
 
-def value_to_node(type, val):
+def value_to_node(_type, val):
     """value_to_node(type, val) -> Tree
 
     Construct an S-expression from a value, using a type as guidance.
@@ -1211,59 +1234,70 @@ def value_to_node(type, val):
     For list types, the value must be a sequence; its entries will
     be constructed recursively based on the list type's types.
     """
-    
+
     if (val is None):
         return sparse.List(no=sparse.ID('value'))
-    
-    if (isinstance(type, Wrapped)):
-        return value_to_node(type.type, val)
-    
-    if (type is None):
+
+    if (isinstance(_type, Wrapped)):
+        return value_to_node(_type.type, val)
+
+    if (_type is None):
         if (_typeof(val) in [list, tuple]):
-            type = list
+            _type = list
         else:
-            type = str
-    
-    if (type in [str, unicode]):
-        if (_typeof(val) in [str, unicode]):
+            _type = str
+
+    if (_type in [str]):
+        if (_typeof(val) in [str]):
             return sparse.ID(val)
         else:
             return sparse.ID(str(val))
-    if (type in [int, long, float]):
+
+    if (_type in [int, float]):
         return sparse.ID(str(val))
-    if (type == bool):
+
+    if (_type == bool):
         val = str(bool(val)).lower()
         return sparse.ID(val)
-    if (type in [list, tuple]
-        or isinstance(type, ListOf)
-        or isinstance(type, TupleOf)):
-        return seq_value_to_node(type, val)
-    
-    if (_typeof(type) == types.ClassType and issubclass(type, sample.Sample)):
+
+    if (_type in [list, tuple]
+        or isinstance(_type, ListOf)
+        or isinstance(_type, TupleOf)):
+        return seq_value_to_node(_type, val)
+
+    if (_typeof(_type) == type and issubclass(_type, sample.Sample)):
         loader = pload.PackageLoader.global_loader
         if (not loader):
             raise ArgDefError('cannot locate resource, because there is no loader')
         (pkg, resource) = loader.find_item_resources(val)
         return sparse.ID(find_resource_ref(loader, pkg, resource.key))
 
-    if (_typeof(type) == types.ClassType and issubclass(type, Agent)):
+    if (_typeof(_type) == type and issubclass(_type, Agent)):
         cla = val
-        if (_typeof(cla) == types.InstanceType):
+
+        if isinstance(cla, object):
             cla = cla.__class__
+
         # check for builtin resources
         modname = getattr(cla, '__module__', None)
+
         if (modname and modname.startswith('boodle.')):
             return sparse.ID('/' + modname + '.' + cla.__name__)
+
         # check for package-loaded resource
         loader = pload.PackageLoader.global_loader
+
         if (not loader):
             raise ArgDefError('cannot locate resource, because there is no loader')
+
         (pkg, resource) = loader.find_item_resources(cla)
+
         return sparse.ID(find_resource_ref(loader, pkg, resource.key))
 
-    raise ArgDefError('value_to_node: unrecognized type: ' + str(type))
+    raise ArgDefError('value_to_node: unrecognized type: ' + str(_type))
 
-def seq_value_to_node(type, vallist):
+
+def seq_value_to_node(_type, vallist):
     """seq_value_to_node(type, vallist) -> Tree
 
     Construct an S-expression from a value, using a type as guidance.
@@ -1271,24 +1305,27 @@ def seq_value_to_node(type, vallist):
     separate function, for readability.
     """
 
-    if (type == list):
-        type = ListOf()
-    elif (type == tuple):
-        type = TupleOf()
-        
-    typelist = type.types
+    if (_type == list):
+        _type = ListOf()
+    elif (_type == tuple):
+        _type = TupleOf()
+
+    typelist = _type.types
     ls = sparse.List()
     pos = 0
+
     for val in vallist:
         nod = value_to_node(typelist[pos], val)
         ls.append(nod)
         pos += 1
+
         if (pos >= len(typelist)):
-            pos = len(typelist) - type.repeat
+            pos = len(typelist) - _type.repeat
 
     return ls
 
-def node_to_value(type, node):
+
+def node_to_value(_type, node):
     """node_to_value(type, node) -> value
 
     Construct a value from an S-expression, using a type as guidance.
@@ -1298,56 +1335,56 @@ def node_to_value(type, node):
     """
     ### would be nice if this took an argument-label argument, for
     ### clearer errors.
-    
+
     if (isinstance(node, sparse.List) and len(node) == 0):
         subnod = node.get_attr('no')
         if (subnod and isinstance(subnod, sparse.ID)
             and subnod.as_string() == 'value'):
             return None
-    
-    if (isinstance(type, Wrapped)):
-        val = node_to_value(type.type, node)
+
+    if (isinstance(_type, Wrapped)):
+        val = node_to_value(_type.type, node)
         if (isinstance(val, ArgWrapper)):
             val.keep_wrapped = True
         return val
-    
-    if (type is None):
+
+    if (_type is None):
         if (isinstance(node, sparse.ID)):
-            type = str
+            _type = str
         else:
-            type = list
-        
-    if (type in [str, unicode]):
+            _type = list
+
+    if (_type in [str]):
         return node.as_string()
-    if (type in [int, long]):
+    if (_type in [int]):
         return node.as_integer()
-    if (type == float):
+    if (_type == float):
         return node.as_float()
-    if (type == bool):
+    if (_type == bool):
         return node.as_boolean()
-    if (type in [list, tuple]
-        or isinstance(type, ListOf)
-        or isinstance(type, TupleOf)):
+    if (_type in [list, tuple]
+        or isinstance(_type, ListOf)
+        or isinstance(_type, TupleOf)):
         if (not isinstance(node, sparse.List)):
             raise ValueError('argument must be a list')
         if (node.attrs):
             raise ValueError('list argument may not have attributes')
-        return node_to_seq_value(type, node.list)
-    
-    if (_typeof(type) == types.ClassType and issubclass(type, sample.Sample)):
+        return node_to_seq_value(_type, node.list)
+
+    if (_typeof(_type) == type and issubclass(_type, sample.Sample)):
         loader = pload.PackageLoader.global_loader
         if (not loader):
             raise ArgDefError('cannot load resource, because there is no loader')
         return loader.load_item_by_name(node.as_string())
-    
-    if (_typeof(type) == types.ClassType and issubclass(type, Agent)):
+
+    if (_typeof(_type) == type and issubclass(_type, Agent)):
         loader = pload.PackageLoader.global_loader
         if (not loader):
             raise ArgDefError('cannot load resource, because there is no loader')
         clas = load_described(loader, node)
         return clas
 
-    raise ValueError('cannot handle type: ' + str(type))
+    raise ValueError('cannot handle type: ' + str(_type))
 
 def node_to_seq_value(type, nodelist):
     """node_to_seq_value(type, nodelist) -> value
@@ -1361,7 +1398,7 @@ def node_to_seq_value(type, nodelist):
         type = ListOf()
     elif (type == tuple):
         type = TupleOf()
-        
+
     if isinstance(type, ListOf):
         wrapper = ArgListWrapper
     elif isinstance(type, TupleOf):
@@ -1379,7 +1416,7 @@ def node_to_seq_value(type, nodelist):
     if (not (type.max is None)):
         if (len(nodelist) > type.max):
             raise ValueError('at most ' + str(type.max) + ' elements required: ' + str(len(nodelist)) + ' found')
-    
+
     ls = []
     pos = 0
     for valnod in nodelist:
@@ -1388,7 +1425,7 @@ def node_to_seq_value(type, nodelist):
         pos += 1
         if (pos >= len(typelist)):
             pos = len(typelist) - type.repeat
-            
+
     return wrapper.create(ls)
 
 def find_resource_ref(loader, pkg, resname):
@@ -1409,7 +1446,7 @@ def find_resource_ref(loader, pkg, resname):
     we use an exact-version reference. (A package that refers to its
     own resource will stick to its own version.)
     """
-    
+
     if ((not loader) or (not loader.currently_creating)):
         pkgref = pkg.name
     elif (loader.currently_creating == pkg):
@@ -1418,15 +1455,15 @@ def find_resource_ref(loader, pkg, resname):
         pkgref = pkg.name + '::' + str(pkg.version)
     else:
         map = loader.currently_creating.imported_pkg_specs
-        if (not map.has_key(pkg.name)):
+        if (pkg.name not in map):
             # We don't know how the package was loaded, so just use a
             # generic (most-current) reference.
             pkgref = pkg.name
         else:
             spec = map[pkg.name]
-            if (isinstance(spec, version.VersionNumber)):
+            if (isinstance(spec, Version)):
                 pkgref = pkg.name + '::' + str(spec)
-            elif (isinstance(spec, version.VersionSpec)):
+            elif (isinstance(spec, SpecifierSet)):
                 pkgref = pkg.name + ':' + str(spec)
             else:
                 # A generic (most-current) reference.
@@ -1445,7 +1482,7 @@ class ArgWrapper:
     This is a static method, rather than a simple constructor, because
     a tuple doesn't always have to be wrapped. So ArgTupleWrapper.create()
     is allowed to return a native tuple rather than an ArgTupleWrapper.
-    
+
     Public method:
 
     unwrap() -- instantiate the value
@@ -1465,12 +1502,12 @@ class ArgClassWrapper(ArgWrapper):
     Static method:
 
     create() -- build an ArgClassWrapper
-    
+
     Public method:
 
     unwrap() -- instantiate the value
     """
-    
+
     def create(cla, ls, dic=None):
         ls = list(ls)
         return ArgClassWrapper(ls, dic)
@@ -1480,7 +1517,7 @@ class ArgClassWrapper(ArgWrapper):
         self.cla = cla
         self.argls = ls
         if (dic):
-            dic = dict([ (str(key),val) for (key,val) in dic.items() ])
+            dic = dict([ (str(key),val) for (key,val) in list(dic.items()) ])
         self.argdic = dic
     def __call__(self):
         return self.unwrap()
@@ -1489,7 +1526,7 @@ class ArgClassWrapper(ArgWrapper):
         if (not self.argdic):
             #print '### ArgClassWrapper:', self.cla, 'with', ls
             return self.cla(*ls)
-        dic = dict([ (key,resolve_value(val)) for (key,val) in self.argdic.items() ])
+        dic = dict([ (key,resolve_value(val)) for (key,val) in list(self.argdic.items()) ])
         #print '### ArgClassWrapper:', self.cla, 'with', ls, dic
         return self.cla(*ls, **dic)
 
@@ -1504,17 +1541,17 @@ class ArgListWrapper(ArgWrapper):
     Static method:
 
     create() -- build an ArgListWrapper
-    
+
     Public method:
 
     unwrap() -- instantiate the value
     """
-    
+
     def create(ls):
         ls = list(ls)
         return ArgListWrapper(ls)
     create = staticmethod(create)
-    
+
     def __init__(self, ls):
         self.ls = ls
     def unwrap(self):
@@ -1531,18 +1568,18 @@ class ArgTupleWrapper(ArgWrapper):
     Static method:
 
     create() -- build an ArgTupleWrapper
-    
+
     This is a static method, rather than a simple constructor, because
     a tuple doesn't always have to be wrapped. A tuple of immutable values
     is completely immutable -- there's no point in wrapping it. So if none
     of the contents are wrapped values, ArgTupleWrapper.create()
     is allowed to return a native tuple rather than an ArgTupleWrapper.
-    
+
     Public method:
 
     unwrap() -- instantiate the value
     """
-    
+
     def create(tup):
         tup = tuple(tup)
         muts = [ val for val in tup if isinstance(val, ArgWrapper) ]
@@ -1550,14 +1587,14 @@ class ArgTupleWrapper(ArgWrapper):
             return tup
         return ArgTupleWrapper(tup)
     create = staticmethod(create)
-    
+
     def __init__(self, tup):
         self.tup = tup
     def unwrap(self):
         ls = [ resolve_value(val) for val in self.tup ]
         return tuple(ls)
 
-    
+
 def resolve_value(val):
     """resolve_value(val) -> value
 
@@ -1574,7 +1611,7 @@ def resolve_value(val):
 # Late imports.
 
 from boodle import sample
-from boopak import sparse, pinfo, pload, version
+from boopak import sparse, pinfo, pload
 
 # from boodle.agent import Agent, load_described
 #

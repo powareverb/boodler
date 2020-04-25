@@ -5,5 +5,9 @@
 # See the LGPL document, or the above URL, for details.
 
 __all__ = [
-    'collect', 'fetch', 'package', 'pinfo', 'pload', 'version'
+    'collect',
+    'fetch',
+    'package',
+    'pinfo',
+    'pload',
 ]

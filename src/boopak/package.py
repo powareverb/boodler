@@ -38,8 +38,8 @@ __all__ = [
     'subimport', 'bimport', 'bexport'
 ]
 
-import pinfo
-import pload
+from . import pinfo
+from . import pload
 
 GLOBAL_WARNING = '(perhaps you tried to import a Boodler package outside the Boodler loader, or you called a top-level package function while not at the top level of your package)'
 
@@ -273,7 +273,7 @@ def bexport(resname=None):
     if (resname):
         ls = resname.split('.')
         for key in ls:
-            if (not grp.has_key(key)):
+            if (key not in grp):
                 raise Exception('resource not found: ' + resname)
             grp = grp.get(key)
 

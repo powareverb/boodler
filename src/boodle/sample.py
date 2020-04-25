@@ -14,14 +14,15 @@ get() -- load a sample object, given a filename or File object
 get_info() -- measure the expected running time and looping params of a sound
 """
 
-import fileinput
+import aifc
+import bisect
 import os
 import os.path
-import aifc
-import wave
-import sunau
 import struct
-import bisect
+import sunau
+import wave
+
+from functools import total_ordering
 
 # Maps File objects, and also str/unicode pathnames, to Samples.
 cache = {}
@@ -43,7 +44,7 @@ class Sample:
     is used by the cboodle native module. Samples may only be created
     by the SampleLoader classes in this module.
     """
-    
+
     reloader = None
 
     def __init__(self, filename, csamp):
@@ -54,7 +55,7 @@ class Sample:
 
     def __repr__(self):
         return '<Sample at ' + str(self.filename) + '>'
-        
+
     def queue_note(self, pitch, volume, pan, starttime, chan):
         if (cboodle.is_sample_error(self.csamp)):
             raise SampleError('sample is unplayable')
@@ -105,7 +106,7 @@ class Sample:
         if (len(res) == 2):
             return (float(res[1]) / ratio, None)
         else:
-            return (float(res[1]) / ratio, 
+            return (float(res[1]) / ratio,
                 (float(res[2]) / ratio, float(res[3]) / ratio))
 
 class MixinSample(Sample):
@@ -117,10 +118,10 @@ class MixinSample(Sample):
         if (filename is None):
             filename = '<constructed>'
         self.filename = filename
-        
+
         if (modname):
             self.__module__ = modname
-        
+
         self.lastused = 0
         self.refcount = 0
         self.csamp = None
@@ -128,16 +129,16 @@ class MixinSample(Sample):
     def find(self, pitch):
         pos = bisect.bisect(self.minvals, pitch)
         pos -= 1
-        
+
         while (pos >= 0):
             rn = self.ranges[pos]
             if (pitch <= rn.max):
                 return rn
             pos -= 1
-            
+
         if (not (self.default is None)):
             return self.default
-            
+
         raise SampleError(str(pitch) + ' is outside mixin ranges')
 
     def queue_note(self, pitch, volume, pan, starttime, chan):
@@ -174,7 +175,7 @@ def unload_unused(deathtime):
                 cboodle.unload_sample(samp.csamp)
 
 def adjust_timebase(trimoffset, maxage):
-    for samp in cache.values():
+    for samp in list(cache.values()):
         if (samp.lastused >= -maxage):
             samp.lastused = samp.lastused - trimoffset
 
@@ -190,7 +191,7 @@ def get(sname):
     same filename twice, the second get() call will be fast.
 
     This function is not useful, since agent.sched_note() and such methods
-    call it for you -- they accept filenames as well as sample objects. 
+    call it for you -- they accept filenames as well as sample objects.
     This function is available nevertheless.
     """
 
@@ -204,7 +205,7 @@ def get(sname):
         return samp
 
     suffix = None
-        
+
     if (isinstance(sname, boopak.pinfo.MemFile)):
         filename = sname
         suffix = sname.suffix
@@ -213,7 +214,7 @@ def get(sname):
         if (not os.access(sname.pathname, os.R_OK)):
             raise SampleError('file not readable: ' + sname.pathname)
         (dummy, suffix) = os.path.splitext(sname.pathname)
-    elif (not (type(sname) in [str, unicode])):
+    elif (not (type(sname) in [str])):
         raise SampleError('not a File or filename')
     elif (os.path.isabs(sname)):
         filename = sname
@@ -230,19 +231,22 @@ def get(sname):
             raise SampleError('file not readable: ' + sname)
 
     suffix = suffix.lower()
-    
+
     loader = find_loader(suffix)
+
     samp = loader.load(filename, suffix)
 
     # Cache under the original key (may be File, str, or unicode)
     cache[sname] = samp
+
     return samp
+
 
 def get_info(samp, pitch=1):
     """get_info(sample, pitch=1) -> tuple
 
     Measure the expected running time and looping parameters of a sound.
-    The argument can be either a filename, or a sample object (as 
+    The argument can be either a filename, or a sample object (as
     returned by get()).
 
     The result is a 2-tuple. The first member is the duration of the
@@ -255,7 +259,7 @@ def get_info(samp, pitch=1):
     exactly equal to the value returned by agent.sched_note(), when
     the note is actually played.
     """
-    
+
     samp = get(samp)
     return samp.get_info(pitch)
 
@@ -297,7 +301,7 @@ class MixIn:
     When your declaration is complete, your_sample_name will magically
     be a MixinSample instance (not a class).
     """
-    
+
     MIN = 0.0
     MAX = 1000000.0
 
@@ -308,6 +312,7 @@ class MixIn:
             pitch=pitch, volume=volume)
     default = staticmethod(default)
 
+    @total_ordering
     class range:
         def __init__(self, arg1, arg2, arg3=None, pitch=None, volume=None):
             if (arg3 is None):
@@ -318,7 +323,7 @@ class MixIn:
                 raise SampleError('range must have a sample')
             if (max is None):
                 raise SampleError('range must have a maximum value')
-                
+
             (self.min, self.max) = (min, max)
             self.sample = samp
             self.pitch = pitch
@@ -327,16 +332,20 @@ class MixIn:
         def __repr__(self):
             return '<range %s, %s>' % (self.min, self.max)
 
-        def __cmp__(self, other):
+        def __eq__(self, other):
+            return self.min == other.min and self.max == other.max
+
+        def __lt__(self, other):
+            self_min_less = False
+            self_max_less = False
+
             if (not (self.min is None or other.min is None)):
-                res = cmp(self.min, other.min)
-                if (res):
-                    return res
+                self_min_less = self.min < other.min
+
             if (not (self.max is None or other.max is None)):
-                res = cmp(self.max, other.max)
-                if (res):
-                    return res
-            return 0
+                self_max_less = self.max < other.max
+
+            return self_min_less or self_max_less
 
     def __class__(name, bases, dic):
         ranges = dic['ranges']
@@ -345,11 +354,12 @@ class MixIn:
 
         MixIn.sort_mixin_ranges(ranges)
         return MixinSample('<'+name+'>', ranges, default, modname)
+
     __class__ = staticmethod(__class__)
 
     def sort_mixin_ranges(ranges):
         ranges.sort()
-        
+
         lastmin = 0.0
         for rn in ranges:
             if (rn.min is None):
@@ -358,14 +368,15 @@ class MixIn:
                 raise SampleError('range\'s min must be less than its max')
             lastmin = rn.max
     sort_mixin_ranges = staticmethod(sort_mixin_ranges)
-    
+
+
 class SampleLoader:
     """SampleLoader: Base class for the facility to load a particular
     form of sound sample from a file.
 
     Subclasses of this are defined and instantiated later in the module.
     """
-    
+
     suffixmap = {}
 
     def __init__(self):
@@ -377,17 +388,21 @@ class SampleLoader:
 
     def load(self, filename, suffix):
         csamp = cboodle.new_sample()
+
         try:
             self.raw_load(filename, csamp)
-        except Exception, ex:
+        except Exception:
             cboodle.delete_sample(csamp)
             raise
+
         samp = Sample(filename, csamp)
         samp.reloader = self
+
         return samp
 
     def reload(self, samp):
         self.raw_load(samp.filename, samp.csamp)
+
 
 def find_loader(suffix):
     """find_loader(suffix) -> SampleLoader
@@ -396,16 +411,18 @@ def find_loader(suffix):
     suffix. (The suffix should be given as a dot followed by lower-case
     characters.)
     """
-    
     clas = SampleLoader.suffixmap.get(suffix)
+
     if (clas is None):
-        raise SampleError('unknown sound file extension \'' 
-            + suffix + '\'')
+        raise SampleError('unknown sound file extension \'' + suffix + '\'')
+
     return clas
 
+
 class AifcLoader(SampleLoader):
+
     suffixlist = ['.aifc', '.aiff', '.aif']
-    
+
     def raw_load(self, filename, csamp):
         if (isinstance(filename, boopak.pinfo.File)):
             afl = filename.open(True)
@@ -422,9 +439,10 @@ class AifcLoader(SampleLoader):
             fl.close()
         finally:
             afl.close()
-            
+
         loopstart = -1
         loopend = -1
+
         if (not (markers is None)):
             for (mark, pos, name) in markers:
                 if (mark == 1):
@@ -434,16 +452,20 @@ class AifcLoader(SampleLoader):
         if (loopstart < 0 or loopend < 0):
             loopstart = -1
             loopend = -1
+
         params = (framerate, numframes, dat, loopstart, loopend, numchannels, samplebits, 1, 1)
         res = cboodle.load_sample(csamp, params)
+
         if (not res):
             raise SampleError('unable to load aiff data')
 
+
 aifc_loader = AifcLoader()
+
 
 class WavLoader(SampleLoader):
     suffixlist = ['.wav']
-    
+
     def raw_load(self, filename, csamp):
         if (isinstance(filename, boopak.pinfo.File)):
             afl = filename.open(True)
@@ -459,7 +481,7 @@ class WavLoader(SampleLoader):
             fl.close()
         finally:
             afl.close()
-        
+
         params = (framerate, numframes, dat, -1, -1, numchannels, samplebits, 1, big_endian)
         res = cboodle.load_sample(csamp, params)
         if (not res):
@@ -469,7 +491,7 @@ wav_loader = WavLoader()
 
 class SunAuLoader(SampleLoader):
     suffixlist = ['.au']
-    
+
     def raw_load(self, filename, csamp):
         if (isinstance(filename, boopak.pinfo.File)):
             afl = filename.open(True)
@@ -485,7 +507,7 @@ class SunAuLoader(SampleLoader):
             fl.close()
         finally:
             afl.close()
-            
+
         params = (framerate, numframes, dat, -1, -1, numchannels, samplebits, 1, 1)
         res = cboodle.load_sample(csamp, params)
         if (not res):
@@ -499,16 +521,16 @@ class MixinLoader(SampleLoader):
     def load(self, filename, suffix):
         dirname = None
         modname = None
-        
+
         if (isinstance(filename, boopak.pinfo.File)):
             afl = filename.open(True)
             modname = filename.package.encoded_name
         else:
             dirname = os.path.dirname(filename)
-            afl = open(filename, 'rb')
+            afl = open(filename, 'r')
         linelist = afl.readlines()
         afl.close()
-        
+
         ranges = []
         defval = None
 
@@ -552,10 +574,10 @@ class MixinLoader(SampleLoader):
             newname = os.path.join(dirname, tok[0])
             newname = os.path.normpath(newname)
             samp = get(newname)
-            
+
         pitch = None
         volume = None
-        
+
         if (len(tok) > 2):
             if (tok[2] != '-'):
                 volume = float(tok[2])

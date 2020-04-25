@@ -63,15 +63,17 @@ AttrToken -- represents a named value encountered during parsing
 ParseContext -- represents the state of an ongoing parse() operation
 """
 
-import StringIO
+import io
 import codecs
 
-escaper = codecs.getencoder('unicode_escape')
+from functools import total_ordering
+
 
 class ParseError(Exception):
     """ParseError: represents an error parsing string data into Trees.
     """
     pass
+
 
 class Tree:
     """Tree: represents an S-expression.
@@ -81,21 +83,18 @@ class Tree:
     """
     
     def serialize(self):
-        """serialize() -> str or unicode
+        """serialize() -> str
 
         Convert this tree into its textual representation. Strings will
         be quoted and escaped if necessary.
         """
         return '<Tree: unimplemented>'
-    
+
     def __repr__(self):
-        val = self.serialize()
-        if (type(val) == unicode):
-            (val, dummy) = escaper(val)
-        return val
+        return self.serialize()
 
     def as_string(self):
-        """as_string() -> str or unicode
+        """as_string() -> str
 
         Get the string which this tree represents. (The result is not
         quoted or escaped; it is the underlying string value.)
@@ -175,7 +174,7 @@ class List(Tree):
         for val in self.list:
             if (not isinstance(val, Tree)):
                 raise ValueError('List may only contain Lists and IDs')
-        for val in self.attrs.values():
+        for val in list(self.attrs.values()):
             if (not isinstance(val, Tree)):
                 raise ValueError('List attribute must be List or ID')
 
@@ -195,7 +194,7 @@ class List(Tree):
         """
         if (not isinstance(val, Tree)):
             raise ValueError('List attribute must be List or ID')
-        if (not (type(key) in [str, unicode])):
+        if (not (type(key) in [str])):
             raise ValueError('List attribute key must be a string')
         self.attrs[key] = val
 
@@ -212,7 +211,7 @@ class List(Tree):
 
         Returns whether there is an entry with the given key.
         """
-        return self.attrs.has_key(key)
+        return key in self.attrs
         
     def serialize(self):
         ls = [ val.serialize() for val in self.list ]
@@ -231,25 +230,26 @@ class List(Tree):
         
     def __iter__(self):
         return self.list.__iter__()
-        
 
+
+@total_ordering
 class ID(Tree):
     """ID: represents a string expression.
 
         ID(val) -- constructor
 
-    The value that you pass to the constructor may be str or unicode.
-    It becomes the ID's underlying string value, so it should not be
-    quoted or escaped.
+    The value that you pass to the constructor is a str.  It becomes the ID's
+    underlying string value, so it should not be quoted or escaped.
 
-    For any str or unicode val,
+    For any str val,
 
         ID(val).as_string() == val
     """
-    
+
     def __init__(self, id):
-        if (not (type(id) in [str, unicode])):
+        if (not (type(id) in [str])):
             raise ValueError('ID must contain a string')
+
         self.id = id
         self.delimiter = None
         self.escape = False
@@ -267,7 +267,7 @@ class ID(Tree):
                     self.escape = True
                 else:
                     self.delimiter = "'"
-        
+
         if ('\\' in id):
             self.escape = True
 
@@ -280,14 +280,21 @@ class ID(Tree):
             return (self.delimiter + val + self.delimiter)
         else:
             return self.id
-        
+
     def __len__(self):
         return len(self.id)
-        
-    def __cmp__(self, other):
+
+    def __eq__(self, other):
         if (isinstance(other, ID)):
             other = other.id
-        return cmp(self.id, other)
+
+        return self.id == other
+
+    def __lt__(self, other):
+        if (isinstance(other, ID)):
+            other = other.id
+
+        return self.id < other
 
     def as_string(self):
         return self.id
@@ -333,8 +340,8 @@ def parse(val):
     Note that parse('') raises ParseError, because it does not contain any
     expression.
     """
-    
-    fl = StringIO.StringIO(val)
+
+    fl = io.StringIO(val)
     context = ParseContext(fl)
     try:
         res = context.parsetree()
@@ -450,7 +457,7 @@ class ParseContext:
         if (ch is None):
             raise Exception('internal error: lookahead char missing')
         
-        idfl = StringIO.StringIO()
+        idfl = io.StringIO()
         while (ch and not (ch in ['=', '"', "'", '(', ')', '\\'])
             and not ch.isspace()):
             idfl.write(ch)
@@ -479,7 +486,7 @@ class ParseContext:
         fl = self.fl
         ch = fl.read(1)
         
-        idfl = StringIO.StringIO()
+        idfl = io.StringIO()
         while True:
             if (not ch):
                 raise ParseError('unterminated string literal')

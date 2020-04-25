@@ -64,8 +64,10 @@ static PyObject* cboodle_init(PyObject* self, PyObject* args) {
     for (ix = 0; ix < count; ix++) {
       PyObject* tup = PyList_GetItem(extras, ix);
       PyObject *tkey, *tval;
+
       if (!tup)
         return NULL;
+
       if (!PyTuple_Check(tup) || PyTuple_Size(tup) != 2) {
         PyErr_SetString(PyExc_TypeError,
                         "extraopts must be a list of 2-tuples");
@@ -73,22 +75,29 @@ static PyObject* cboodle_init(PyObject* self, PyObject* args) {
       }
 
       tkey = PyTuple_GetItem(tup, 0);
+
       if (!tkey)
         return NULL;
+
       tval = PyTuple_GetItem(tup, 1);
+
       if (!tval)
         return NULL;
-      if (!PyString_Check(tkey) || !(tval == Py_None || PyString_Check(tval))) {
+
+      if (!PyUnicode_Check(tkey) ||
+          !(tval == Py_None || PyUnicode_Check(tval))) {
         PyErr_SetString(PyExc_TypeError,
                         "extraopts must be (string, string) or (string, None)");
+
         return NULL;
       }
 
-      opts[ix].key = PyString_AsString(tkey);
+      opts[ix].key = PyUnicode_AsUnicode(tkey);
+
       if (tval == Py_None)
         opts[ix].val = NULL;
       else
-        opts[ix].val = PyString_AsString(tval);
+        opts[ix].val = PyUnicode_AsUnicode(tval);
     }
 
     opts[count].key = NULL;
@@ -99,9 +108,11 @@ static PyObject* cboodle_init(PyObject* self, PyObject* args) {
                           (opts ? opts : (&dummyopt)));
   if (!res) {
     PyErr_SetString(PyExc_IOError, "unable to initialize audio device");
+
     if (opts) {
       free(opts);
     }
+
     return NULL;
   }
 
@@ -192,12 +203,13 @@ static PyObject* cboodle_framespersec(PyObject* self, PyObject* args) {
 static PyObject* cboodle_new_sample(PyObject* self, PyObject* args) {
   sample_t* samp;
 
-  if (!PyArg_ParseTuple(args, ":new_sample"))
+  if (!PyArg_ParseTuple(args, ":new_sample")) {
     return NULL;
+  }
 
   samp = sample_create();
 
-  return Py_BuildValue("s#", (void*)&samp, sizeof(sample_t*));
+  return Py_BuildValue("y#", (void*)&samp, sizeof(sample_t*));
 }
 
 static PyObject* cboodle_delete_sample(PyObject* self, PyObject* args) {
@@ -205,9 +217,7 @@ static PyObject* cboodle_delete_sample(PyObject* self, PyObject* args) {
   char* sampstr;
   int samplen;
 
-  /* ### use CObject instead of sampstr/samplen? */
-
-  if (!PyArg_ParseTuple(args, "s#:delete_sample", &sampstr, &samplen))
+  if (!PyArg_ParseTuple(args, "y#:delete_sample", &sampstr, &samplen))
     return NULL;
 
   if (!sampstr || samplen != sizeof(sample_t*)) {
@@ -229,7 +239,7 @@ static PyObject* cboodle_unload_sample(PyObject* self, PyObject* args) {
   char* sampstr;
   int samplen;
 
-  if (!PyArg_ParseTuple(args, "s#:unload_sample", &sampstr, &samplen))
+  if (!PyArg_ParseTuple(args, "y#:unload_sample", &sampstr, &samplen))
     return NULL;
 
   if (!sampstr || samplen != sizeof(sample_t*)) {
@@ -252,7 +262,7 @@ static PyObject* cboodle_is_sample_error(PyObject* self, PyObject* args) {
   int samplen;
   int retval;
 
-  if (!PyArg_ParseTuple(args, "s#:is_sample_error", &sampstr, &samplen))
+  if (!PyArg_ParseTuple(args, "y#:is_sample_error", &sampstr, &samplen))
     return NULL;
 
   if (!sampstr || samplen != sizeof(sample_t*)) {
@@ -274,7 +284,7 @@ static PyObject* cboodle_is_sample_loaded(PyObject* self, PyObject* args) {
   int samplen;
   int retval;
 
-  if (!PyArg_ParseTuple(args, "s#:is_sample_loaded", &sampstr, &samplen))
+  if (!PyArg_ParseTuple(args, "y#:is_sample_loaded", &sampstr, &samplen))
     return NULL;
 
   if (!sampstr || samplen != sizeof(sample_t*)) {
@@ -296,7 +306,7 @@ static PyObject* cboodle_sample_info(PyObject* self, PyObject* args) {
   int samplen;
   PyObject* result;
 
-  if (!PyArg_ParseTuple(args, "s#:sample_info", &sampstr, &samplen))
+  if (!PyArg_ParseTuple(args, "y#:sample_info", &sampstr, &samplen))
     return NULL;
 
   if (!sampstr || samplen != sizeof(sample_t*)) {
@@ -332,7 +342,7 @@ static PyObject* cboodle_load_sample(PyObject* self, PyObject* args) {
   int samplebits;
   int issigned, isbigend;
 
-  if (!PyArg_ParseTuple(args, "s#(ils#lliiii):load_sample", &sampstr, &samplen,
+  if (!PyArg_ParseTuple(args, "y#(ils#lliiii):load_sample", &sampstr, &samplen,
                         &framerate, &numframes, &data, &datalen, &loopstart,
                         &loopend, &numchannels, &samplebits, &issigned,
                         &isbigend)) {
@@ -380,7 +390,7 @@ static PyObject* cboodle_create_note(PyObject* self, PyObject* args) {
   long retval;
   PyObject *channel, *removefunc;
 
-  if (!PyArg_ParseTuple(args, "s#ddddddlOO:create_note", &sampstr, &samplen,
+  if (!PyArg_ParseTuple(args, "y#ddddddlOO:create_note", &sampstr, &samplen,
                         &pitch, &volume, &pan.scalex, &pan.shiftx, &pan.scaley,
                         &pan.shifty, &starttime, &channel, &removefunc))
     return NULL;
@@ -411,7 +421,7 @@ static PyObject* cboodle_create_note_reps(PyObject* self, PyObject* args) {
   long retval;
   PyObject *channel, *removefunc;
 
-  if (!PyArg_ParseTuple(args, "s#ddddddliOO:create_note", &sampstr, &samplen,
+  if (!PyArg_ParseTuple(args, "y#ddddddliOO:create_note", &sampstr, &samplen,
                         &pitch, &volume, &pan.scalex, &pan.shiftx, &pan.scaley,
                         &pan.shifty, &starttime, &reps, &channel, &removefunc))
     return NULL;
@@ -442,7 +452,7 @@ static PyObject* cboodle_create_note_duration(PyObject* self, PyObject* args) {
   long retval;
   PyObject *channel, *removefunc;
 
-  if (!PyArg_ParseTuple(args, "s#ddddddllOO:create_note", &sampstr, &samplen,
+  if (!PyArg_ParseTuple(args, "y#ddddddllOO:create_note", &sampstr, &samplen,
                         &pitch, &volume, &pan.scalex, &pan.shiftx, &pan.scaley,
                         &pan.shifty, &starttime, &duration, &channel,
                         &removefunc))
@@ -506,6 +516,17 @@ static PyMethodDef methods[] = {
     {"adjust_timebase", cboodle_adjust_timebase, METH_VARARGS},
     {NULL, NULL}};
 
-void initcboodle_stdout(void) {
-  Py_InitModule("cboodle_stdout", methods);
+static struct PyModuleDef moduledef = {PyModuleDef_HEAD_INIT, "cboodle_stdout",
+                                       NULL, -1, methods};
+
+PyMODINIT_FUNC PyInit_cboodle_stdout(void) {
+  PyObject* m;
+
+  m = PyModule_Create(&moduledef);
+
+  if (m == NULL) {
+    return NULL;
+  }
+
+  return m;
 }

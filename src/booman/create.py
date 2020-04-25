@@ -4,16 +4,19 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-import sys
-import types
+import inspect
+import keyword
 import os
 import os.path
 import re
-import inspect
-import keyword
+import types
+
+from packaging.specifiers import SpecifierSet
+from packaging.version import InvalidVersion, Version
 
 from booman import CommandError
 from boodle.agent import Agent
+
 
 class ConstructError(CommandError):
     """ConstructError: represents an error during package construction.
@@ -54,11 +57,11 @@ def examine_directory(loader, dirname, destname=None):
     # incomplete)
     metadatafile = os.path.join(dirname, pload.Filename_Metadata)
     if (os.path.exists(metadatafile)):
-        fl = open(metadatafile, 'rbU')
+        fl = open(metadatafile, 'r')
         try:
             try:
                 metadata = pinfo.Metadata('<'+metadatafile+'>', fl)
-            except pload.PackageLoadError, ex:
+            except pload.PackageLoadError as ex:
                 raise ConstructError(dirname, str(ex))
         finally:
             fl.close()
@@ -87,12 +90,12 @@ def examine_directory(loader, dirname, destname=None):
     if (pkgname):
         try:
             pinfo.parse_package_name(pkgname)
-        except ValueError, ex:
+        except ValueError as ex:
             raise ConstructError(dirname, str(ex))
     if (pkgvers):
         try:
-            pkgvers = version.VersionNumber(pkgvers)
-        except ValueError, ex:
+            pkgvers = Version(pkgvers)
+        except InvalidVersion as ex:
             raise ConstructError(dirname, str(ex))
 
     # See what name/vers information we can extract from the destname.
@@ -105,7 +108,7 @@ def examine_directory(loader, dirname, destname=None):
     if (destname):
         try:
             (tmpname, tmpvers) = parse_package_filename(destname, False)
-        except ValueError, ex:
+        except ValueError as ex:
             pass
         
     if (tmpname and not pkgname):
@@ -119,7 +122,7 @@ def examine_directory(loader, dirname, destname=None):
         warning(dirname, 'Package version is "'+str(pkgvers)+'", but the version in the destination file is "'+str(tmpvers)+'".')
 
     if (not pkgvers):
-        pkgvers = version.VersionNumber()
+        pkgvers = Version('1.0')
 
     # Validate package name.
     if (pkgname is None):
@@ -130,7 +133,7 @@ def examine_directory(loader, dirname, destname=None):
     if (ls[0:2] == ['org', 'boodler']):
         warning(dirname, 'Package name begins with "org.boodler", which is reserved')
 
-    print 'Creating package: ' + booman.command.format_package( (pkgname, pkgvers) )
+    print('Creating package: ' + booman.command.format_package( (pkgname, pkgvers) ))
 
     # More sanity checking on the metadata.
     
@@ -149,8 +152,8 @@ def examine_directory(loader, dirname, destname=None):
             
             pinfo.parse_package_name(reqname)
             if (not (reqspec is None)):
-                version.VersionSpec(reqspec)
-        except Exception, ex:
+                SpecifierSet(reqspec)
+        except Exception as ex:
             warning(dirname, str(ex))
             warning(dirname, 'Invalid boodler.requires: ' + val)
         
@@ -166,8 +169,8 @@ def examine_directory(loader, dirname, destname=None):
             
             pinfo.parse_package_name(reqname)
             if (not (reqspec is None)):
-                version.VersionNumber(reqspec)
-        except Exception, ex:
+                Version(reqspec)
+        except Exception as ex:
             warning(dirname, str(ex))
             warning(dirname, 'Invalid boodler.requires_exact: ' + val)
         
@@ -175,11 +178,11 @@ def examine_directory(loader, dirname, destname=None):
     # incomplete)
     resourcesfile = os.path.join(dirname, pload.Filename_Resources)
     if (os.path.exists(resourcesfile)):
-        fl = open(resourcesfile, 'rbU')
+        fl = open(resourcesfile, 'r')
         try:
             try:
                 resources = pinfo.Resources('<'+resourcesfile+'>', fl)
-            except pload.PackageLoadError, ex:
+            except pload.PackageLoadError as ex:
                 raise ConstructError(dirname, str(ex))
         finally:
             fl.close()
@@ -195,7 +198,7 @@ def examine_directory(loader, dirname, destname=None):
             raise ConstructError(dirname, 'boodler.filename cannot contain backslashes: ' + val)
         try:
             fil = pinfo.build_safe_pathname(dirname, val)
-        except ValueError, ex:
+        except ValueError as ex:
             raise ConstructError(dirname, str(ex))
         if (not os.path.exists(fil)):
             warning(dirname, 'boodler.filename refers to nonexistent file: ' + val)
@@ -308,7 +311,7 @@ def examine_directory(loader, dirname, destname=None):
                 if (res is None):
                     try:
                         res = resources.create(reskey)
-                    except ValueError, ex:
+                    except ValueError as ex:
                         warning(dirname, resfilename + ' looks like a resource, but: ' + str(ex))
                         continue
                     
@@ -326,7 +329,7 @@ def examine_directory(loader, dirname, destname=None):
 
     try:
         resources.build_tree()
-    except ValueError, ex:
+    except ValueError as ex:
         warning(dirname, str(ex))
         raise ConstructError(dirname, 'Resource tree is not valid')
 
@@ -371,7 +374,7 @@ def examine_directory(loader, dirname, destname=None):
                     nod = arglist.to_node()
                     #print '### created agent', key, ':', nod.serialize()
                     res.add('boodler.arguments', nod.serialize())
-                except Exception, ex:
+                except Exception as ex:
                     warning(dirname, key + ' argument list error: ' + str(ex))
 
     finally:
@@ -380,7 +383,7 @@ def examine_directory(loader, dirname, destname=None):
 
     try:
         resources.build_tree()
-    except ValueError, ex:
+    except ValueError as ex:
         warning(dirname, str(ex))
         raise ConstructError(dirname, 'Resource tree is not valid')
 
@@ -429,11 +432,11 @@ def walk_module(context, mod, prefix=''):
             
         val = getattr(mod, key)
         
-        if (type(val) == types.ModuleType):
+        if (isinstance(val, types.ModuleType)):
             if (mod.__name__+'.'+key == val.__name__):
                 walk_module(context, val, prefix+key+'.')
 
-        if (type(val) == types.ClassType and issubclass(val, Agent)):
+        if (isinstance(val, type) and issubclass(val, Agent)):
             if (val == Agent):
                 continue
             if (not (val.__module__ == context.root_module_name
@@ -470,9 +473,9 @@ def resolve_dependency_metadata(dirname, pkgname, pkgvers,
         for (reqname, reqspec) in ls:
             if (reqspec is None):
                 entls.append( ('boodler.requires', reqname) )
-            elif (isinstance(reqspec, version.VersionSpec)):
+            elif (isinstance(reqspec, SpecifierSet)):
                 entls.append( ('boodler.requires', reqname+' '+str(reqspec)) )
-            elif (isinstance(reqspec, version.VersionNumber)):
+            elif (isinstance(reqspec, Version)):
                 entls.append( ('boodler.requires_exact', reqname+' '+str(reqspec)) )
         for (key, val) in entls:
             if (val in metadata.get_all(key)):
@@ -487,7 +490,7 @@ def resolve_dependency_metadata(dirname, pkgname, pkgvers,
         ls = val.split()
         if (ls):
             pinfo.dict_accumulate(dic, ls[0], True)
-    for reqname in dic.keys():
+    for reqname in list(dic.keys()):
         val = len(dic[reqname])
         if (val > 1):
             warning(dirname, 'package dependency appears in ' + str(val)
@@ -501,7 +504,7 @@ def resolve_dependency_metadata(dirname, pkgname, pkgvers,
             (ag, origloc) = context.agents[key]
 
             realname = ag.__module__+'.'+ag.__name__
-            if (revmap.has_key(realname)):
+            if (realname in revmap):
                 warning(dirname, 'Agent appears as two different resources: ' +
                     key + ', ' + revmap[realname])
             else:
@@ -521,12 +524,12 @@ def resolve_dependency_metadata(dirname, pkgname, pkgvers,
             continue
 
         realname = ag.__module__+'.'+ag.__name__
-        if (revmap.has_key(realname)):
+        if (realname in revmap):
             continue
 
         try:
             res = resources.create(key)
-        except ValueError, ex:
+        except ValueError as ex:
             warning(dirname, key + ' looks like an Agent, but: ' + str(ex))
             continue
             
@@ -546,13 +549,13 @@ def resolve_argument_list(dirname, key, ag):
         arglist = argdef.ArgList.from_argspec(*argspec)
         maxinitargs = arglist.max_accepted()
         mininitargs = arglist.min_accepted()
-    except argdef.ArgDefError, ex:
+    except argdef.ArgDefError as ex:
         warning(dirname, key + '.init() could not be inspected: ' + str(ex))
 
     if (not (ag._args is None)):
         try:
             arglist = argdef.ArgList.merge(ag._args, arglist)
-        except argdef.ArgDefError, ex:
+        except argdef.ArgDefError as ex:
             warning(dirname, key + '.init() does not match _args: ' + str(ex))
             arglist = ag._args
 
@@ -561,7 +564,7 @@ def resolve_argument_list(dirname, key, ag):
         unindexed = len(ls)
         indexed = len(arglist.args) - unindexed
         ls = [ arg.index for arg in arglist.args ]
-        if (ls[ : indexed] != range(1,1+indexed)):
+        if (ls[ : indexed] != list(range(1,1+indexed))):
             ls1 = [ str(val) for val in ls[ : indexed] ]
             ls2 = [ str(val) for val in range(1,1+indexed) ]
             warning(dirname, 'found arguments ' + (', '.join(ls1))
@@ -616,7 +619,7 @@ def warning(dirname, msg):
 
     Print a warning.
     """
-    print 'Warning: ' + msg
+    print('Warning: ' + msg)
 
 def build_package_filename(pkgname, pkgvers):
     """build_package_filename(pkgname, pkgvers) -> str
@@ -677,10 +680,10 @@ def parse_package_filename(val, assume_1=True):
 
     pinfo.parse_package_name(pkgname)
     if (pkgvers):
-        pkgvers = version.VersionNumber(pkgvers)
+        pkgvers = Version(pkgvers)
     else:
         if (assume_1):
-            pkgvers = version.VersionNumber()
+            pkgvers = Version('1.0')
         else:
             pkgvers = None
 
@@ -688,7 +691,6 @@ def parse_package_filename(val, assume_1=True):
 
 # Late imports
 
-from boopak import version
 from boopak import pinfo
 from boopak import pload
 from boopak import collect
@@ -698,17 +700,18 @@ import booman
 # Unit tests
 
 import unittest
-        
+
+
 class TestCreate(unittest.TestCase):
 
     def test_build_package_filename(self):
         ls = [
             ('foo.bar', '1.0', 'foo.bar.1.0.boop'),
-            ('foo.bar', '2.30.xyzzy.1', 'foo.bar.2.30.xyzzy.1.boop'),
-            ('foo.bar.baz', '9.8.A.b.Cd.EF', 'foo.bar.baz.9.8.^A.b.^Cd.^E^F.boop'),
+            ('foo.bar', '2.30.1', 'foo.bar.2.30.1.boop'),
+            ('foo.bar.baz', '9.8.1', 'foo.bar.baz.9.8.1.boop'),
         ]
         for (pkgname, pkgvers, result) in ls:
-            pkgvers = version.VersionNumber(pkgvers)
+            pkgvers = Version(pkgvers)
             val = build_package_filename(pkgname, pkgvers)
             self.assertEqual(val, result)
 
@@ -716,14 +719,12 @@ class TestCreate(unittest.TestCase):
         ls = [
             ('foo.bar', '1.0', 'foo.bar.1.0.boop'),
             ('foo.bar', '1.0', 'FOO.BAR.1.0.BOOP'),
-            ('foo.bar', '2.30.xyzzy.1', 'foo.bar.2.30.xyzzy.1.boop'),
-            ('foo', '1.2..3', 'foo.1.2..3.boop'),
-            ('hello.a.string', '12.95.a._.X', 'hello.a.string.12.95.a._.^x.boop'),
+            ('foo.bar', '2.30.1', 'foo.bar.2.30.1.boop'),
+            ('foo', '1.2.3', 'foo.1.2.3.boop'),
+            ('hello.a.string', '12.95', 'hello.a.string.12.95.boop'),
             ('foo.bar', '1.0', 'foo.bar.boop'),
-            ('foo.bar', '2.0', 'foo.bar.2.boop'),
-            ('foo.bar.baz', '9.8.A.b.Cd.EF', 'foo.bar.baz.9.8.^A.b.^Cd.^E^F.boop'),
-            ('foo.bar.baz', '9.8.A.b.Cd.EF', 'foo.bar.baz.9.8.^a.b.^cd.^e^f.boop'),
-            ('foo.bar.baz', '9.8.A.b.Cd.EF', 'foo.BAR.baz.9.8.^a.B.^CD.^e^F.Boop'),
+            ('foo.bar', '2.0', 'foo.bar.2.0.boop'),
+            ('foo.bar.baz', '9.8.1', 'foo.bar.baz.9.8.1.boop'),
         ]
 
         for (pkgname, pkgvers, result) in ls:
@@ -737,9 +738,9 @@ class TestCreate(unittest.TestCase):
         (resname, resvers) = parse_package_filename('foo.boop', False)
         self.assertEqual(resvers, None)
     
-        (resname, resvers) = parse_package_filename('foo.1.boop')
+        (resname, resvers) = parse_package_filename('foo.1.0.boop')
         self.assertEqual(str(resvers), '1.0')
-        (resname, resvers) = parse_package_filename('foo.1.boop', False)
+        (resname, resvers) = parse_package_filename('foo.1.0.boop', False)
         self.assertEqual(str(resvers), '1.0')
     
         (resname, resvers) = parse_package_filename('foo.2.5.boop')
@@ -749,14 +750,26 @@ class TestCreate(unittest.TestCase):
     
     def test_parse_package_filename_bad(self):
         ls = [
-            '', 'fooboop', '.boop', '!.boop', 'hel lo.boop', 'foo. boop',
-            '1.2.3.boop', '1.2.$.boop', 'foo.1.$.boop', 'foo.$.boop',
-            'zero.0.1.boop', 'foo.1._.boop',
-            'foo..boop', 'foo..1.boop', 'foo.1..2.boop',
-            'front^caret.boop', 'mis.1.0.caret^.boop',
-            'mis.1.0.^1.boop', 'mis.1.0.^^x.boop', 'mis.1.0.bo^op', 
+            ('', ValueError),
+            ('fooboop', ValueError),
+            ('.boop', ValueError),
+            ('!.boop', ValueError),
+            ('hel lo.boop', ValueError),
+            ('foo. boop', ValueError),
+            ('1.2.3.boop', ValueError),
+            ('1.2.$.boop', ValueError),
+            ('foo.1.$.boop', ValueError),
+            ('foo.$.boop', ValueError),
+            ('foo.1._.boop', ValueError),
+            ('foo..boop', ValueError),
+            ('foo..1.boop', ValueError),
+            ('foo.1..2.boop', ValueError),
+            ('front^caret.boop', ValueError),
+            ('mis.1.0.caret^.boop', ValueError),
+            ('mis.1.0.^1.boop', ValueError),
+            ('mis.1.0.^^x.boop', ValueError),
+            ('mis.1.0.bo^op', ValueError),
         ]
 
-        for val in ls:
-            self.assertRaises(ValueError, parse_package_filename, val)
-
+        for val, exc in ls:
+            self.assertRaises(exc, parse_package_filename, val)

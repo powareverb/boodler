@@ -4,22 +4,19 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-import StringIO
+import io
 import unittest
 
-try:
-    set
-except:
-    import sets
-    set = sets.Set
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
+from packaging.version import InvalidVersion, Version
 
-from boopak import version
 from boopak import pinfo
 from boopak.pinfo import Metadata, Resources, PackageLoadError
 from boopak.pinfo import parse_package_name, parse_resource_name
 from boopak.pinfo import parse_package_version_spec
-from boopak.pinfo import build_safe_pathname, encode_package_name, deunicode
+from boopak.pinfo import build_safe_pathname, encode_package_name
 from boopak.pinfo import dict_accumulate, dict_all_values
+
 
 class TestPInfo(unittest.TestCase):
 
@@ -48,7 +45,7 @@ one: 11
 
 four : Four
 """
-        fl = StringIO.StringIO(source)
+        fl = io.StringIO(source)
         meta = Metadata('<unit test>', fl)
         fl.close()
 
@@ -63,21 +60,21 @@ four : Four
         self.assertEqual(meta.get_all('one'), ['1','11'])
         self.assertEqual(meta.get_all('missing'), [])
 
-        ls = meta.keys()
+        ls = list(meta.keys())
         self.assertEqual(len(ls), len(meta))
         ls.sort()
         self.assertEqual(ls, ['dc.three', 'four', 'one', 'two'])
 
         meta2 = meta.clone()
         self.assertEqual(len(meta2), len(meta))
-        for key in meta.keys():
+        for key in list(meta.keys()):
             self.assertEqual(meta.get_all(key), meta2.get_all(key))
 
     def test_metadata_empty(self):
         meta = Metadata('<test>')
         self.assertEqual(len(meta), 0)
         self.assertEqual(meta.get_all('foo'), [])
-        self.assertEqual(meta.keys(), [])
+        self.assertEqual(list(meta.keys()), [])
     
     def test_metadata_modify(self):
         meta = Metadata('<test>')
@@ -97,14 +94,14 @@ four : Four
         self.assertEqual(meta2.get_all('one'), ['two', 'four'])
 
     def dump_to_string(self, obj, *args):
-        fl = StringIO.StringIO()
+        fl = io.StringIO()
         obj.dump(fl, *args)
         fl.seek(0)
         return fl.read()
-        
+
     def test_metadata_dump(self):
         meta = Metadata('<test>')
-        
+
         val = self.dump_to_string(meta)
         self.assertEqual(val, '')
         val = self.dump_to_string(meta, 'I am a comment.')
@@ -118,26 +115,26 @@ four : Four
         meta.add('one', 'three')
         val = self.dump_to_string(meta)
         self.assertEqual(val, 'one: two\none: three\n')
-    
+
     def test_metadata_unicode(self):
         meta = Metadata('<test>')
 
-        meta.add(u'alpha', u'is \u03b1')
+        meta.add('alpha', 'is \u03b1')
         val = self.dump_to_string(meta)
-        self.assertEqual(val, u'alpha: is \u03b1\n')
+        self.assertEqual(val, 'alpha: is \u03b1\n')
 
         source = """# Metadata test file
-alpha: is \xce\xb1
+alpha: is α
 """
-        fl = StringIO.StringIO(source)
+        fl = io.StringIO(source)
         meta = Metadata('<unit test>', fl)
         fl.close()
 
-        self.assertEqual(meta.get_one('alpha'), u'is \u03b1')
-        
+        self.assertEqual(meta.get_one('alpha'), 'is \u03b1')
+
     def test_resources(self):
         source = """# Resources test file
-        
+
     # Another comment
 
 :res1
@@ -149,14 +146,14 @@ two: II
 :Foo.Bar
 one: eleven
 """
-        fl = StringIO.StringIO(source)
+        fl = io.StringIO(source)
         ress = Resources('<unit test>', fl)
         fl.close()
-        
-        self.assert_(ress.get('foo') is None)
+
+        self.assertTrue(ress.get('foo') is None)
 
         res = ress.get('res1')
-        self.assert_(res in ress.resources())
+        self.assertTrue(res in ress.resources())
         self.assertEqual(res.get_one('one'), '1')
         self.assertEqual(res.get_one('two'), '2')
         self.assertEqual(res.get_all('two'), ['2', 'II'])
@@ -164,19 +161,19 @@ one: eleven
         self.assertEqual(res.get_one('missing', 'def'), 'def')
         
         res = ress.get('Foo.Bar')
-        self.assert_(res in ress.resources())
+        self.assertTrue(res in ress.resources())
         self.assertEqual(res.get_one('one'), 'eleven')
         self.assertEqual(res.get_one('two'), None)
 
-        keys = ress.keys()
-        self.assertEquals(len(keys), 2)
-        self.assert_('res1' in keys and 'Foo.Bar' in keys)
+        keys = list(ress.keys())
+        self.assertEqual(len(keys), 2)
+        self.assertTrue('res1' in keys and 'Foo.Bar' in keys)
 
     def test_resources_empty(self):
         ress = Resources('<test>')
         self.assertEqual(len(ress), 0)
-        self.assert_(ress.get('foo') is None)
-        self.assertEqual(ress.keys(), [])
+        self.assertTrue(ress.get('foo') is None)
+        self.assertEqual(list(ress.keys()), [])
         self.assertEqual(ress.resources(), [])
 
     def test_resources_bad(self):
@@ -189,7 +186,7 @@ one: eleven
         ]
 
         for source in ls:
-            fl = StringIO.StringIO(source)
+            fl = io.StringIO(source)
             self.assertRaises(PackageLoadError, Resources, '<test>', fl)
 
     def test_resources_create(self):
@@ -267,34 +264,43 @@ one: eleven
 
     def test_parse_package_version_spec(self):
         valid_list = [
-            'foo:1.0', 'foo:2-', 'foo:-3.1', 'foo:2-4',
+            'foo:~=1.0', 'foo:>=2', 'foo:<3.1', 'foo:>=2,<=4',
             'foo::1.2.3', 'foo.bar::1.5.6a',
         ]
+
         invalid_list = [
-            '0x', ':foo', 'foo:0.1', 'foo:1.2.3',
-            'foo::0.1', 'foo:::1.0', 'foo:1:2',
-            'foo: 1.0', 'foo :1.0', 'foo: :1.0', 'foo:: 1.0',
+            ('0x', ValueError),
+            (':foo', ValueError),
+            ('0x:', ValueError),
+            ('foo:0.1', InvalidSpecifier),
+            ('foo:1.2.3', InvalidSpecifier),
+            ('foo:::1.0', InvalidVersion),
+            ('foo:1:2', ValueError),
+            ('foo: 1.0', InvalidSpecifier),
+            ('foo :1.0', InvalidSpecifier),
+            ('foo: :1.0', ValueError),
         ]
-        
+
         (pkg, vers) = parse_package_version_spec('x.y.z')
         self.assertEqual(pkg, 'x.y.z')
         self.assertEqual(vers, None)
-        
-        (pkg, vers) = parse_package_version_spec('x.y.z:2.4')
+
+        (pkg, vers) = parse_package_version_spec('x.y.z:~=2.4')
         self.assertEqual(pkg, 'x.y.z')
-        self.assert_(isinstance(vers, version.VersionSpec))
-        self.assertEqual(vers, version.VersionSpec('2.4'))
-        
+        self.assertTrue(isinstance(vers, SpecifierSet))
+        self.assertEqual(vers, SpecifierSet('~=2.4'))
+
         (pkg, vers) = parse_package_version_spec('x.y.z::2.4.6')
         self.assertEqual(pkg, 'x.y.z')
-        self.assert_(isinstance(vers, version.VersionNumber))
-        self.assertEqual(vers, version.VersionNumber('2.4.6'))
+        self.assertTrue(isinstance(vers, Version))
+        self.assertEqual(vers, Version('2.4.6'))
 
         for val in valid_list:
             parse_package_version_spec(val)
-        for val in invalid_list:
-            self.assertRaises(ValueError, parse_package_version_spec, val)
-        
+
+        for val, exc in invalid_list:
+            self.assertRaises(exc, parse_package_version_spec, val)
+
     def test_parse_package_name(self):
         valid_list = [
             ('hello', ['hello']),
@@ -365,40 +371,40 @@ one: eleven
         self.assertEqual(res, [])
 
         dic = {1:11, 2:22, 3:{3:33, 31:331}, 4:44, 5:{55:55}}
-        res = dict_all_values(dic)
-        res.sort()
+        res = sorted(dict_all_values(dic))
         self.assertEqual(res, [11, 22, 33, 44, 55, 331])
 
         ls = [0]
         res = dict_all_values(dic, ls)
         res.sort()
         self.assertEqual(res, [0, 11, 22, 33, 44, 55, 331])
-        self.assert_(res is ls)
+        self.assertTrue(res is ls)
 
     def test_encode_package_name(self):
-        (pkgname, vers) = ('xy.zzy', version.VersionNumber('1.2.3a.four'))
+        (pkgname, vers) = ('xy.zzy', Version('1.2.3'))
         val = encode_package_name(pkgname, vers)
-        self.assertEqual(val, '_BooPkg_xy_zzyV1_2_3a_four')
+        self.assertEqual(val, '_BooPkg_xy_zzyV1_2_3')
 
         ls = [
-            ('x.y_z', '1.1._'),
-            ('x.y.z', '1.1._'),
-            ('x.y.z1', '1.1._'),
-            ('x.y.z', '11.1._'),
-            ('x.y.z', '1.11._'),
-            ('x.y.z', '1.1.1_'),
-            ('x.y.z', '1.1.a'),
-            ('x.y.z', '1.1.A'),
-            ('x.y.z', '1.1.U'),
-            ('x.y.z', '1.1.C'),
-            ('x.y.z', '1.1.CU'),
+            ('x.y_z', '1.1.1'),
+            ('x.y.z', '1.1.2'),
+            ('x.y.z1', '1.1.3'),
+            ('x.y.z', '11.1.4'),
+            ('x.y.z', '1.11.5'),
+            ('x.y.z', '1.1.6'),
+            ('x.y.z', '1.1.7'),
+            ('x.y.z', '1.1.8'),
+            ('x.y.z', '1.1.9'),
+            ('x.y.z', '1.1.10'),
+            ('x.y.z', '1.1.11'),
         ]
+
         st = set()
 
         for (pkgname, vers) in ls:
-            vers = version.VersionNumber(vers)
+            vers = Version(vers)
             val = encode_package_name(pkgname, vers)
-            self.assert_(pinfo.ident_name_regexp.match(val))
+            self.assertTrue(pinfo.ident_name_regexp.match(val))
             st.add(val)
 
         self.assertEqual(len(st), len(ls))
@@ -423,13 +429,5 @@ one: eleven
         for (name, result) in valid_list:
             val = build_safe_pathname('/tmp', name)
             self.assertEqual(val, result)
-        val = build_safe_pathname('/tmp', u'foo')
+        val = build_safe_pathname('/tmp', 'foo')
         self.assertEqual(type(val), str)
-            
-    def test_deunicode(self):
-        val = ' hello '
-        self.assertEqual(deunicode(val), ' hello ')
-        val = 'alpha is \xce\xb1'
-        self.assertEqual(deunicode(val), u'alpha is \u03b1')
-        val = '\xef\xbb\xbfalpha is \xce\xb1'
-        self.assertEqual(deunicode(val), u'alpha is \u03b1')
