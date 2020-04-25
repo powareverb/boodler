@@ -127,20 +127,11 @@ class Generator:
         if typ in [float, int]:
             if delay < 0:
                 raise ScheduleError('negative delay time')
-            if delay > 3605:
-                # about one hour
-                # need to think about this
-                raise ScheduleError('delay too long')
-            # int() is willing to return a long if necessary
             fdelay = int(delay * fps)
         elif isinstance(delay, FrameCount):
             fdelay = delay.frames
             if fdelay < 0:
                 raise ScheduleError('negative delay time')
-            if fdelay > 3605 * fps:
-                # about one hour
-                # need to think about this
-                raise ScheduleError('delay too long')
         else:
             raise ScheduleError('unknown type for delay')
 
@@ -166,20 +157,11 @@ class Generator:
         if typ in [float, int]:
             if duration < 0:
                 raise ScheduleError('negative duration time')
-            if duration > 3605:
-                # about one hour
-                # need to think about this
-                raise ScheduleError('duration too long')
-            # int() is willing to return a long if necessary
             fduration = int(duration * fps)
         elif isinstance(duration, FrameCount):
             fduration = duration.frames
             if fduration < 0:
                 raise ScheduleError('negative duration time')
-            if fduration > 3605 * fps:
-                # about one hour
-                # need to think about this
-                raise ScheduleError('duration too long')
         else:
             raise ScheduleError('unknown type for duration')
 
