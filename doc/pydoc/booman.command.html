@@ -1,6 +1,6 @@
-
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module booman.command</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -30,8 +30,7 @@
 </td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
 <a href="http://www.python.org/doc/current/library/time.html">time</a><br>
 <a href="booman.token.html">booman.token</a><br>
-</td><td width="25%" valign=top><a href="boopak.version.html">boopak.version</a><br>
-<a href="http://www.python.org/doc/current/library/zipfile.html">zipfile</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/zipfile.html">zipfile</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -40,6 +39,15 @@
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="booman.token.html#Token">booman.token.Token</a>(<a href="builtins.html#object">builtins.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="booman.command.html#CommandToken">CommandToken</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
 <dt><font face="helvetica, arial"><a href="booman.command.html#Command">Command</a>
 </font></dt><dd>
 <dl>
@@ -61,18 +69,14 @@
 </font></dt><dt><font face="helvetica, arial"><a href="booman.command.html#VersionsCmd">VersionsCmd</a>
 </font></dt></dl>
 </dd>
-<dt><font face="helvetica, arial"><a href="booman.token.html#Token">booman.token.Token</a>
-</font></dt><dd>
-<dl>
-<dt><font face="helvetica, arial"><a href="booman.command.html#CommandToken">CommandToken</a>
-</font></dt></dl>
+</dl>
 </dd>
 </dl>
  <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Command">class <strong>Command</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="Command">class <strong>Command</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
@@ -91,7 +95,7 @@ Methods:<br>
 <a href="#Command-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Command-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Command-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="Command-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#Command-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -105,6 +109,14 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 &nbsp;<br>
 Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = '&lt;unknown&gt;'</dl>
@@ -125,21 +137,40 @@ Data and other attributes defined here:<br>
 <td colspan=2><tt><a href="#CommandToken">CommandToken</a>:&nbsp;a&nbsp;<a href="booman.token.html#Token">Token</a>&nbsp;which&nbsp;grabs&nbsp;one&nbsp;of&nbsp;the&nbsp;command&nbsp;words.<br>
 &nbsp;<br>
 Returns&nbsp;the&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;corresponding&nbsp;to&nbsp;the&nbsp;command.&nbsp;(A&nbsp;class<br>
-object,&nbsp;not&nbsp;an&nbsp;instance&nbsp;of&nbsp;it.)<br>
+<a href="builtins.html#object">object</a>,&nbsp;not&nbsp;an&nbsp;instance&nbsp;of&nbsp;it.)<br>
 &nbsp;<br>
 Class&nbsp;field:<br>
 &nbsp;<br>
 verb_map&nbsp;--&nbsp;a&nbsp;dict&nbsp;mapping&nbsp;words&nbsp;to&nbsp;<a href="#Command">Command</a>&nbsp;subclasses.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="CommandToken-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#CommandToken">CommandToken</a></dd>
+<dd><a href="booman.token.html#Token">booman.token.Token</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="CommandToken-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="CommandToken-accept"><strong>accept</strong></a>(self, source)</dt></dl>
+<dl><dt><a name="CommandToken-accept"><strong>accept</strong></a>(self, source)</dt><dd><tt><a href="#CommandToken-accept">accept</a>(source)&nbsp;-&gt;&nbsp;value<br>
+&nbsp;<br>
+Grab&nbsp;the&nbsp;desired&nbsp;command&nbsp;element&nbsp;from&nbsp;the&nbsp;given&nbsp;InputSource,&nbsp;and<br>
+return&nbsp;it.&nbsp;The&nbsp;type&nbsp;of&nbsp;value&nbsp;returned&nbsp;depends&nbsp;on&nbsp;the&nbsp;<a href="booman.token.html#Token">Token</a>&nbsp;subclass.<br>
+&nbsp;<br>
+(Raising&nbsp;KeyboardInterrupt&nbsp;is&nbsp;always&nbsp;a&nbsp;possibility.)</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>verb_map</strong> = None</dl>
 
+<hr>
+Data descriptors inherited from <a href="booman.token.html#Token">booman.token.Token</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 <hr>
 Data and other attributes inherited from <a href="booman.token.html#Token">booman.token.Token</a>:<br>
 <dl><dt><strong>prompt</strong> = ''</dl>
@@ -150,9 +181,32 @@ Data and other attributes inherited from <a href="booman.token.html#Token">booma
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="ContentsCmd">class <strong>ContentsCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ContentsCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#ContentsCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#ContentsCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#ContentsCmd">ContentsCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ContentsCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#ContentsCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -166,7 +220,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="ContentsCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="ContentsCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="ContentsCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#ContentsCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -176,15 +230,46 @@ CommandError.<br>
 (This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
+<hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="CreateCmd">class <strong>CreateCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="CreateCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#CreateCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#CreateCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#CreateCmd">CreateCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="CreateCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#CreateCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -196,7 +281,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="CreateCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="CreateCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="CreateCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#CreateCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -207,6 +292,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
 
@@ -216,9 +309,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="DeleteAllCmd">class <strong>DeleteAllCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="DeleteAllCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#DeleteAllCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#DeleteAllCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#DeleteAllCmd">DeleteAllCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="DeleteAllCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#DeleteAllCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -230,7 +346,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="DeleteAllCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="DeleteAllCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="DeleteAllCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#DeleteAllCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -241,6 +357,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
 
@@ -250,9 +374,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="DeleteCmd">class <strong>DeleteCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="DeleteCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#DeleteCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#DeleteCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#DeleteCmd">DeleteCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="DeleteCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#DeleteCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -264,7 +411,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="DeleteCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="DeleteCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="DeleteCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#DeleteCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -275,6 +422,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
 
@@ -284,9 +439,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="DescribeCmd">class <strong>DescribeCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="DescribeCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#DescribeCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#DescribeCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#DescribeCmd">DescribeCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="DescribeCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#DescribeCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -300,7 +478,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="DescribeCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="DescribeCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="DescribeCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#DescribeCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -310,15 +488,46 @@ CommandError.<br>
 (This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
+<hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="ExamineCmd">class <strong>ExamineCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ExamineCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#ExamineCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#ExamineCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#ExamineCmd">ExamineCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ExamineCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#ExamineCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -330,7 +539,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="ExamineCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="ExamineCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="ExamineCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#ExamineCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -341,6 +550,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>help</strong> = None</dl>
 
@@ -350,9 +567,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="HelpCmd">class <strong>HelpCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="HelpCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#HelpCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#HelpCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#HelpCmd">HelpCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="HelpCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#HelpCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -366,7 +606,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="HelpCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="HelpCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="HelpCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#HelpCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -376,15 +616,46 @@ CommandError.<br>
 (This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
+<hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="InstallCmd">class <strong>InstallCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="InstallCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#InstallCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#InstallCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#InstallCmd">InstallCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="InstallCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#InstallCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -396,7 +667,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="InstallCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="InstallCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="InstallCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#InstallCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -407,6 +678,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
 
@@ -416,9 +695,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="LastErrorCmd">class <strong>LastErrorCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="LastErrorCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#LastErrorCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#LastErrorCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#LastErrorCmd">LastErrorCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="LastErrorCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#LastErrorCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -430,7 +732,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="LastErrorCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="LastErrorCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="LastErrorCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#LastErrorCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -441,6 +743,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
 
@@ -450,9 +760,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="ListAllCmd">class <strong>ListAllCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ListAllCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#ListAllCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#ListAllCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#ListAllCmd">ListAllCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ListAllCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#ListAllCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -464,7 +797,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="ListAllCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="ListAllCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="ListAllCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#ListAllCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -475,6 +808,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
 
@@ -484,9 +825,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="ListCmd">class <strong>ListCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ListCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#ListCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#ListCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#ListCmd">ListCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ListCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#ListCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -498,7 +862,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="ListCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="ListCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="ListCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#ListCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -509,6 +873,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
 
@@ -518,9 +890,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="ObsoleteCmd">class <strong>ObsoleteCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ObsoleteCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#ObsoleteCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#ObsoleteCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#ObsoleteCmd">ObsoleteCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ObsoleteCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#ObsoleteCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -532,7 +927,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="ObsoleteCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="ObsoleteCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="ObsoleteCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#ObsoleteCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -543,6 +938,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
 
@@ -552,9 +955,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="QuitCmd">class <strong>QuitCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="QuitCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#QuitCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#QuitCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#QuitCmd">QuitCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="QuitCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#QuitCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -568,7 +994,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="QuitCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="QuitCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="QuitCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#QuitCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -578,15 +1004,46 @@ CommandError.<br>
 (This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
+<hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="ReloadCmd">class <strong>ReloadCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ReloadCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#ReloadCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#ReloadCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#ReloadCmd">ReloadCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ReloadCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#ReloadCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -598,7 +1055,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="ReloadCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="ReloadCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="ReloadCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#ReloadCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -609,6 +1066,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
 
@@ -618,9 +1083,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="RequiresCmd">class <strong>RequiresCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="RequiresCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#RequiresCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#RequiresCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#RequiresCmd">RequiresCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="RequiresCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#RequiresCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -632,7 +1120,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="RequiresCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="RequiresCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="RequiresCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#RequiresCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -643,6 +1131,14 @@ CommandError.<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
 
@@ -652,9 +1148,32 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="VersionsCmd">class <strong>VersionsCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="VersionsCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>:&nbsp;represents&nbsp;a&nbsp;possible&nbsp;command.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Command">Command</a><br>
+represents&nbsp;one&nbsp;command&nbsp;(<a href="#QuitCmd">QuitCmd</a>,&nbsp;<a href="#HelpCmd">HelpCmd</a>,&nbsp;etc).<br>
+&nbsp;<br>
+Class&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;basic&nbsp;command&nbsp;word<br>
+synonyms&nbsp;--&nbsp;a&nbsp;list&nbsp;of&nbsp;alternate&nbsp;words&nbsp;which&nbsp;are&nbsp;accepted&nbsp;for&nbsp;the&nbsp;command<br>
+description&nbsp;--&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;command<br>
+help&nbsp;--&nbsp;more&nbsp;detailed&nbsp;help&nbsp;for&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Methods:<br>
+&nbsp;<br>
+<a href="#VersionsCmd-perform">perform</a>()&nbsp;--&nbsp;carry&nbsp;out&nbsp;the&nbsp;command<br>
+<a href="#VersionsCmd-assert_done">assert_done</a>()&nbsp;--&nbsp;ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.command.html#VersionsCmd">VersionsCmd</a></dd>
+<dd><a href="booman.command.html#Command">Command</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="VersionsCmd-perform"><strong>perform</strong></a>(self, source)</dt><dd><tt><a href="#VersionsCmd-perform">perform</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Carry&nbsp;out&nbsp;the&nbsp;command.&nbsp;Each&nbsp;<a href="#Command">Command</a>&nbsp;subclass&nbsp;must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -666,7 +1185,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><a name="VersionsCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="VersionsCmd-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="VersionsCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#VersionsCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -676,6 +1195,14 @@ CommandError.<br>
 (This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
+<hr>
+Data descriptors inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
 <dl><dt><strong>synonyms</strong> = []</dl>
@@ -693,10 +1220,10 @@ Make&nbsp;sure&nbsp;the&nbsp;(srctype,&nbsp;loc)&nbsp;pair&nbsp;is&nbsp;fetched&
 PackageCollection.fetch_source()&nbsp;method&nbsp;for&nbsp;the&nbsp;arguments.)&nbsp;This<br>
 does&nbsp;any&nbsp;slow&nbsp;processing&nbsp;--&nbsp;that&nbsp;is,&nbsp;HTTP&nbsp;downloading&nbsp;--&nbsp;which&nbsp;is<br>
 necessary&nbsp;before&nbsp;the&nbsp;command&nbsp;is&nbsp;executed.</tt></dd></dl>
- <dl><dt><a name="-format_package"><strong>format_package</strong></a>(val, full<font color="#909090">=True</font>)</dt><dd><tt><a href="#-format_package">format_package</a>(val,&nbsp;full=True)&nbsp;-&gt;&nbsp;str<br>
+ <dl><dt><a name="-format_package"><strong>format_package</strong></a>(val, full=True)</dt><dd><tt><a href="#-format_package">format_package</a>(val,&nbsp;full=True)&nbsp;-&gt;&nbsp;str<br>
 &nbsp;<br>
 Create&nbsp;a&nbsp;human-readable&nbsp;label&nbsp;for&nbsp;a&nbsp;package.&nbsp;The&nbsp;val&nbsp;may&nbsp;be&nbsp;a<br>
-PackageInfo&nbsp;object&nbsp;or&nbsp;a&nbsp;(pkgname,&nbsp;vers)&nbsp;pair.&nbsp;In&nbsp;the&nbsp;latter&nbsp;case,<br>
+PackageInfo&nbsp;<a href="builtins.html#object">object</a>&nbsp;or&nbsp;a&nbsp;(pkgname,&nbsp;vers)&nbsp;pair.&nbsp;In&nbsp;the&nbsp;latter&nbsp;case,<br>
 vers&nbsp;may&nbsp;be&nbsp;a&nbsp;VersionNumber&nbsp;or&nbsp;a&nbsp;VersionSpec.<br>
 &nbsp;<br>
 If&nbsp;full&nbsp;is&nbsp;false,&nbsp;the&nbsp;version&nbsp;is&nbsp;ignored.</tt></dd></dl>
@@ -707,5 +1234,5 @@ If&nbsp;full&nbsp;is&nbsp;false,&nbsp;the&nbsp;version&nbsp;is&nbsp;ignored.</tt
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>command_list</strong> = [&lt;class booman.command.HelpCmd&gt;, &lt;class booman.command.ListCmd&gt;, &lt;class booman.command.ListAllCmd&gt;, &lt;class booman.command.DescribeCmd&gt;, &lt;class booman.command.ContentsCmd&gt;, &lt;class booman.command.VersionsCmd&gt;, &lt;class booman.command.ObsoleteCmd&gt;, &lt;class booman.command.RequiresCmd&gt;, &lt;class booman.command.InstallCmd&gt;, &lt;class booman.command.DeleteCmd&gt;, &lt;class booman.command.DeleteAllCmd&gt;, &lt;class booman.command.CreateCmd&gt;, &lt;class booman.command.ReloadCmd&gt;, &lt;class booman.command.LastErrorCmd&gt;, &lt;class booman.command.QuitCmd&gt;]</td></tr></table>
+<td width="100%"><strong>command_list</strong> = [&lt;class 'booman.command.HelpCmd'&gt;, &lt;class 'booman.command.ListCmd'&gt;, &lt;class 'booman.command.ListAllCmd'&gt;, &lt;class 'booman.command.DescribeCmd'&gt;, &lt;class 'booman.command.ContentsCmd'&gt;, &lt;class 'booman.command.VersionsCmd'&gt;, &lt;class 'booman.command.ObsoleteCmd'&gt;, &lt;class 'booman.command.RequiresCmd'&gt;, &lt;class 'booman.command.InstallCmd'&gt;, &lt;class 'booman.command.DeleteCmd'&gt;, &lt;class 'booman.command.DeleteAllCmd'&gt;, &lt;class 'booman.command.CreateCmd'&gt;, &lt;class 'booman.command.ReloadCmd'&gt;, &lt;class 'booman.command.LastErrorCmd'&gt;, &lt;class 'booman.command.QuitCmd'&gt;]</td></tr></table>
 </body></html>

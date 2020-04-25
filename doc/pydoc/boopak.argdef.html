@@ -1,6 +1,6 @@
-
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module boopak.argdef</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -30,7 +30,7 @@ Simultaneous&nbsp;agent&nbsp;is&nbsp;expecting.&nbsp;That&nbsp;is&nbsp;the&nbsp;
 &nbsp;<br>
 --&nbsp;Overview<br>
 &nbsp;<br>
-The&nbsp;work&nbsp;begins&nbsp;by&nbsp;creating&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>&nbsp;object.&nbsp;This&nbsp;contains&nbsp;all&nbsp;the<br>
+The&nbsp;work&nbsp;begins&nbsp;by&nbsp;creating&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>&nbsp;<a href="builtins.html#object">object</a>.&nbsp;This&nbsp;contains&nbsp;all&nbsp;the<br>
 information&nbsp;about&nbsp;the&nbsp;agent's&nbsp;arguments&nbsp;--&nbsp;how&nbsp;many&nbsp;arguments,&nbsp;their<br>
 names,&nbsp;their&nbsp;types,&nbsp;their&nbsp;default&nbsp;values.&nbsp;(Note&nbsp;that&nbsp;the&nbsp;<a href="#ArgList">ArgList</a>&nbsp;type<br>
 information&nbsp;can&nbsp;be&nbsp;quite&nbsp;detailed.&nbsp;An&nbsp;argument&nbsp;can&nbsp;be&nbsp;specified&nbsp;not<br>
@@ -111,7 +111,7 @@ agent&nbsp;receives&nbsp;these&nbsp;two&nbsp;objects.&nbsp;It&nbsp;invokes&nbsp;
 OneBeat&nbsp;instance&nbsp;--&nbsp;correctly&nbsp;instantiated&nbsp;with&nbsp;its&nbsp;1.5&nbsp;argument.&nbsp;Then<br>
 it&nbsp;invokes&nbsp;the&nbsp;second&nbsp;one&nbsp;to&nbsp;get&nbsp;another&nbsp;OneBeat&nbsp;instance&nbsp;(with&nbsp;0.9).<br>
 Then&nbsp;it&nbsp;invokes&nbsp;the&nbsp;first&nbsp;one&nbsp;again,&nbsp;getting&nbsp;a&nbsp;*new*&nbsp;OneBeat(1.5).&nbsp;And<br>
-so&nbsp;on.&nbsp;Each&nbsp;wrapped&nbsp;object&nbsp;can&nbsp;be&nbsp;invoked&nbsp;as&nbsp;often&nbsp;as&nbsp;desired,&nbsp;each<br>
+so&nbsp;on.&nbsp;Each&nbsp;wrapped&nbsp;<a href="builtins.html#object">object</a>&nbsp;can&nbsp;be&nbsp;invoked&nbsp;as&nbsp;often&nbsp;as&nbsp;desired,&nbsp;each<br>
 time&nbsp;instantiating&nbsp;a&nbsp;new,&nbsp;fresh&nbsp;Agent&nbsp;instance.<br>
 &nbsp;<br>
 (Other&nbsp;mutable&nbsp;types,&nbsp;such&nbsp;as&nbsp;lists,&nbsp;can&nbsp;also&nbsp;be&nbsp;wrapped&nbsp;in&nbsp;this&nbsp;way.<br>
@@ -134,7 +134,7 @@ Classes:<br>
 &nbsp;<br>
 Utility&nbsp;functions:<br>
 &nbsp;<br>
-infer_type()&nbsp;--&nbsp;given&nbsp;a&nbsp;data&nbsp;value,&nbsp;return&nbsp;an&nbsp;object&nbsp;representing&nbsp;its&nbsp;type<br>
+infer_type()&nbsp;--&nbsp;given&nbsp;a&nbsp;data&nbsp;value,&nbsp;return&nbsp;an&nbsp;<a href="builtins.html#object">object</a>&nbsp;representing&nbsp;its&nbsp;type<br>
 check_valid_type()&nbsp;--&nbsp;make&nbsp;sure&nbsp;that&nbsp;type&nbsp;is&nbsp;a&nbsp;valid&nbsp;type&nbsp;for&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>&nbsp;entry<br>
 type_to_node()&nbsp;--&nbsp;construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;a&nbsp;type<br>
 node_to_type()&nbsp;--&nbsp;construct&nbsp;a&nbsp;type&nbsp;from&nbsp;an&nbsp;S-expression<br>
@@ -167,8 +167,7 @@ resolve_value()&nbsp;--&nbsp;resolve&nbsp;a&nbsp;value&nbsp;or&nbsp;wrapped&nbsp
 <a href="boopak.sparse.html">boopak.sparse</a><br>
 </td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
 <a href="http://www.python.org/doc/current/library/types.html">types</a><br>
-</td><td width="25%" valign=top><a href="boopak.version.html">boopak.version</a><br>
-</td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -176,6 +175,15 @@ resolve_value()&nbsp;--&nbsp;resolve&nbsp;a&nbsp;value&nbsp;or&nbsp;wrapped&nbsp
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#ValueError">builtins.ValueError</a>(<a href="builtins.html#Exception">builtins.Exception</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boopak.argdef.html#ArgDefError">ArgDefError</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
 <dt><font face="helvetica, arial"><a href="boopak.argdef.html#Arg">Arg</a>
 </font></dt><dt><font face="helvetica, arial"><a href="boopak.argdef.html#ArgExtra">ArgExtra</a>
 </font></dt><dt><font face="helvetica, arial"><a href="boopak.argdef.html#ArgList">ArgList</a>
@@ -187,10 +195,6 @@ resolve_value()&nbsp;--&nbsp;resolve&nbsp;a&nbsp;value&nbsp;or&nbsp;wrapped&nbsp
 </font></dt></dl>
 </dd>
 <dt><font face="helvetica, arial"><a href="boopak.argdef.html#Wrapped">Wrapped</a>
-</font></dt><dt><font face="helvetica, arial"><a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">exceptions.ValueError</a>(<a href="http://www.python.org/doc/current/library/exceptions.html#StandardError">exceptions.StandardError</a>)
-</font></dt><dd>
-<dl>
-<dt><font face="helvetica, arial"><a href="boopak.argdef.html#ArgDefError">ArgDefError</a>
 </font></dt></dl>
 </dd>
 </dl>
@@ -198,10 +202,12 @@ resolve_value()&nbsp;--&nbsp;resolve&nbsp;a&nbsp;value&nbsp;or&nbsp;wrapped&nbsp
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Arg">class <strong>Arg</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="Arg">class <strong>Arg</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#Arg">Arg</a>:&nbsp;represents&nbsp;one&nbsp;argument&nbsp;in&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>.<br>
+<td colspan=2><tt><a href="#Arg">Arg</a>(name=None,&nbsp;index=None,&nbsp;type=None,&nbsp;default=&amp;lt;<a href="builtins.html#object">object</a>&nbsp;<a href="builtins.html#object">object</a>&nbsp;at&nbsp;0x109341e60&amp;gt;,&nbsp;optional=None,&nbsp;description=None)<br>
+&nbsp;<br>
+<a href="#Arg">Arg</a>:&nbsp;represents&nbsp;one&nbsp;argument&nbsp;in&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>.<br>
 &nbsp;<br>
 <a href="#Arg">Arg</a>(name=...,&nbsp;index=...,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;type=...,&nbsp;default=...,&nbsp;optional=...,<br>
@@ -223,7 +229,7 @@ Fields:&nbsp;(any&nbsp;of&nbsp;these&nbsp;may&nbsp;be&nbsp;None&nbsp;to&nbsp;ind
 &nbsp;<br>
 name&nbsp;--&nbsp;str&nbsp;or&nbsp;unicode<br>
 index&nbsp;--&nbsp;int<br>
-type&nbsp;--&nbsp;a&nbsp;type&nbsp;object&nbsp;(int,&nbsp;str,&nbsp;etc.),&nbsp;or&nbsp;a&nbsp;class&nbsp;object&nbsp;(Sample&nbsp;or<br>
+type&nbsp;--&nbsp;a&nbsp;type&nbsp;<a href="builtins.html#object">object</a>&nbsp;(int,&nbsp;str,&nbsp;etc.),&nbsp;or&nbsp;a&nbsp;class&nbsp;<a href="builtins.html#object">object</a>&nbsp;(Sample&nbsp;or<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Agent),&nbsp;or&nbsp;a&nbsp;<a href="#Wrapped">Wrapped</a>&nbsp;instance.<br>
 optional&nbsp;--&nbsp;bool<br>
 description&nbsp;--&nbsp;str&nbsp;or&nbsp;unicode<br>
@@ -238,9 +244,9 @@ Public&nbsp;methods:<br>
 <a href="#Arg-absorb">absorb</a>()&nbsp;--&nbsp;merge&nbsp;the&nbsp;attributes&nbsp;of&nbsp;another&nbsp;<a href="#Arg">Arg</a>&nbsp;into&nbsp;this&nbsp;one<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Arg-__init__"><strong>__init__</strong></a>(self, name<font color="#909090">=None</font>, index<font color="#909090">=None</font>, type<font color="#909090">=None</font>, default<font color="#909090">=&lt;object object&gt;</font>, optional<font color="#909090">=None</font>, description<font color="#909090">=None</font>)</dt></dl>
+<dl><dt><a name="Arg-__init__"><strong>__init__</strong></a>(self, name=None, index=None, type=None, default=&lt;object object&gt;, optional=None, description=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="Arg-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Arg-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="Arg-absorb"><strong>absorb</strong></a>(self, arg)</dt><dd><tt><a href="#Arg-absorb">absorb</a>(arg)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -274,22 +280,29 @@ Static methods defined here:<br>
 Construct&nbsp;an&nbsp;<a href="#Arg">Arg</a>&nbsp;from&nbsp;an&nbsp;S-expression.&nbsp;The&nbsp;Tree&nbsp;passed&nbsp;in&nbsp;should<br>
 be&nbsp;one&nbsp;generated&nbsp;by&nbsp;the&nbsp;<a href="#Arg-to_node">to_node</a>()&nbsp;method.</tt></dd></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ArgDefError">class <strong>ArgDefError</strong></a>(<a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">exceptions.ValueError</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="ArgDefError">class <strong>ArgDefError</strong></a>(<a href="builtins.html#ValueError">builtins.ValueError</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#ArgDefError">ArgDefError</a>:&nbsp;represents&nbsp;an&nbsp;error&nbsp;constructing&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="boopak.argdef.html#ArgDefError">ArgDefError</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">exceptions.ValueError</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#StandardError">exceptions.StandardError</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+<dd><a href="builtins.html#ValueError">builtins.ValueError</a></dd>
+<dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
+<dd><a href="builtins.html#BaseException">builtins.BaseException</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
 </dl>
 <hr>
 Data descriptors defined here:<br>
@@ -297,65 +310,81 @@ Data descriptors defined here:<br>
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">exceptions.ValueError</a>:<br>
-<dl><dt><a name="ArgDefError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#ArgDefError-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+Methods inherited from <a href="builtins.html#ValueError">builtins.ValueError</a>:<br>
+<dl><dt><a name="ArgDefError-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">exceptions.ValueError</a>:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#ArgDefError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+Static methods inherited from <a href="builtins.html#ValueError">builtins.ValueError</a>:<br>
+<dl><dt><a name="ArgDefError-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
-<dl><dt><a name="ArgDefError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ArgDefError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+Methods inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><a name="ArgDefError-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="ArgDefError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#ArgDefError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+<dl><dt><a name="ArgDefError-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="ArgDefError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#ArgDefError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+<dl><dt><a name="ArgDefError-__reduce__"><strong>__reduce__</strong></a>(...)</dt><dd><tt>Helper&nbsp;for&nbsp;pickle.</tt></dd></dl>
 
-<dl><dt><a name="ArgDefError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#ArgDefError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
-&nbsp;<br>
-Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+<dl><dt><a name="ArgDefError-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
-<dl><dt><a name="ArgDefError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
-
-<dl><dt><a name="ArgDefError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#ArgDefError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
-
-<dl><dt><a name="ArgDefError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ArgDefError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+<dl><dt><a name="ArgDefError-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><tt>Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</tt></dd></dl>
 
 <dl><dt><a name="ArgDefError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
 
-<dl><dt><a name="ArgDefError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#ArgDefError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+<dl><dt><a name="ArgDefError-__str__"><strong>__str__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<dl><dt><a name="ArgDefError-with_traceback"><strong>with_traceback</strong></a>(...)</dt><dd><tt>Exception.<a href="#ArgDefError-with_traceback">with_traceback</a>(tb)&nbsp;--<br>
+set&nbsp;self.<strong>__traceback__</strong>&nbsp;to&nbsp;tb&nbsp;and&nbsp;return&nbsp;self.</tt></dd></dl>
 
 <hr>
-Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+Data descriptors inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><strong>__cause__</strong></dt>
+<dd><tt>exception&nbsp;cause</tt></dd>
+</dl>
+<dl><dt><strong>__context__</strong></dt>
+<dd><tt>exception&nbsp;context</tt></dd>
+</dl>
 <dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>__suppress_context__</strong></dt>
+</dl>
+<dl><dt><strong>__traceback__</strong></dt>
 </dl>
 <dl><dt><strong>args</strong></dt>
 </dl>
-<dl><dt><strong>message</strong></dt>
-<dd><tt>exception&nbsp;message</tt></dd>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ArgExtra">class <strong>ArgExtra</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ArgExtra">ArgExtra</a>(type=&amp;lt;class&nbsp;'list'&amp;gt;)<br>
+&nbsp;<br>
+<a href="#ArgExtra">ArgExtra</a>:&nbsp;represents&nbsp;extra&nbsp;positional&nbsp;arguments,&nbsp;when&nbsp;constructing<br>
+an&nbsp;<a href="#ArgList">ArgList</a>.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ArgExtra-__init__"><strong>__init__</strong></a>(self, type=&lt;class 'list'&gt;)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ArgExtra">class <strong>ArgExtra</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="ArgList">class <strong>ArgList</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#ArgExtra">ArgExtra</a>:&nbsp;represents&nbsp;extra&nbsp;positional&nbsp;arguments,&nbsp;when&nbsp;constructing<br>
-an&nbsp;<a href="#ArgList">ArgList</a>.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ArgExtra-__init__"><strong>__init__</strong></a>(self, type<font color="#909090">=&lt;type 'list'&gt;</font>)</dt></dl>
-
-</td></tr></table> <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ArgList">class <strong>ArgList</strong></a></font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#ArgList">ArgList</a>:&nbsp;represents&nbsp;the&nbsp;argument&nbsp;structure&nbsp;of&nbsp;a&nbsp;function.&nbsp;This<br>
+<td colspan=2><tt><a href="#ArgList">ArgList</a>(*ls,&nbsp;**dic)<br>
+&nbsp;<br>
+<a href="#ArgList">ArgList</a>:&nbsp;represents&nbsp;the&nbsp;argument&nbsp;structure&nbsp;of&nbsp;a&nbsp;function.&nbsp;This<br>
 includes&nbsp;the&nbsp;number&nbsp;of&nbsp;arguments,&nbsp;their&nbsp;names,&nbsp;and&nbsp;their&nbsp;types.<br>
 &nbsp;<br>
 Actually,&nbsp;arguments&nbsp;can&nbsp;be&nbsp;specified&nbsp;by&nbsp;position&nbsp;*or*&nbsp;by&nbsp;name,<br>
@@ -376,7 +405,7 @@ You&nbsp;can&nbsp;construct&nbsp;the&nbsp;<a href="#ArgList">ArgList</a>&nbsp;wi
 The&nbsp;former&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;specifying&nbsp;the&nbsp;index=&nbsp;value&nbsp;in&nbsp;the&nbsp;<a href="#Arg">Arg</a><br>
 constructor;&nbsp;the&nbsp;latter,&nbsp;the&nbsp;name=&nbsp;value.<br>
 &nbsp;<br>
-You&nbsp;can&nbsp;also&nbsp;include&nbsp;an&nbsp;<a href="#ArgExtra">ArgExtra</a>&nbsp;object&nbsp;in&nbsp;the&nbsp;arguments:<br>
+You&nbsp;can&nbsp;also&nbsp;include&nbsp;an&nbsp;<a href="#ArgExtra">ArgExtra</a>&nbsp;<a href="builtins.html#object">object</a>&nbsp;in&nbsp;the&nbsp;arguments:<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#ArgList">ArgList</a>(<a href="#ArgExtra">ArgExtra</a>(...))<br>
 &nbsp;<br>
@@ -405,19 +434,19 @@ Public&nbsp;methods:<br>
 <a href="#ArgList-resolve">resolve</a>()&nbsp;--&nbsp;match&nbsp;a&nbsp;Tree&nbsp;of&nbsp;argument&nbsp;values&nbsp;against&nbsp;the&nbsp;<a href="#ArgList">ArgList</a><br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="ArgList-__init__"><strong>__init__</strong></a>(self, *ls, **dic)</dt></dl>
+<dl><dt><a name="ArgList-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ArgList-__init__"><strong>__init__</strong></a>(self, *ls, **dic)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="ArgList-__len__"><strong>__len__</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="ArgList-__nonzero__"><strong>__nonzero__</strong></a>(self)</dt></dl>
-
-<dl><dt><a name="ArgList-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="ArgList-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="ArgList-clone"><strong>clone</strong></a>(self)</dt><dd><tt><a href="#ArgList-clone">clone</a>()&nbsp;-&gt;&nbsp;<a href="#ArgList">ArgList</a><br>
 &nbsp;<br>
 Construct&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>&nbsp;identical&nbsp;to&nbsp;this&nbsp;one.</tt></dd></dl>
 
-<dl><dt><a name="ArgList-dump"><strong>dump</strong></a>(self, fl<font color="#909090">=&lt;open file '&lt;stdout&gt;', mode 'w'&gt;</font>)</dt><dd><tt><a href="#ArgList-dump">dump</a>(fl=sys.stdout)&nbsp;-&gt;&nbsp;None<br>
+<dl><dt><a name="ArgList-dump"><strong>dump</strong></a>(self, fl=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;)</dt><dd><tt><a href="#ArgList-dump">dump</a>(fl=sys.stdout)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Print&nbsp;out&nbsp;the&nbsp;<a href="#ArgList">ArgList</a>&nbsp;to&nbsp;stdout,&nbsp;or&nbsp;another&nbsp;stream.&nbsp;This&nbsp;method<br>
 prints&nbsp;in&nbsp;a&nbsp;human-readable&nbsp;form;&nbsp;it&nbsp;is&nbsp;intended&nbsp;for&nbsp;debugging.</tt></dd></dl>
@@ -505,7 +534,7 @@ then&nbsp;<a href="#ArgDefError">ArgDefError</a>&nbsp;is&nbsp;raised.</tt></dd><
 Construct&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>&nbsp;from&nbsp;an&nbsp;S-expression.&nbsp;The&nbsp;Tree&nbsp;passed&nbsp;in&nbsp;should<br>
 be&nbsp;one&nbsp;generated&nbsp;by&nbsp;the&nbsp;<a href="#ArgList-to_node">to_node</a>()&nbsp;method.</tt></dd></dl>
 
-<dl><dt><a name="ArgList-merge"><strong>merge</strong></a>(arglist1, arglist2<font color="#909090">=None</font>)</dt><dd><tt><a href="#ArgList-merge">merge</a>(arglist1,&nbsp;arglist2=None)&nbsp;-&gt;&nbsp;<a href="#ArgList">ArgList</a><br>
+<dl><dt><a name="ArgList-merge"><strong>merge</strong></a>(arglist1, arglist2=None)</dt><dd><tt><a href="#ArgList-merge">merge</a>(arglist1,&nbsp;arglist2=None)&nbsp;-&gt;&nbsp;<a href="#ArgList">ArgList</a><br>
 &nbsp;<br>
 Construct&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>&nbsp;by&nbsp;merging&nbsp;two&nbsp;ArgLists.&nbsp;This&nbsp;does&nbsp;not<br>
 modify&nbsp;the&nbsp;arguments;&nbsp;it&nbsp;creates&nbsp;a&nbsp;new&nbsp;<a href="#ArgList">ArgList</a>.<br>
@@ -524,6 +553,14 @@ When&nbsp;arguments&nbsp;are&nbsp;merged,&nbsp;the&nbsp;characteristics&nbsp;in&
 take&nbsp;precedence&nbsp;--&nbsp;except&nbsp;for&nbsp;the&nbsp;optional&nbsp;flag,&nbsp;which&nbsp;is&nbsp;always<br>
 taken&nbsp;from&nbsp;the&nbsp;second&nbsp;list.&nbsp;(It&nbsp;makes&nbsp;sense,&nbsp;honest.)</tt></dd></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -531,7 +568,9 @@ taken&nbsp;from&nbsp;the&nbsp;second&nbsp;list.&nbsp;(It&nbsp;makes&nbsp;sense,&
 <font color="#000000" face="helvetica, arial"><a name="ListOf">class <strong>ListOf</strong></a>(<a href="boopak.argdef.html#SequenceOf">SequenceOf</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#ListOf">ListOf</a>:&nbsp;represents&nbsp;a&nbsp;list&nbsp;type,&nbsp;with&nbsp;additional&nbsp;information&nbsp;about<br>
+<td colspan=2><tt><a href="#ListOf-classname">ListOf</a>(*types,&nbsp;**opts)<br>
+&nbsp;<br>
+<a href="#ListOf">ListOf</a>:&nbsp;represents&nbsp;a&nbsp;list&nbsp;type,&nbsp;with&nbsp;additional&nbsp;information&nbsp;about<br>
 the&nbsp;types&nbsp;of&nbsp;the&nbsp;list&nbsp;elements.<br>
 &nbsp;<br>
 You&nbsp;can&nbsp;use&nbsp;a&nbsp;<a href="#ListOf">ListOf</a>&nbsp;instance&nbsp;(not&nbsp;the&nbsp;class!)&nbsp;as&nbsp;a&nbsp;type&nbsp;value&nbsp;in<br>
@@ -563,7 +602,13 @@ Public&nbsp;method:<br>
 &nbsp;<br>
 <a href="#ListOf-to_node">to_node</a>()&nbsp;--&nbsp;construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;this&nbsp;<a href="#ListOf">ListOf</a><br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boopak.argdef.html#ListOf">ListOf</a></dd>
+<dd><a href="boopak.argdef.html#SequenceOf">SequenceOf</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="ListOf-default_setup"><strong>default_setup</strong></a>(self, notypes)</dt></dl>
 
 <hr>
@@ -572,34 +617,52 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="boopak.argdef.html#SequenceOf">SequenceOf</a>:<br>
-<dl><dt><a name="ListOf-__init__"><strong>__init__</strong></a>(self, *types, **opts)</dt></dl>
+<dl><dt><a name="ListOf-__init__"><strong>__init__</strong></a>(self, *types, **opts)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="ListOf-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="ListOf-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="ListOf-to_node"><strong>to_node</strong></a>(self)</dt><dd><tt><a href="#ListOf-to_node">to_node</a>()&nbsp;-&gt;&nbsp;Tree<br>
 &nbsp;<br>
-Construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;this&nbsp;type&nbsp;object.</tt></dd></dl>
+Construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;this&nbsp;type&nbsp;<a href="builtins.html#object">object</a>.</tt></dd></dl>
 
+<hr>
+Data descriptors inherited from <a href="boopak.argdef.html#SequenceOf">SequenceOf</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SequenceOf">class <strong>SequenceOf</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SequenceOf">class <strong>SequenceOf</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#SequenceOf">SequenceOf</a>:&nbsp;base&nbsp;class&nbsp;for&nbsp;<a href="#ListOf">ListOf</a>&nbsp;and&nbsp;<a href="#TupleOf">TupleOf</a>.<br>
+<td colspan=2><tt><a href="#SequenceOf">SequenceOf</a>(*types,&nbsp;**opts)<br>
+&nbsp;<br>
+<a href="#SequenceOf">SequenceOf</a>:&nbsp;base&nbsp;class&nbsp;for&nbsp;<a href="#ListOf">ListOf</a>&nbsp;and&nbsp;<a href="#TupleOf">TupleOf</a>.<br>
 &nbsp;<br>
 You&nbsp;cannot&nbsp;instantiate&nbsp;this&nbsp;class&nbsp;directly.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="SequenceOf-__init__"><strong>__init__</strong></a>(self, *types, **opts)</dt></dl>
+<dl><dt><a name="SequenceOf-__init__"><strong>__init__</strong></a>(self, *types, **opts)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="SequenceOf-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="SequenceOf-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="SequenceOf-to_node"><strong>to_node</strong></a>(self)</dt><dd><tt><a href="#SequenceOf-to_node">to_node</a>()&nbsp;-&gt;&nbsp;Tree<br>
 &nbsp;<br>
-Construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;this&nbsp;type&nbsp;object.</tt></dd></dl>
+Construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;this&nbsp;type&nbsp;<a href="builtins.html#object">object</a>.</tt></dd></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>classname</strong> = None</dl>
@@ -611,7 +674,9 @@ Data and other attributes defined here:<br>
 <font color="#000000" face="helvetica, arial"><a name="TupleOf">class <strong>TupleOf</strong></a>(<a href="boopak.argdef.html#SequenceOf">SequenceOf</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#TupleOf">TupleOf</a>:&nbsp;represents&nbsp;a&nbsp;tuple&nbsp;type,&nbsp;with&nbsp;additional&nbsp;information&nbsp;about<br>
+<td colspan=2><tt><a href="#TupleOf-classname">TupleOf</a>(*types,&nbsp;**opts)<br>
+&nbsp;<br>
+<a href="#TupleOf">TupleOf</a>:&nbsp;represents&nbsp;a&nbsp;tuple&nbsp;type,&nbsp;with&nbsp;additional&nbsp;information&nbsp;about<br>
 the&nbsp;types&nbsp;of&nbsp;the&nbsp;tuple&nbsp;elements.<br>
 &nbsp;<br>
 You&nbsp;can&nbsp;use&nbsp;a&nbsp;<a href="#TupleOf">TupleOf</a>&nbsp;instance&nbsp;(not&nbsp;the&nbsp;class!)&nbsp;as&nbsp;a&nbsp;type&nbsp;value&nbsp;in<br>
@@ -645,7 +710,13 @@ Public&nbsp;method:<br>
 &nbsp;<br>
 <a href="#TupleOf-to_node">to_node</a>()&nbsp;--&nbsp;construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;this&nbsp;<a href="#TupleOf">TupleOf</a><br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boopak.argdef.html#TupleOf">TupleOf</a></dd>
+<dd><a href="boopak.argdef.html#SequenceOf">SequenceOf</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="TupleOf-default_setup"><strong>default_setup</strong></a>(self, notypes)</dt></dl>
 
 <hr>
@@ -654,22 +725,32 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="boopak.argdef.html#SequenceOf">SequenceOf</a>:<br>
-<dl><dt><a name="TupleOf-__init__"><strong>__init__</strong></a>(self, *types, **opts)</dt></dl>
+<dl><dt><a name="TupleOf-__init__"><strong>__init__</strong></a>(self, *types, **opts)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="TupleOf-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="TupleOf-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <dl><dt><a name="TupleOf-to_node"><strong>to_node</strong></a>(self)</dt><dd><tt><a href="#TupleOf-to_node">to_node</a>()&nbsp;-&gt;&nbsp;Tree<br>
 &nbsp;<br>
-Construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;this&nbsp;type&nbsp;object.</tt></dd></dl>
+Construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;this&nbsp;type&nbsp;<a href="builtins.html#object">object</a>.</tt></dd></dl>
 
+<hr>
+Data descriptors inherited from <a href="boopak.argdef.html#SequenceOf">SequenceOf</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Wrapped">class <strong>Wrapped</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="Wrapped">class <strong>Wrapped</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#Wrapped">Wrapped</a>:&nbsp;represents&nbsp;a&nbsp;type&nbsp;which&nbsp;needs&nbsp;to&nbsp;be&nbsp;instantiated&nbsp;lazily.<br>
+<td colspan=2><tt><a href="#Wrapped">Wrapped</a>(type)<br>
+&nbsp;<br>
+<a href="#Wrapped">Wrapped</a>:&nbsp;represents&nbsp;a&nbsp;type&nbsp;which&nbsp;needs&nbsp;to&nbsp;be&nbsp;instantiated&nbsp;lazily.<br>
 Whenever&nbsp;you&nbsp;are&nbsp;creating&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>,&nbsp;you&nbsp;can&nbsp;use&nbsp;<a href="#Wrapped">Wrapped</a>(type)<br>
 instead&nbsp;of&nbsp;type.<br>
 &nbsp;<br>
@@ -708,8 +789,16 @@ value&nbsp;or&nbsp;list&nbsp;of&nbsp;values.&nbsp;Any&nbsp;other&nbsp;type&nbsp;
 <a href="#ArgDefError">ArgDefError</a>.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Wrapped-__init__"><strong>__init__</strong></a>(self, type)</dt></dl>
+<dl><dt><a name="Wrapped-__init__"><strong>__init__</strong></a>(self, type)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">

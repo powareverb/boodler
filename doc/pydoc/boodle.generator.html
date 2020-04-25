@@ -1,6 +1,6 @@
-
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module boodle.generator</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -24,9 +24,9 @@ in&nbsp;the&nbsp;heart&nbsp;of&nbsp;Boodler.<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/stringio.html">StringIO</a><br>
-<a href="http://www.python.org/doc/current/library/bisect.html">bisect</a><br>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/bisect.html">bisect</a><br>
 <a href="boodle.html">boodle</a><br>
+<a href="io.html">io</a><br>
 </td><td width="25%" valign=top><a href="boodle.listen.html">boodle.listen</a><br>
 <a href="http://www.python.org/doc/current/library/logging.html">logging</a><br>
 <a href="boodle.sample.html">boodle.sample</a><br>
@@ -41,7 +41,7 @@ in&nbsp;the&nbsp;heart&nbsp;of&nbsp;Boodler.<br>
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
-<dt><font face="helvetica, arial"><a href="boodle.html#BoodlerError">boodle.BoodlerError</a>(<a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>)
+<dt><font face="helvetica, arial"><a href="boodle.html#BoodlerError">boodle.BoodlerError</a>(<a href="builtins.html#Exception">builtins.Exception</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="boodle.generator.html#BoodleInternalError">BoodleInternalError</a>
@@ -49,10 +49,15 @@ in&nbsp;the&nbsp;heart&nbsp;of&nbsp;Boodler.<br>
 </font></dt><dt><font face="helvetica, arial"><a href="boodle.generator.html#ScheduleError">ScheduleError</a>
 </font></dt></dl>
 </dd>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
 <dt><font face="helvetica, arial"><a href="boodle.generator.html#Channel">Channel</a>
 </font></dt><dt><font face="helvetica, arial"><a href="boodle.generator.html#FrameCount">FrameCount</a>
 </font></dt><dt><font face="helvetica, arial"><a href="boodle.generator.html#Generator">Generator</a>
 </font></dt></dl>
+</dd>
+</dl>
  <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -66,9 +71,9 @@ wrong.<br>&nbsp;</tt></td></tr>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="boodle.generator.html#BoodleInternalError">BoodleInternalError</a></dd>
 <dd><a href="boodle.html#BoodlerError">boodle.BoodlerError</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+<dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
+<dd><a href="builtins.html#BaseException">builtins.BaseException</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
 </dl>
 <hr>
 Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.BoodlerError</a>:<br>
@@ -76,52 +81,58 @@ Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.Boodle
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><a name="BoodleInternalError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+Methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="BoodleInternalError-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#BoodleInternalError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+Static methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="BoodleInternalError-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
-<dl><dt><a name="BoodleInternalError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+Methods inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><a name="BoodleInternalError-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="BoodleInternalError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+<dl><dt><a name="BoodleInternalError-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="BoodleInternalError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+<dl><dt><a name="BoodleInternalError-__reduce__"><strong>__reduce__</strong></a>(...)</dt><dd><tt>Helper&nbsp;for&nbsp;pickle.</tt></dd></dl>
 
-<dl><dt><a name="BoodleInternalError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
-&nbsp;<br>
-Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+<dl><dt><a name="BoodleInternalError-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
-<dl><dt><a name="BoodleInternalError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
-
-<dl><dt><a name="BoodleInternalError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
-
-<dl><dt><a name="BoodleInternalError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+<dl><dt><a name="BoodleInternalError-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><tt>Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</tt></dd></dl>
 
 <dl><dt><a name="BoodleInternalError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
 
-<dl><dt><a name="BoodleInternalError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+<dl><dt><a name="BoodleInternalError-__str__"><strong>__str__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<dl><dt><a name="BoodleInternalError-with_traceback"><strong>with_traceback</strong></a>(...)</dt><dd><tt>Exception.<a href="#BoodleInternalError-with_traceback">with_traceback</a>(tb)&nbsp;--<br>
+set&nbsp;self.<strong>__traceback__</strong>&nbsp;to&nbsp;tb&nbsp;and&nbsp;return&nbsp;self.</tt></dd></dl>
 
 <hr>
-Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+Data descriptors inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><strong>__cause__</strong></dt>
+<dd><tt>exception&nbsp;cause</tt></dd>
+</dl>
+<dl><dt><strong>__context__</strong></dt>
+<dd><tt>exception&nbsp;context</tt></dd>
+</dl>
 <dl><dt><strong>__dict__</strong></dt>
 </dl>
-<dl><dt><strong>args</strong></dt>
+<dl><dt><strong>__suppress_context__</strong></dt>
 </dl>
-<dl><dt><strong>message</strong></dt>
-<dd><tt>exception&nbsp;message</tt></dd>
+<dl><dt><strong>__traceback__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
 </dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Channel">class <strong>Channel</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="Channel">class <strong>Channel</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#Channel">Channel</a>:&nbsp;a&nbsp;class&nbsp;for&nbsp;creating&nbsp;hierarchical&nbsp;trees&nbsp;of&nbsp;sounds&nbsp;and<br>
+<td colspan=2><tt><a href="#Channel">Channel</a>(parent,&nbsp;gen,&nbsp;createagent,&nbsp;startvol,&nbsp;pan)<br>
+&nbsp;<br>
+<a href="#Channel">Channel</a>:&nbsp;a&nbsp;class&nbsp;for&nbsp;creating&nbsp;hierarchical&nbsp;trees&nbsp;of&nbsp;sounds&nbsp;and<br>
 agents.<br>
 &nbsp;<br>
 <a href="#Channel">Channel</a>&nbsp;objects&nbsp;should&nbsp;be&nbsp;created&nbsp;via&nbsp;Agent.new_channel()&nbsp;and<br>
@@ -151,9 +162,9 @@ Class&nbsp;method:<br>
 <a href="#Channel-compare">compare</a>()&nbsp;--&nbsp;compare&nbsp;two&nbsp;channels&nbsp;in&nbsp;deepest-to-root&nbsp;order<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Channel-__init__"><strong>__init__</strong></a>(self, parent, gen, createagent, startvol, pan)</dt></dl>
+<dl><dt><a name="Channel-__init__"><strong>__init__</strong></a>(self, parent, gen, createagent, startvol, pan)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="Channel-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Channel-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
 
 <dl><dt><a name="Channel-addnote"><strong>addnote</strong></a>(self)</dt><dd><tt><a href="#Channel-addnote">addnote</a>()&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -178,7 +189,7 @@ effect.<br>
 Note&nbsp;that&nbsp;this&nbsp;does&nbsp;not&nbsp;affect&nbsp;parent&nbsp;channels.&nbsp;So&nbsp;<a href="#Channel-get_prop">get_prop</a>(key)<br>
 may&nbsp;still&nbsp;return&nbsp;a&nbsp;value&nbsp;after&nbsp;<a href="#Channel-del_prop">del_prop</a>(key).</tt></dd></dl>
 
-<dl><dt><a name="Channel-get_prop"><strong>get_prop</strong></a>(self, key, default<font color="#909090">=None</font>)</dt><dd><tt><a href="#Channel-get_prop">get_prop</a>(key,&nbsp;default=None)&nbsp;-&gt;&nbsp;any<br>
+<dl><dt><a name="Channel-get_prop"><strong>get_prop</strong></a>(self, key, default=None)</dt><dd><tt><a href="#Channel-get_prop">get_prop</a>(key,&nbsp;default=None)&nbsp;-&gt;&nbsp;any<br>
 &nbsp;<br>
 Get&nbsp;a&nbsp;property&nbsp;from&nbsp;this&nbsp;channel.&nbsp;If&nbsp;none&nbsp;is&nbsp;set,&nbsp;see&nbsp;if&nbsp;one&nbsp;is<br>
 inherited&nbsp;from&nbsp;the&nbsp;parent.&nbsp;If&nbsp;there&nbsp;is&nbsp;no&nbsp;inherited&nbsp;value&nbsp;either,<br>
@@ -210,7 +221,7 @@ Note&nbsp;that&nbsp;a&nbsp;note&nbsp;has&nbsp;been&nbsp;removed&nbsp;from&nbsp;t
 &nbsp;<br>
 Internal&nbsp;method.&nbsp;(Called&nbsp;from&nbsp;the&nbsp;callback&nbsp;to&nbsp;cboodle.create_note.)</tt></dd></dl>
 
-<dl><dt><a name="Channel-set_pan"><strong>set_pan</strong></a>(self, newpan, interval<font color="#909090">=0.5</font>)</dt><dd><tt><a href="#Channel-set_pan">set_pan</a>(newpan,&nbsp;interval=0.5)&nbsp;-&gt;&nbsp;None<br>
+<dl><dt><a name="Channel-set_pan"><strong>set_pan</strong></a>(self, newpan, interval=0.5)</dt><dd><tt><a href="#Channel-set_pan">set_pan</a>(newpan,&nbsp;interval=0.5)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Change&nbsp;the&nbsp;channel&nbsp;to&nbsp;a&nbsp;new&nbsp;pan&nbsp;position.&nbsp;This&nbsp;affects&nbsp;all&nbsp;notes<br>
 in&nbsp;the&nbsp;channel&nbsp;and&nbsp;any&nbsp;subchannels.<br>
@@ -219,7 +230,7 @@ The&nbsp;position&nbsp;is&nbsp;specified&nbsp;relative&nbsp;to&nbsp;the&nbsp;par
 (or&nbsp;None,&nbsp;or&nbsp;stereo.default())&nbsp;places&nbsp;the&nbsp;channel&nbsp;in&nbsp;the&nbsp;same<br>
 position&nbsp;as&nbsp;its&nbsp;parent.&nbsp;A&nbsp;positive&nbsp;number&nbsp;shifts&nbsp;it&nbsp;to&nbsp;the&nbsp;right<br>
 of&nbsp;the&nbsp;parent;&nbsp;a&nbsp;negative&nbsp;number&nbsp;shifts&nbsp;it&nbsp;left.&nbsp;The&nbsp;value&nbsp;may<br>
-also&nbsp;be&nbsp;any&nbsp;object&nbsp;created&nbsp;by&nbsp;the&nbsp;stereo&nbsp;module.<br>
+also&nbsp;be&nbsp;any&nbsp;<a href="builtins.html#object">object</a>&nbsp;created&nbsp;by&nbsp;the&nbsp;stereo&nbsp;module.<br>
 &nbsp;<br>
 The&nbsp;change&nbsp;begins&nbsp;immediately,&nbsp;and&nbsp;occurs&nbsp;smoothly&nbsp;over&nbsp;the<br>
 interval&nbsp;given&nbsp;(in&nbsp;seconds).&nbsp;If&nbsp;no&nbsp;value&nbsp;is&nbsp;given,&nbsp;the&nbsp;interval<br>
@@ -239,7 +250,7 @@ else&nbsp;create&nbsp;several&nbsp;channels.</tt></dd></dl>
 &nbsp;<br>
 Set&nbsp;a&nbsp;property&nbsp;on&nbsp;this&nbsp;channel.</tt></dd></dl>
 
-<dl><dt><a name="Channel-set_volume"><strong>set_volume</strong></a>(self, newvol, interval<font color="#909090">=0.0050000000000000001</font>)</dt><dd><tt><a href="#Channel-set_volume">set_volume</a>(newvolume,&nbsp;interval=0.005)&nbsp;-&gt;&nbsp;None<br>
+<dl><dt><a name="Channel-set_volume"><strong>set_volume</strong></a>(self, newvol, interval=0.005)</dt><dd><tt><a href="#Channel-set_volume">set_volume</a>(newvolume,&nbsp;interval=0.005)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Change&nbsp;the&nbsp;volume&nbsp;of&nbsp;the&nbsp;channel&nbsp;to&nbsp;a&nbsp;new&nbsp;level&nbsp;(0&nbsp;means&nbsp;silence,<br>
 1&nbsp;means&nbsp;full&nbsp;volume).&nbsp;This&nbsp;affects&nbsp;all&nbsp;notes&nbsp;in&nbsp;the&nbsp;channel&nbsp;and<br>
@@ -283,6 +294,14 @@ with&nbsp;this&nbsp;comparison&nbsp;function&nbsp;will&nbsp;put&nbsp;the&nbsp;de
 the&nbsp;root&nbsp;last.</tt></dd></dl>
 
 <hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>logger</strong> = None</dl>
 
@@ -300,9 +319,9 @@ Data and other attributes defined here:<br>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="boodle.generator.html#ChannelError">ChannelError</a></dd>
 <dd><a href="boodle.html#BoodlerError">boodle.BoodlerError</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+<dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
+<dd><a href="builtins.html#BaseException">builtins.BaseException</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
 </dl>
 <hr>
 Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.BoodlerError</a>:<br>
@@ -310,52 +329,58 @@ Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.Boodle
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><a name="ChannelError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+Methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="ChannelError-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#ChannelError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+Static methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="ChannelError-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
-<dl><dt><a name="ChannelError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+Methods inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><a name="ChannelError-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="ChannelError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+<dl><dt><a name="ChannelError-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="ChannelError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+<dl><dt><a name="ChannelError-__reduce__"><strong>__reduce__</strong></a>(...)</dt><dd><tt>Helper&nbsp;for&nbsp;pickle.</tt></dd></dl>
 
-<dl><dt><a name="ChannelError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
-&nbsp;<br>
-Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+<dl><dt><a name="ChannelError-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
-<dl><dt><a name="ChannelError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
-
-<dl><dt><a name="ChannelError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
-
-<dl><dt><a name="ChannelError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+<dl><dt><a name="ChannelError-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><tt>Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</tt></dd></dl>
 
 <dl><dt><a name="ChannelError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
 
-<dl><dt><a name="ChannelError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+<dl><dt><a name="ChannelError-__str__"><strong>__str__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<dl><dt><a name="ChannelError-with_traceback"><strong>with_traceback</strong></a>(...)</dt><dd><tt>Exception.<a href="#ChannelError-with_traceback">with_traceback</a>(tb)&nbsp;--<br>
+set&nbsp;self.<strong>__traceback__</strong>&nbsp;to&nbsp;tb&nbsp;and&nbsp;return&nbsp;self.</tt></dd></dl>
 
 <hr>
-Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+Data descriptors inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><strong>__cause__</strong></dt>
+<dd><tt>exception&nbsp;cause</tt></dd>
+</dl>
+<dl><dt><strong>__context__</strong></dt>
+<dd><tt>exception&nbsp;context</tt></dd>
+</dl>
 <dl><dt><strong>__dict__</strong></dt>
 </dl>
-<dl><dt><strong>args</strong></dt>
+<dl><dt><strong>__suppress_context__</strong></dt>
 </dl>
-<dl><dt><strong>message</strong></dt>
-<dd><tt>exception&nbsp;message</tt></dd>
+<dl><dt><strong>__traceback__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
 </dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="FrameCount">class <strong>FrameCount</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="FrameCount">class <strong>FrameCount</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#FrameCount">FrameCount</a>:&nbsp;Represents&nbsp;a&nbsp;time&nbsp;(or&nbsp;duration)&nbsp;measured&nbsp;in&nbsp;a&nbsp;fixed<br>
+<td colspan=2><tt><a href="#FrameCount">FrameCount</a>(frames)<br>
+&nbsp;<br>
+<a href="#FrameCount">FrameCount</a>:&nbsp;Represents&nbsp;a&nbsp;time&nbsp;(or&nbsp;duration)&nbsp;measured&nbsp;in&nbsp;a&nbsp;fixed<br>
 number&nbsp;of&nbsp;sound&nbsp;frames.&nbsp;A&nbsp;frame&nbsp;is&nbsp;a&nbsp;group&nbsp;of&nbsp;values,&nbsp;one&nbsp;for&nbsp;each<br>
 channel.&nbsp;(For&nbsp;a&nbsp;mono&nbsp;sound&nbsp;file,&nbsp;therefore,&nbsp;a&nbsp;frame&nbsp;is&nbsp;the&nbsp;same&nbsp;as<br>
 a&nbsp;sample&nbsp;value.)&nbsp;When&nbsp;you&nbsp;see&nbsp;a&nbsp;sound&nbsp;rate&nbsp;like&nbsp;44100&nbsp;Hz,&nbsp;that's<br>
@@ -375,16 +400,26 @@ The&nbsp;argument&nbsp;should&nbsp;be&nbsp;an&nbsp;integer&nbsp;(or&nbsp;long)&n
 range-checking&nbsp;is&nbsp;done&nbsp;at&nbsp;constructor-time.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="FrameCount-__init__"><strong>__init__</strong></a>(self, frames)</dt></dl>
+<dl><dt><a name="FrameCount-__init__"><strong>__init__</strong></a>(self, frames)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Generator">class <strong>Generator</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="Generator">class <strong>Generator</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#Generator">Generator</a>:&nbsp;A&nbsp;class&nbsp;that&nbsp;stores&nbsp;the&nbsp;internal&nbsp;state&nbsp;of&nbsp;Boodler<br>
+<td colspan=2><tt><a href="#Generator">Generator</a>(basevolume=0.5,&nbsp;stdinlisten=False,&nbsp;netlisten=False,&nbsp;listenport=None,&nbsp;loader=None)<br>
+&nbsp;<br>
+<a href="#Generator">Generator</a>:&nbsp;A&nbsp;class&nbsp;that&nbsp;stores&nbsp;the&nbsp;internal&nbsp;state&nbsp;of&nbsp;Boodler<br>
 sound&nbsp;generation.<br>
 &nbsp;<br>
 Everything&nbsp;in&nbsp;this&nbsp;class&nbsp;is&nbsp;private&nbsp;to&nbsp;Boodler.<br>
@@ -399,7 +434,7 @@ queue&nbsp;--&nbsp;list&nbsp;of&nbsp;[runtime,&nbsp;agent,&nbsp;handler]&nbsp;li
 &nbsp;&nbsp;&nbsp;&nbsp;runtime&nbsp;(and,&nbsp;insignificantly,&nbsp;by&nbsp;the&nbsp;other&nbsp;list&nbsp;values).<br>
 &nbsp;&nbsp;&nbsp;&nbsp;These&nbsp;are&nbsp;not&nbsp;tuples&nbsp;because&nbsp;we&nbsp;have&nbsp;to&nbsp;update&nbsp;the&nbsp;runtime&nbsp;in<br>
 &nbsp;&nbsp;&nbsp;&nbsp;place&nbsp;occasionally.<br>
-rootchannel&nbsp;--&nbsp;the&nbsp;root&nbsp;channel&nbsp;object<br>
+rootchannel&nbsp;--&nbsp;the&nbsp;root&nbsp;channel&nbsp;<a href="builtins.html#object">object</a><br>
 channels&nbsp;--&nbsp;set&nbsp;of&nbsp;channels&nbsp;in&nbsp;existence<br>
 &nbsp;<br>
 allhandlers&nbsp;--&nbsp;set&nbsp;of&nbsp;all&nbsp;active&nbsp;handler&nbsp;objects<br>
@@ -411,19 +446,19 @@ loader&nbsp;--&nbsp;the&nbsp;package&nbsp;loader<br>
 &nbsp;<br>
 Internal&nbsp;methods:<br>
 &nbsp;<br>
-<a href="#Generator-close">close</a>()&nbsp;--&nbsp;shut&nbsp;down&nbsp;the&nbsp;generator&nbsp;object<br>
+<a href="#Generator-close">close</a>()&nbsp;--&nbsp;shut&nbsp;down&nbsp;the&nbsp;generator&nbsp;<a href="builtins.html#object">object</a><br>
 <a href="#Generator-select_time">select_time</a>()&nbsp;--&nbsp;determine&nbsp;the&nbsp;schedule&nbsp;time&nbsp;represented&nbsp;by&nbsp;a&nbsp;value<br>
 <a href="#Generator-select_duration">select_duration</a>()&nbsp;--&nbsp;determine&nbsp;the&nbsp;duration&nbsp;represented&nbsp;by&nbsp;a&nbsp;value<br>
 <a href="#Generator-set_stats_interval">set_stats_interval</a>()&nbsp;--&nbsp;set&nbsp;the&nbsp;interval&nbsp;at&nbsp;which&nbsp;stats&nbsp;are&nbsp;dumped<br>
 <a href="#Generator-addagent">addagent</a>()&nbsp;--&nbsp;put&nbsp;an&nbsp;agent&nbsp;on&nbsp;the&nbsp;schedule&nbsp;queue<br>
 <a href="#Generator-remagent">remagent</a>()&nbsp;--&nbsp;remove&nbsp;an&nbsp;agent&nbsp;from&nbsp;the&nbsp;schedule&nbsp;queue<br>
-<a href="#Generator-addhandler">addhandler</a>()&nbsp;--&nbsp;add&nbsp;a&nbsp;Handler&nbsp;object&nbsp;to&nbsp;the&nbsp;system<br>
+<a href="#Generator-addhandler">addhandler</a>()&nbsp;--&nbsp;add&nbsp;a&nbsp;Handler&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;the&nbsp;system<br>
 <a href="#Generator-remhandlers">remhandlers</a>()&nbsp;--&nbsp;remove&nbsp;a&nbsp;list&nbsp;of&nbsp;Handler&nbsp;objects&nbsp;from&nbsp;the&nbsp;system<br>
 <a href="#Generator-sendevent">sendevent</a>()&nbsp;--&nbsp;process&nbsp;an&nbsp;event&nbsp;on&nbsp;the&nbsp;given&nbsp;channel<br>
 <a href="#Generator-dump_stats">dump_stats</a>()&nbsp;--&nbsp;write&nbsp;statistical&nbsp;information&nbsp;to&nbsp;the&nbsp;given&nbsp;file<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Generator-__init__"><strong>__init__</strong></a>(self, basevolume<font color="#909090">=0.5</font>, stdinlisten<font color="#909090">=False</font>, netlisten<font color="#909090">=False</font>, listenport<font color="#909090">=None</font>, loader<font color="#909090">=None</font>)</dt></dl>
+<dl><dt><a name="Generator-__init__"><strong>__init__</strong></a>(self, basevolume=0.5, stdinlisten=False, netlisten=False, listenport=None, loader=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="Generator-addagent"><strong>addagent</strong></a>(self, ag, chan, runtime, handle)</dt><dd><tt><a href="#Generator-addagent">addagent</a>(ag,&nbsp;chan,&nbsp;runtime,&nbsp;handle)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -435,16 +470,16 @@ A&nbsp;given&nbsp;agent&nbsp;can&nbsp;only&nbsp;be&nbsp;on&nbsp;the&nbsp;queue&n
 
 <dl><dt><a name="Generator-addhandler"><strong>addhandler</strong></a>(self, han)</dt><dd><tt><a href="#Generator-addhandler">addhandler</a>(han)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
-Add&nbsp;a&nbsp;Handler&nbsp;object&nbsp;to&nbsp;the&nbsp;system.&nbsp;This&nbsp;sets&nbsp;up&nbsp;listening&nbsp;(and<br>
+Add&nbsp;a&nbsp;Handler&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;the&nbsp;system.&nbsp;This&nbsp;sets&nbsp;up&nbsp;listening&nbsp;(and<br>
 channel&nbsp;holds)&nbsp;as&nbsp;described&nbsp;by&nbsp;the&nbsp;Handler.</tt></dd></dl>
 
 <dl><dt><a name="Generator-close"><strong>close</strong></a>(self)</dt><dd><tt><a href="#Generator-close">close</a>()&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
-Shut&nbsp;down&nbsp;the&nbsp;generator&nbsp;object&nbsp;and&nbsp;any&nbsp;resources&nbsp;it&nbsp;has&nbsp;open.<br>
+Shut&nbsp;down&nbsp;the&nbsp;generator&nbsp;<a href="builtins.html#object">object</a>&nbsp;and&nbsp;any&nbsp;resources&nbsp;it&nbsp;has&nbsp;open.<br>
 (This&nbsp;does&nbsp;not,&nbsp;however,&nbsp;shut&nbsp;down&nbsp;the&nbsp;cboodle&nbsp;module.&nbsp;The<br>
 caller&nbsp;must&nbsp;do&nbsp;that.)</tt></dd></dl>
 
-<dl><dt><a name="Generator-dump_stats"><strong>dump_stats</strong></a>(self, fl<font color="#909090">=None</font>)</dt><dd><tt><a href="#Generator-dump_stats">dump_stats</a>(fl=sys.stdout)&nbsp;-&gt;&nbsp;None<br>
+<dl><dt><a name="Generator-dump_stats"><strong>dump_stats</strong></a>(self, fl=None)</dt><dd><tt><a href="#Generator-dump_stats">dump_stats</a>(fl=sys.stdout)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Write&nbsp;statistical&nbsp;information&nbsp;to&nbsp;the&nbsp;given&nbsp;file&nbsp;or&nbsp;stream.</tt></dd></dl>
 
@@ -467,7 +502,7 @@ It&nbsp;is&nbsp;safe&nbsp;for&nbsp;a&nbsp;Handler&nbsp;to&nbsp;appear&nbsp;more&
 <dl><dt><a name="Generator-select_duration"><strong>select_duration</strong></a>(self, duration)</dt><dd><tt><a href="#Generator-select_duration">select_duration</a>(duration)&nbsp;-&gt;&nbsp;long<br>
 &nbsp;<br>
 Determine&nbsp;the&nbsp;duration&nbsp;represented&nbsp;by&nbsp;a&nbsp;value.&nbsp;Typically&nbsp;this&nbsp;is<br>
-a&nbsp;number&nbsp;(in&nbsp;seconds).&nbsp;It&nbsp;may&nbsp;also&nbsp;be&nbsp;a&nbsp;<a href="#FrameCount">FrameCount</a>&nbsp;object.<br>
+a&nbsp;number&nbsp;(in&nbsp;seconds).&nbsp;It&nbsp;may&nbsp;also&nbsp;be&nbsp;a&nbsp;<a href="#FrameCount">FrameCount</a>&nbsp;<a href="builtins.html#object">object</a>.<br>
 &nbsp;<br>
 This&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;from&nbsp;Agent&nbsp;methods&nbsp;used&nbsp;by&nbsp;agent&nbsp;run()<br>
 code.<br>
@@ -478,7 +513,7 @@ Raises&nbsp;<a href="#ScheduleError">ScheduleError</a>&nbsp;for&nbsp;illegal&nbs
 &nbsp;<br>
 Determine&nbsp;the&nbsp;schedule&nbsp;time&nbsp;represented&nbsp;by&nbsp;a&nbsp;value.&nbsp;Typically&nbsp;this&nbsp;<br>
 is&nbsp;a&nbsp;number&nbsp;(in&nbsp;seconds),&nbsp;measured&nbsp;from&nbsp;the&nbsp;current&nbsp;agentruntime.<br>
-It&nbsp;may&nbsp;also&nbsp;be&nbsp;a&nbsp;<a href="#FrameCount">FrameCount</a>&nbsp;object.<br>
+It&nbsp;may&nbsp;also&nbsp;be&nbsp;a&nbsp;<a href="#FrameCount">FrameCount</a>&nbsp;<a href="builtins.html#object">object</a>.<br>
 &nbsp;<br>
 This&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;from&nbsp;Agent&nbsp;methods&nbsp;used&nbsp;by&nbsp;agent&nbsp;run()<br>
 code.&nbsp;(Outside&nbsp;of&nbsp;run()&nbsp;time,&nbsp;the&nbsp;agentruntime&nbsp;is&nbsp;not&nbsp;set.)<br>
@@ -495,6 +530,14 @@ listeners&nbsp;which&nbsp;are&nbsp;paying&nbsp;attention&nbsp;to&nbsp;the&nbsp;e
 Set&nbsp;the&nbsp;interval&nbsp;(in&nbsp;seconds)&nbsp;at&nbsp;which&nbsp;stats&nbsp;are&nbsp;dumped&nbsp;to&nbsp;the<br>
 logger.&nbsp;Pass&nbsp;None&nbsp;to&nbsp;turn&nbsp;stats&nbsp;off.</tt></dd></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -507,9 +550,9 @@ logger.&nbsp;Pass&nbsp;None&nbsp;to&nbsp;turn&nbsp;stats&nbsp;off.</tt></dd></dl
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="boodle.generator.html#ScheduleError">ScheduleError</a></dd>
 <dd><a href="boodle.html#BoodlerError">boodle.BoodlerError</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+<dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
+<dd><a href="builtins.html#BaseException">builtins.BaseException</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
 </dl>
 <hr>
 Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.BoodlerError</a>:<br>
@@ -517,43 +560,47 @@ Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.Boodle
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><a name="ScheduleError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+Methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="ScheduleError-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#ScheduleError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+Static methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="ScheduleError-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
-<dl><dt><a name="ScheduleError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+Methods inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><a name="ScheduleError-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="ScheduleError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+<dl><dt><a name="ScheduleError-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="ScheduleError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+<dl><dt><a name="ScheduleError-__reduce__"><strong>__reduce__</strong></a>(...)</dt><dd><tt>Helper&nbsp;for&nbsp;pickle.</tt></dd></dl>
 
-<dl><dt><a name="ScheduleError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
-&nbsp;<br>
-Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+<dl><dt><a name="ScheduleError-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
-<dl><dt><a name="ScheduleError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
-
-<dl><dt><a name="ScheduleError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
-
-<dl><dt><a name="ScheduleError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+<dl><dt><a name="ScheduleError-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><tt>Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</tt></dd></dl>
 
 <dl><dt><a name="ScheduleError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
 
-<dl><dt><a name="ScheduleError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+<dl><dt><a name="ScheduleError-__str__"><strong>__str__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<dl><dt><a name="ScheduleError-with_traceback"><strong>with_traceback</strong></a>(...)</dt><dd><tt>Exception.<a href="#ScheduleError-with_traceback">with_traceback</a>(tb)&nbsp;--<br>
+set&nbsp;self.<strong>__traceback__</strong>&nbsp;to&nbsp;tb&nbsp;and&nbsp;return&nbsp;self.</tt></dd></dl>
 
 <hr>
-Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+Data descriptors inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><strong>__cause__</strong></dt>
+<dd><tt>exception&nbsp;cause</tt></dd>
+</dl>
+<dl><dt><strong>__context__</strong></dt>
+<dd><tt>exception&nbsp;context</tt></dd>
+</dl>
 <dl><dt><strong>__dict__</strong></dt>
 </dl>
-<dl><dt><strong>args</strong></dt>
+<dl><dt><strong>__suppress_context__</strong></dt>
 </dl>
-<dl><dt><strong>message</strong></dt>
-<dd><tt>exception&nbsp;message</tt></dd>
+<dl><dt><strong>__traceback__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
 </dl>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

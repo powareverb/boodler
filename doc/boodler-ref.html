@@ -49,18 +49,6 @@ Type <code>boodler --help</code> or <code>boodler -h</code> for a complete list 
 
 <dl>
 
-<dt><code>--output <em>driver</em></code></dt>
-<dd>Select one of the available driver modules. (See <a href="#drivers">below</a>.) The default is <code>oss</code> on Unix, <code>osxaq</code> on MacOSX 10.5 or later, or <code>macosx</code> on MacOSX through 10.4.</dd>
-
-<dt><code>--list-drivers</code></dt>
-<dd>List the driver modules which are available. Any of the listed drivers may be used with the <code>--output</code> option.</dd>
-
-<dt><code>--device <em>device</em></code></dt>
-<dd>Set the device which Boodler will write to. The details depend on which driver module you have selected. (For a file-writing driver, this specifies the file to write.)</dd>
-
-<dt><code>--list-devices</code></dt>
-<dd>List the devices which are available for this driver module. (Not all drivers provide such a list. For a file-writing driver, any valid filename is a "device", so it makes no sense to list them.)</dd>
-
 <dt><code>--rate <em>soundrate</em></code></dt>
 <dd>Set the sampling rate (in frames per second) which Boodler will try to use. If the sound device does not support this rate, Boodler will try to fall back upon some sampling rate which is supported. The default depends on the output driver, but is often 44100.</dd>
 
@@ -87,9 +75,6 @@ Type <code>boodler --help</code> or <code>boodler -h</code> for a complete list 
 
 <dt><code>--log <em>level</em></code></dt>
 <dd>Set logging to the given level, which may be <code>debug</code>, <code>info</code>, <code>warning</code>, <code>error</code>, <code>critical</code>. The default is <code>warning</code>, meaning that messages of that severity <em>or worse</em> are printed. (In other words, by default, <code>debug</code> and <code>info</code> messages are suppressed.) Set this to <code>debug</code> to see lots of picayune detail about sound generation.</dd>
-
-<dt><code>--logconfig <em>configfile</em></code></dt>
-<dd>Format log messages according to the given file. This file can control how messages look, which messages appear, and where they are sent. (See the Python documentation for <a href="http://docs.python.org/library/logging.html#configuration-file-format">log config file format</a>.) A sample logging config file is distributed in the Boodler source as ./etc/logging.config.</dd>
 
 <dt><code>--stats <em>interval</em></code></dt>
 <dd>Turn on periodic statistics reporting. At intervals (given in seconds), Boodler will print out a message saying how many agents, channels, sounds, and note are queued up. This may be helpful for debugging soundscapes; if you see a value which increases without limit, you probably have a bug.</dd>
@@ -149,9 +134,6 @@ All of these environment variables are optional. You can set all of this informa
 <dt><code>$BOODLER_PROPERTIES</code></dt>
 <dd>Set a property value. See the <code>--prop</code> option. To set several properties, set this variable to a comma-separated list of <code>opt</code> or <code>opt=val</code>.</dd>
 
-<dt><code>$BOODLER_SOUND_PATH</code></dt>
-<dd>This is a holdover from Boodler 1.0. An old-style soundscape can load a sound from your <code>$BOODLER_SOUND_PATH</code>, rather than loading it from a package. This is supported only for the sake of old code; no modern soundscapes should rely on it.</dd>
-
 </dl>
 
 <h2><a name="drivers">Boodler sound drivers</a></h2>
@@ -160,49 +142,11 @@ All of these environment variables are optional. You can set all of this informa
 Boodler currently offers these drivers:
 </p>
 
-<h4><code>file</code> --   write file containing raw sample output</h4>
-
-<p>
-The file will be named "boosound.raw" by default. To change this, pass
-a filename as the <code>--device</code>.
-</p>
-
-<p>
-The file will contain raw PCM sound sample data, two channels, 16 bits
-per sample, signed (centered at 0). By default the samples will be
-in the native endianness of your computer, but you can change this with
-<code>--define end=big</code> or <code>--define end=little</code>.
-</p>
-
-<p>
-This driver limits the size of the file. By default, it will only write
-five seconds of sound data; you can change the limit with the
-<code>--define time=<em>interval</em></code> option. If the
-sound agent stops before the time limit, you'll get a shorter file.
-</p>
-
-<p>
-(Note that this driver writes to the file as quickly as possible.
-It probably won't take five seconds to generate a five-second
-sound file.)
-</p>
-
-<dl>
-<dt><code>--define time=<em>interval</em></code></dt>
-<dd>Generate approximately <em>interval</em> seconds of output. 
-This defaults to five seconds.</dd>
-<dt><code>--define end=big</code></dt>
-<dd>Force the sound output to be written big-endian.</dd>
-<dt><code>--define end=little</code></dt>
-<dd>Force the sound output to be written little-endian.</dd>
-</dl>
-
 <h4><code>stdout</code> -- write raw sample output to stdout</h4>
 
 <p>
-This is similar to the <code>file</code> driver, but it streams its
-data to stdout, and there is no time limit. The 
-<code>--device</code> argument is ignored.
+Streams data to stdout containing raw PCM sound sample data, two channels,
+16 bits per sample, signed (centered at 0), little endian.
 </p>
 
 <p>
@@ -213,211 +157,6 @@ you will have a very large file very soon. This driver is intended
 to be piped to an application that can regulate its input, such as
 <a href="http://www.icecast.org/ices.php">Ices</a>.
 </p>
-
-<dl>
-<dt><code>--define end=big</code></dt>
-<dd>Force the sound output to be written big-endian.</dd>
-<dt><code>--define end=little</code></dt>
-<dd>Force the sound output to be written little-endian.</dd>
-</dl>
-
-<h4><code>oss</code> --    Open Sound System</h4>
-
-<p>
-This is the default output driver on Linux and other Unixes.
-Use <code>--device</code> to control which audio hardware device
-is used; the default is <code>/dev/dsp</code>.
-</p>
-
-<h4><code>alsa</code> --   Advanced Linux Sound Architecture</h4>
-
-<p>
-Another Unix sound framework. Use <code>--device</code> to control which
-ALSA device is used; the default is <code>default</code>.
-</p>
-
-<dl>
-<dt><code>--define buffersize=<em>frames</em></code></dt>
-<dd>Define the length of Boodler's generation buffer, in frames.
-The default is 4096.</dd>
-<dt><code>--define hwbuffer=<em>frames</em></code></dt>
-<dd>Define the length of the ALSA sound buffer, in frames. The default
-is 16384. If you find that the sound skips when the CPU is busy,
-increase this value. The hwbuffer should not be shorter than the buffersize.</dd>
-<dt><code>--define periodsize=<em>frames</em></code></dt>
-<dd>Define the length of the ALSA transfer period. This should be a
-fraction of the buffersize. The default is left up to the ALSA
-driver; it depends on the buffersize.</dd>
-</dl>
-
-<h4><code>esd</code> --    Enlightened Sound Daemon</h4>
-
-<p>
-Yet another Unix sound framework. The <code>--device</code> option defines 
-the hostname to send sound to; it defaults to <code>localhost</code>.
-If no ESD daemon is running, this will attempt to write directly to
-<code>/dev/dsp</code>.
-</p>
-
-<h4><code>pulse</code> --    PulseAudio</h4>
-
-<p>
-Yet <em>another</em> Unix sound framework. The <code>--device</code>
-option defines the device ("sink") to send sound to. 
-(<code>--list-devices</code> is not currently supported, but you can
-use Pulse's <code>pacmd</code> command-line tool to get a list of devices;
-try its <code>list-sinks</code> command.)
-</p>
-
-<dl>
-<dt><code>--define buffersize=<em>size</em></code></dt>
-<dd>Set each write buffer to be <em>size</em> bytes long.
-The default is 32768.</dd>
-<dt><code>--define end=big</code></dt>
-<dd>Force the sound output to be written big-endian.</dd>
-<dt><code>--define end=little</code></dt>
-<dd>Force the sound output to be written little-endian.</dd>
-</dl>
-
-<h4><code>jackb</code> -- JACK via Bio2Jack</h4>
-
-<p>
-<em>Yet again another</em> Unix sound framework. The <code>--device</code>
-option defines the name of the JACK client which will generate sound.
-The default is "boodler".
-</p>
-
-<dl>
-<dt><code>--define buffersize=<em>size</em></code></dt>
-<dd>Generate sound in chunks of <em>size</em> bytes.
-The default is 32768. (This is not the same as JACK's write
-buffer size.)</dd>
-<dt><code>--define connect=none</code></dt>
-<dd>Do not connect the JACK client to any output devices.
-(Default.)</dd>
-<dt><code>--define connect=output</code></dt>
-<dd>Connect the JACK client to the first two output channels found.
-(This is a Bio2Jack option; I'm not sure how well it works.)</dd>
-<dt><code>--define connect=all</code></dt>
-<dd>Connect the JACK client to every output channel.
-(This may cause problems if you have, say, a MIDI JACK device.
-Again, it is included because Bio2Jack offers it, not because
-it is a good idea.)</dd>
-<dt><code>--define end=big</code></dt>
-<dd>Force the sound output to be written big-endian.</dd>
-<dt><code>--define end=little</code></dt>
-<dd>Force the sound output to be written little-endian.</dd>
-</dl>
-
-<h4><code>osxaq</code> -- MacOSX AudioQueue</h4>
-
-<p>
-This is the default output driver on MacOSX 10.5 and later.
-It is also compatible with the iPhone OS.
-</p>
-
-<dl>
-<dt><code>--define buffercount=<em>count</em></code></dt>
-<dd>Create a queue of <em>count</em> buffers. If you find that the
-sound skips when the CPU is busy, increase this value. 
-The default is 3.</dd>
-<dt><code>--define buffersize=<em>size</em></code></dt>
-<dd>Set each AudioQueue buffer to be <em>size</em> bytes long.
-The default is 32768.</dd>
-<dt><code>--define end=big</code></dt>
-<dd>Force the sound output to be written big-endian.</dd>
-<dt><code>--define end=little</code></dt>
-<dd>Force the sound output to be written little-endian.</dd>
-</dl>
-
-<h4><code>macosx</code> -- MacOSX CoreAudio</h4>
-
-<p>
-This is the default output driver on MacOSX 10.4 and earlier.
-(It works on 10.5, but is deprecated.)
-</p>
-
-<dl>
-<dt><code>--define buffercount=<em>count</em></code></dt>
-<dd>Create a queue of <em>count</em> buffers. If you find that the
-sound skips when the CPU is busy (for example, when you're dragging
-or resizing windows), increase this value. The default is 6.</dd>
-<dt><code>--define buffersize=<em>size</em></code></dt>
-<dd>Set each CoreAudio buffer to be <em>size</em> bytes long.
-The default is 32768. (Values above 49152 may work poorly or 
-be rejected by the OS.)</dd>
-</dl>
-
-<h4><code>vorbis</code> -- write Ogg Vorbis file</h4>
-
-<p>
-This writes a file, like the <code>file</code> driver; but it
-generates an Ogg Vorbis file. The default filename is "boosound.ogg".
-To change this, pass a filename as the <code>--device</code>.
-</p>
-
-<dl>
-<dt><code>--define time=<em>interval</em></code></dt>
-<dd>Generate approximately <em>interval</em> seconds of output. 
-This defaults to five seconds.</dd>
-<dt><code>--define quality=<em>val</em></code></dt>
-<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
-quality) to 1.0 (high).</dd>
-</dl>
-
-<h4><code>shout</code> --  Shoutcast or Icecast source</h4>
-
-<p>
-This generates an Ogg Vorbis stream, and sends it to a Shoutcast or
-Icecast server (using 
-<a href="http://www.icecast.org/download.php">libshout</a>).
-</p>
-
-<dl>
-<dt><code>--define shout-server=<em>name</em></code></dt>
-<dd>Connect to shoutcast or icecast server <em>name</em>. Can be a
-domain or an IP address. Defaults to "127.0.0.1".</dd>
-<dt><code>--define shout-port=<em>port</em></code></dt>
-<dd>Use port <em>port</em> on the streaming server. Defaults to 8000.</dd>
-<dt><code>--define shout-user=<em>name</em></code></dt>
-<dd>Login with username <em>user</em> to the server. Defaults to "source".</dd>
-<dt><code>--define shout-password=<em>password</em></code></dt>
-<dd>Login with password <em>password</em> to the server. Defaults to "hackme".</dd>
-<dt><code>--define shout-mount=<em>mount</em></code></dt>
-<dd>With an icecast server, mount the sound on <em>mount</em>. Defaults to "/boodler.ogg".</dd>
-<dt><code>--define shout-protocol=<em>type</em></code></dt>
-<dd>Use <em>type</em> as the protocol. Use "http" for icecast2,
-"xaudiocast" for icecast1, and "icy" for a shoutcast server. Defaults to "http".</dd>
-<dt><code>--define quality=<em>val</em></code></dt>
-<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
-quality) to 1.0 (high).</dd>
-</dl>
-
-<h4><code>lame</code> -- write MP3 file with LAME encoder</h4>
-
-<p>
-This writes a file, like the <code>file</code> driver; but it
-generates an MP3 file. The default filename is "boosound.mp3".
-To change this, pass a filename as the <code>--device</code>.
-</p>
-
-<dl>
-<dt><code>--define time=<em>interval</em></code></dt>
-<dd>Generate approximately <em>interval</em> seconds of output. 
-This defaults to five seconds.</dd>
-<dt><code>--define quality=<em>val</em></code></dt>
-<dd>Set the LAME VBR compression quality, from 9 (low bitrate and 
-quality) to 0 (high). Yes, it's backwards. The default is 2.</dd>
-<dt><code>--define fast</code></dt>
-<dd>Use a faster VBR encoding algorithm. (Reduces quality somewhat.)</dd>
-<dt><code>--define abr=<em>rate</em></code></dt>
-<dd>Use ABR (fixed average bit rate) of <em>rate</em> KBPS.
-The <em>rate</em> can be from 8 to 320.</dd>
-<dt><code>--define haste=<em>val</em></code></dt>
-<dd>Modify the speed of the encoding algorithm, from 0 (slow and careful)
-to 9 (hasty). This affects the quality (but not the bit rate) of the output. 
-The default is 2.</dd>
-</dl>
 
 <h2><a name="args">Soundscape arguments</a></h2>
 

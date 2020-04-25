@@ -1,6 +1,6 @@
-
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module boopak.collect</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -22,11 +22,10 @@ of&nbsp;<a href="boopak.pload.html#PackageLoader">PackageLoader</a>.</tt></p>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="boopak.fetch.html">boopak.fetch</a><br>
-<a href="http://www.python.org/doc/current/library/os.html">os</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/os.html">os</a><br>
 </td><td width="25%" valign=top><a href="boopak.pload.html">boopak.pload</a><br>
-<a href="boopak.version.html">boopak.version</a><br>
 </td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/zipfile.html">zipfile</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -34,7 +33,7 @@ of&nbsp;<a href="boopak.pload.html#PackageLoader">PackageLoader</a>.</tt></p>
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
-<dt><font face="helvetica, arial"><a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>
+<dt><font face="helvetica, arial"><a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>(<a href="builtins.html#object">builtins.object</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="boopak.collect.html#PackageCollection">PackageCollection</a>
@@ -48,7 +47,9 @@ of&nbsp;<a href="boopak.pload.html#PackageLoader">PackageLoader</a>.</tt></p>
 <font color="#000000" face="helvetica, arial"><a name="PackageCollection">class <strong>PackageCollection</strong></a>(<a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#PackageCollection">PackageCollection</a>:&nbsp;manages&nbsp;a&nbsp;package&nbsp;collection.&nbsp;This&nbsp;is&nbsp;a&nbsp;subclass<br>
+<td colspan=2><tt><a href="#PackageCollection">PackageCollection</a>(basedir=None,&nbsp;coldir=None,&nbsp;dldir=None,&nbsp;boodler_api_vers=None,&nbsp;importing_ok=False)<br>
+&nbsp;<br>
+<a href="#PackageCollection">PackageCollection</a>:&nbsp;manages&nbsp;a&nbsp;package&nbsp;collection.&nbsp;This&nbsp;is&nbsp;a&nbsp;subclass<br>
 of&nbsp;<a href="boopak.pload.html#PackageLoader">PackageLoader</a>;&nbsp;it&nbsp;adds&nbsp;the&nbsp;ability&nbsp;to&nbsp;install&nbsp;and&nbsp;delete&nbsp;packages.<br>
 &nbsp;<br>
 This&nbsp;class&nbsp;is&nbsp;intended&nbsp;to&nbsp;be&nbsp;used&nbsp;by&nbsp;a&nbsp;Boodler&nbsp;UI.&nbsp;It&nbsp;should&nbsp;not&nbsp;be<br>
@@ -118,15 +119,21 @@ Internal&nbsp;methods:<br>
 &nbsp;<br>
 <a href="#PackageCollection-rewrite_versions_file">rewrite_versions_file</a>()&nbsp;--&nbsp;write&nbsp;(or&nbsp;overwrite)&nbsp;a&nbsp;new&nbsp;Versions&nbsp;file<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="PackageCollection-__init__"><strong>__init__</strong></a>(self, basedir<font color="#909090">=None</font>, coldir<font color="#909090">=None</font>, dldir<font color="#909090">=None</font>, boodler_api_vers<font color="#909090">=None</font>, importing_ok<font color="#909090">=False</font>)</dt></dl>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boopak.collect.html#PackageCollection">PackageCollection</a></dd>
+<dd><a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="PackageCollection-__init__"><strong>__init__</strong></a>(self, basedir=None, coldir=None, dldir=None, boodler_api_vers=None, importing_ok=False)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="PackageCollection-clean_temp"><strong>clean_temp</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-clean_temp">clean_temp</a>()&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Clean&nbsp;up&nbsp;the&nbsp;temporary&nbsp;download&nbsp;workspace.&nbsp;Delete&nbsp;all&nbsp;files,&nbsp;and<br>
 clear&nbsp;the&nbsp;internal&nbsp;caches&nbsp;that&nbsp;referred&nbsp;to&nbsp;them.</tt></dd></dl>
 
-<dl><dt><a name="PackageCollection-create_temp_dir"><strong>create_temp_dir</strong></a>(self, label<font color="#909090">='tmp'</font>)</dt><dd><tt><a href="#PackageCollection-create_temp_dir">create_temp_dir</a>(label='tmp')&nbsp;-&gt;&nbsp;str<br>
+<dl><dt><a name="PackageCollection-create_temp_dir"><strong>create_temp_dir</strong></a>(self, label='tmp')</dt><dd><tt><a href="#PackageCollection-create_temp_dir">create_temp_dir</a>(label='tmp')&nbsp;-&gt;&nbsp;str<br>
 &nbsp;<br>
 Return&nbsp;the&nbsp;pathname&nbsp;of&nbsp;a&nbsp;new,&nbsp;empty&nbsp;directory&nbsp;in&nbsp;the&nbsp;temporary<br>
 workspace.&nbsp;This&nbsp;directory&nbsp;will&nbsp;be&nbsp;deleted&nbsp;by&nbsp;the&nbsp;next&nbsp;<a href="#PackageCollection-clean_temp">clean_temp</a>()<br>
@@ -134,7 +141,7 @@ call.<br>
 &nbsp;<br>
 The&nbsp;optional&nbsp;label&nbsp;argument&nbsp;will&nbsp;be&nbsp;used&nbsp;in&nbsp;the&nbsp;directory&nbsp;name.</tt></dd></dl>
 
-<dl><dt><a name="PackageCollection-create_temp_file"><strong>create_temp_file</strong></a>(self, label<font color="#909090">='tmp'</font>)</dt><dd><tt><a href="#PackageCollection-create_temp_file">create_temp_file</a>(label='tmp')&nbsp;-&gt;&nbsp;str<br>
+<dl><dt><a name="PackageCollection-create_temp_file"><strong>create_temp_file</strong></a>(self, label='tmp')</dt><dd><tt><a href="#PackageCollection-create_temp_file">create_temp_file</a>(label='tmp')&nbsp;-&gt;&nbsp;str<br>
 &nbsp;<br>
 Return&nbsp;the&nbsp;pathname&nbsp;of&nbsp;a&nbsp;new&nbsp;file&nbsp;in&nbsp;the&nbsp;temporary&nbsp;workspace.<br>
 The&nbsp;file&nbsp;will&nbsp;not&nbsp;exist,&nbsp;but&nbsp;can&nbsp;be&nbsp;opened&nbsp;for&nbsp;writing.&nbsp;This<br>
@@ -149,7 +156,7 @@ Delete&nbsp;all&nbsp;versions&nbsp;of&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbs
 This&nbsp;method&nbsp;does&nbsp;not&nbsp;generate&nbsp;an&nbsp;error&nbsp;if&nbsp;the&nbsp;package&nbsp;group<br>
 is&nbsp;malformed,&nbsp;or&nbsp;even&nbsp;missing.</tt></dd></dl>
 
-<dl><dt><a name="PackageCollection-delete_package"><strong>delete_package</strong></a>(self, pkgname, vers<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-delete_package">delete_package</a>(pkgname,&nbsp;vers=None)&nbsp;-&gt;&nbsp;None<br>
+<dl><dt><a name="PackageCollection-delete_package"><strong>delete_package</strong></a>(self, pkgname, vers=None)</dt><dd><tt><a href="#PackageCollection-delete_package">delete_package</a>(pkgname,&nbsp;vers=None)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Delete&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;collection.<br>
 &nbsp;<br>
@@ -226,12 +233,12 @@ the&nbsp;API;&nbsp;it&nbsp;would&nbsp;be&nbsp;nice&nbsp;if&nbsp;<a href="#Packag
 URL&nbsp;too,&nbsp;but&nbsp;that&nbsp;is&nbsp;potentially&nbsp;a&nbsp;slow&nbsp;operation,&nbsp;and<br>
 <a href="#PackageCollection-install_source">install_source</a>()&nbsp;is&nbsp;not&nbsp;set&nbsp;up&nbsp;for&nbsp;slow&nbsp;operations.</tt></dd></dl>
 
-<dl><dt><a name="PackageCollection-record_import"><strong>record_import</strong></a>(self, pkg, name, spec<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-record_import">record_import</a>(pkg,&nbsp;name,&nbsp;spec=None)&nbsp;-&gt;&nbsp;None<br>
+<dl><dt><a name="PackageCollection-record_import"><strong>record_import</strong></a>(self, pkg, name, spec=None)</dt><dd><tt><a href="#PackageCollection-record_import">record_import</a>(pkg,&nbsp;name,&nbsp;spec=None)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Note&nbsp;a&nbsp;bimport()&nbsp;call&nbsp;by&nbsp;a&nbsp;package&nbsp;being&nbsp;imported.&nbsp;This&nbsp;should<br>
 only&nbsp;be&nbsp;called&nbsp;by&nbsp;bimport().</tt></dd></dl>
 
-<dl><dt><a name="PackageCollection-rewrite_versions_file"><strong>rewrite_versions_file</strong></a>(self, dirname, versionlist, pkgname<font color="#909090">='&lt;unknown&gt;'</font>)</dt><dd><tt><a href="#PackageCollection-rewrite_versions_file">rewrite_versions_file</a>(dirname,&nbsp;versionlist,<br>
+<dl><dt><a name="PackageCollection-rewrite_versions_file"><strong>rewrite_versions_file</strong></a>(self, dirname, versionlist, pkgname='&lt;unknown&gt;')</dt><dd><tt><a href="#PackageCollection-rewrite_versions_file">rewrite_versions_file</a>(dirname,&nbsp;versionlist,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;pkgname='&lt;unknown&gt;')&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Write&nbsp;(or&nbsp;overwrite)&nbsp;a&nbsp;new&nbsp;Versions&nbsp;file,&nbsp;in&nbsp;the&nbsp;given&nbsp;directory,<br>
@@ -267,7 +274,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>:<br>
-<dl><dt><a name="PackageCollection-add_external_package"><strong>add_external_package</strong></a>(self, dirname, metadata<font color="#909090">=None</font>, resources<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-add_external_package">add_external_package</a>(dirname,&nbsp;metadata=None,&nbsp;resources=None)&nbsp;-&gt;<br>
+<dl><dt><a name="PackageCollection-add_external_package"><strong>add_external_package</strong></a>(self, dirname, metadata=None, resources=None)</dt><dd><tt><a href="#PackageCollection-add_external_package">add_external_package</a>(dirname,&nbsp;metadata=None,&nbsp;resources=None)&nbsp;-&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(str,&nbsp;VersionNumber)<br>
 &nbsp;<br>
 Add&nbsp;an&nbsp;external&nbsp;directory&nbsp;to&nbsp;load&nbsp;a&nbsp;package&nbsp;from.&nbsp;The&nbsp;argument<br>
@@ -360,7 +367,7 @@ defined&nbsp;in&nbsp;a&nbsp;module;&nbsp;this&nbsp;covers&nbsp;the&nbsp;normal&n
 It&nbsp;will&nbsp;also&nbsp;work&nbsp;on&nbsp;File&nbsp;objects&nbsp;defined&nbsp;in&nbsp;a&nbsp;module.&nbsp;Beyond<br>
 that,&nbsp;results&nbsp;are&nbsp;questionable.</tt></dd></dl>
 
-<dl><dt><a name="PackageCollection-generate_package_path"><strong>generate_package_path</strong></a>(self, pkgname, vers<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-generate_package_path">generate_package_path</a>(pkgname,&nbsp;vers=None)&nbsp;-&gt;&nbsp;str<br>
+<dl><dt><a name="PackageCollection-generate_package_path"><strong>generate_package_path</strong></a>(self, pkgname, vers=None)</dt><dd><tt><a href="#PackageCollection-generate_package_path">generate_package_path</a>(pkgname,&nbsp;vers=None)&nbsp;-&gt;&nbsp;str<br>
 &nbsp;<br>
 Return&nbsp;the&nbsp;pathname&nbsp;in&nbsp;the&nbsp;collection&nbsp;directory&nbsp;which&nbsp;contains&nbsp;the<br>
 given&nbsp;package&nbsp;group&nbsp;(if&nbsp;vers&nbsp;is&nbsp;None),&nbsp;or&nbsp;the&nbsp;given&nbsp;package<br>
@@ -409,7 +416,7 @@ newest-to-oldest.<br>
 This&nbsp;only&nbsp;searches&nbsp;the&nbsp;on-disk&nbsp;directory&nbsp;the&nbsp;first&nbsp;time&nbsp;you&nbsp;call<br>
 it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbsp;call&nbsp;<a href="#PackageCollection-clear_cache">clear_cache</a>()&nbsp;first.</tt></dd></dl>
 
-<dl><dt><a name="PackageCollection-load"><strong>load</strong></a>(self, pkgname, versionspec<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-load">load</a>(pkgname,&nbsp;versionspec=None)&nbsp;-&gt;&nbsp;PackageInfo<br>
+<dl><dt><a name="PackageCollection-load"><strong>load</strong></a>(self, pkgname, versionspec=None)</dt><dd><tt><a href="#PackageCollection-load">load</a>(pkgname,&nbsp;versionspec=None)&nbsp;-&gt;&nbsp;PackageInfo<br>
 &nbsp;<br>
 Load&nbsp;a&nbsp;package,&nbsp;given&nbsp;its&nbsp;name&nbsp;and&nbsp;a&nbsp;version&nbsp;spec.<br>
 &nbsp;<br>
@@ -431,7 +438,7 @@ This&nbsp;is&nbsp;not&nbsp;tremendously&nbsp;useful&nbsp;for&nbsp;outside&nbsp;u
 can&nbsp;call&nbsp;it&nbsp;if&nbsp;you&nbsp;want.&nbsp;A&nbsp;PackageGroup&nbsp;represents&nbsp;all&nbsp;the<br>
 available&nbsp;versions&nbsp;of&nbsp;a&nbsp;particular&nbsp;package.</tt></dd></dl>
 
-<dl><dt><a name="PackageCollection-load_item_by_name"><strong>load_item_by_name</strong></a>(self, name, package<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-load_item_by_name">load_item_by_name</a>(name,&nbsp;package=None)&nbsp;-&gt;&nbsp;value<br>
+<dl><dt><a name="PackageCollection-load_item_by_name"><strong>load_item_by_name</strong></a>(self, name, package=None)</dt><dd><tt><a href="#PackageCollection-load_item_by_name">load_item_by_name</a>(name,&nbsp;package=None)&nbsp;-&gt;&nbsp;value<br>
 &nbsp;<br>
 Given&nbsp;a&nbsp;string&nbsp;that&nbsp;names&nbsp;a&nbsp;resource&nbsp;--&nbsp;for&nbsp;example,<br>
 'com.eblong.example/reptile.Hiss'&nbsp;--&nbsp;import&nbsp;the&nbsp;module&nbsp;and<br>
@@ -498,6 +505,14 @@ current&nbsp;external&nbsp;directory,&nbsp;this&nbsp;silently&nbsp;does&nbsp;not
 Since&nbsp;this&nbsp;changes&nbsp;the&nbsp;set&nbsp;of&nbsp;what&nbsp;packages&nbsp;are&nbsp;available,<br>
 it&nbsp;implicitly&nbsp;invokes&nbsp;<a href="#PackageCollection-clear_cache">clear_cache</a>().</tt></dd></dl>
 
+<hr>
+Data descriptors inherited from <a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 <hr>
 Data and other attributes inherited from <a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>:<br>
 <dl><dt><strong>global_loader</strong> = None</dl>

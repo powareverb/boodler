@@ -1,6 +1,6 @@
-
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module boodle.listen</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -38,17 +38,24 @@ implement&nbsp;it&nbsp;that&nbsp;way.)</tt></p>
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
 <dt><font face="helvetica, arial"><a href="boodle.listen.html#SocketListener">SocketListener</a>
 </font></dt><dt><font face="helvetica, arial"><a href="boodle.listen.html#StdinListener">StdinListener</a>
 </font></dt></dl>
+</dd>
+</dl>
  <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SocketListener">class <strong>SocketListener</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SocketListener">class <strong>SocketListener</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#SocketListener">SocketListener</a>:&nbsp;Listen&nbsp;for&nbsp;events&nbsp;on&nbsp;an&nbsp;Internet&nbsp;or&nbsp;Unix&nbsp;domain&nbsp;socket.<br>
+<td colspan=2><tt><a href="#SocketListener">SocketListener</a>(handler,&nbsp;listenport=None)<br>
+&nbsp;<br>
+<a href="#SocketListener">SocketListener</a>:&nbsp;Listen&nbsp;for&nbsp;events&nbsp;on&nbsp;an&nbsp;Internet&nbsp;or&nbsp;Unix&nbsp;domain&nbsp;socket.<br>
 &nbsp;<br>
 This&nbsp;opens&nbsp;a&nbsp;socket;&nbsp;external&nbsp;processes&nbsp;can&nbsp;connect&nbsp;and&nbsp;send&nbsp;Boodler<br>
 events&nbsp;to&nbsp;it.&nbsp;You&nbsp;can&nbsp;open&nbsp;either&nbsp;Internet&nbsp;sockets&nbsp;(with&nbsp;a&nbsp;numeric<br>
@@ -70,12 +77,20 @@ Public&nbsp;methods:<br>
 <a href="#SocketListener-close">close</a>()&nbsp;--&nbsp;close&nbsp;the&nbsp;socket<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="SocketListener-__init__"><strong>__init__</strong></a>(self, handler, listenport<font color="#909090">=None</font>)</dt></dl>
+<dl><dt><a name="SocketListener-__init__"><strong>__init__</strong></a>(self, handler, listenport=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="SocketListener-close"><strong>close</strong></a>(self)</dt></dl>
 
 <dl><dt><a name="SocketListener-poll"><strong>poll</strong></a>(self)</dt></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>unlinkport</strong> = None</dl>
@@ -84,10 +99,12 @@ Data and other attributes defined here:<br>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="StdinListener">class <strong>StdinListener</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="StdinListener">class <strong>StdinListener</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#StdinListener">StdinListener</a>:&nbsp;Listen&nbsp;for&nbsp;events&nbsp;arriving&nbsp;on&nbsp;standard&nbsp;input.<br>
+<td colspan=2><tt><a href="#StdinListener">StdinListener</a>(handler)<br>
+&nbsp;<br>
+<a href="#StdinListener">StdinListener</a>:&nbsp;Listen&nbsp;for&nbsp;events&nbsp;arriving&nbsp;on&nbsp;standard&nbsp;input.<br>
 &nbsp;<br>
 This&nbsp;is&nbsp;intended&nbsp;for&nbsp;when&nbsp;Boodler&nbsp;is&nbsp;running&nbsp;as&nbsp;a&nbsp;subordinate&nbsp;process<br>
 in&nbsp;some&nbsp;other&nbsp;program.&nbsp;The&nbsp;hosting&nbsp;program&nbsp;can&nbsp;write&nbsp;event&nbsp;data&nbsp;in<br>
@@ -106,12 +123,20 @@ Public&nbsp;methods:<br>
 <a href="#StdinListener-close">close</a>()&nbsp;--&nbsp;close&nbsp;the&nbsp;socket<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="StdinListener-__init__"><strong>__init__</strong></a>(self, handler)</dt></dl>
+<dl><dt><a name="StdinListener-__init__"><strong>__init__</strong></a>(self, handler)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="StdinListener-close"><strong>close</strong></a>(self)</dt></dl>
 
 <dl><dt><a name="StdinListener-poll"><strong>poll</strong></a>(self)</dt></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#eeaa77">

@@ -1,6 +1,6 @@
-
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module boodle.builtin</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -29,7 +29,7 @@ they&nbsp;need&nbsp;to&nbsp;be&nbsp;available&nbsp;always.<br>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="boodle.agent.html">boodle.agent</a><br>
-</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/stringio.html">cStringIO</a><br>
+</td><td width="25%" valign=top><a href="io.html">io</a><br>
 </td><td width="25%" valign=top><a href="boopak.pinfo.html">boopak.pinfo</a><br>
 </td><td width="25%" valign=top><a href="boodle.stereo.html">boodle.stereo</a><br>
 </td></tr></table></td></tr></table><p>
@@ -40,7 +40,7 @@ they&nbsp;need&nbsp;to&nbsp;be&nbsp;available&nbsp;always.<br>
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
-<dt><font face="helvetica, arial"><a href="boodle.agent.html#Agent">boodle.agent.Agent</a>
+<dt><font face="helvetica, arial"><a href="boodle.agent.html#Agent">boodle.agent.Agent</a>(<a href="builtins.html#object">builtins.object</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="boodle.builtin.html#FadeInOutAgent">FadeInOutAgent</a>
@@ -60,7 +60,9 @@ they&nbsp;need&nbsp;to&nbsp;be&nbsp;available&nbsp;always.<br>
 <font color="#000000" face="helvetica, arial"><a name="FadeInOutAgent">class <strong>FadeInOutAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#FadeInOutAgent">FadeInOutAgent</a>(agent,&nbsp;liveinterval,&nbsp;fadeinterval,&nbsp;fadeoutinterval=fadeinterval):<br>
+<td colspan=2><tt><a href="#FadeInOutAgent">FadeInOutAgent</a>(agentinst,&nbsp;liveinterval=10.0,&nbsp;fadeinterval=1.0,&nbsp;fadeoutinterval=None)<br>
+&nbsp;<br>
+<a href="#FadeInOutAgent">FadeInOutAgent</a>(agent,&nbsp;liveinterval,&nbsp;fadeinterval,&nbsp;fadeoutinterval=fadeinterval):<br>
 &nbsp;<br>
 This&nbsp;agent&nbsp;creates&nbsp;a&nbsp;channel&nbsp;with&nbsp;an&nbsp;agent,&nbsp;and&nbsp;causes&nbsp;that&nbsp;channel<br>
 to&nbsp;fade&nbsp;up&nbsp;from&nbsp;zero&nbsp;volume,&nbsp;remain&nbsp;at&nbsp;full&nbsp;volume,&nbsp;and&nbsp;then&nbsp;fade&nbsp;out<br>
@@ -73,12 +75,25 @@ of&nbsp;fade-in&nbsp;to&nbsp;the&nbsp;beginning&nbsp;of&nbsp;fade-out).<br>
 If&nbsp;two&nbsp;intervals&nbsp;are&nbsp;given,&nbsp;the&nbsp;first&nbsp;is&nbsp;the&nbsp;fade-in&nbsp;time,&nbsp;and&nbsp;the<br>
 second&nbsp;is&nbsp;the&nbsp;fade-out&nbsp;time.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="FadeInOutAgent-__init__"><strong>__init__</strong></a>(self, agentinst, liveinterval<font color="#909090">=10.0</font>, fadeinterval<font color="#909090">=1.0</font>, fadeoutinterval<font color="#909090">=None</font>)</dt></dl>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.builtin.html#FadeInOutAgent">FadeInOutAgent</a></dd>
+<dd><a href="boodle.agent.html#Agent">boodle.agent.Agent</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="FadeInOutAgent-__init__"><strong>__init__</strong></a>(self, agentinst, liveinterval=10.0, fadeinterval=1.0, fadeoutinterval=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="FadeInOutAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+<dl><dt><a name="FadeInOutAgent-get_title"><strong>get_title</strong></a>(self)</dt><dd><tt><a href="#FadeInOutAgent-get_title">get_title</a>()&nbsp;-&gt;&nbsp;string<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;agent.&nbsp;This&nbsp;normally&nbsp;returns&nbsp;the&nbsp;title<br>
+value&nbsp;from&nbsp;the&nbsp;agent's&nbsp;metadata.&nbsp;(An&nbsp;agent&nbsp;class&nbsp;can&nbsp;override<br>
+this&nbsp;behavior,&nbsp;but&nbsp;there&nbsp;is&nbsp;usually&nbsp;no&nbsp;reason&nbsp;to&nbsp;do&nbsp;so.)</tt></dd></dl>
 
-<dl><dt><a name="FadeInOutAgent-run"><strong>run</strong></a>(self)</dt></dl>
+<dl><dt><a name="FadeInOutAgent-run"><strong>run</strong></a>(self)</dt><dd><tt><a href="#FadeInOutAgent-run">run</a>()<br>
+&nbsp;<br>
+Perform&nbsp;the&nbsp;agent's&nbsp;action.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="boodle.agent.html#Agent">Agent</a>&nbsp;must&nbsp;override<br>
+this&nbsp;method.</tt></dd></dl>
 
 <hr>
 </td></tr></table> <p>
@@ -88,17 +103,32 @@ second&nbsp;is&nbsp;the&nbsp;fade-out&nbsp;time.<br>&nbsp;</tt></td></tr>
 <font color="#000000" face="helvetica, arial"><a name="FadeOutAgent">class <strong>FadeOutAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#FadeOutAgent">FadeOutAgent</a>(interval):<br>
+<td colspan=2><tt><a href="#FadeOutAgent">FadeOutAgent</a>(duration=0.005)<br>
+&nbsp;<br>
+<a href="#FadeOutAgent">FadeOutAgent</a>(interval):<br>
 &nbsp;<br>
 This&nbsp;agent&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;fade&nbsp;down&nbsp;to&nbsp;zero&nbsp;volume&nbsp;over&nbsp;a<br>
 given&nbsp;interval,&nbsp;and&nbsp;then&nbsp;stop.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="FadeOutAgent-__init__"><strong>__init__</strong></a>(self, duration<font color="#909090">=0.0050000000000000001</font>)</dt></dl>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.builtin.html#FadeOutAgent">FadeOutAgent</a></dd>
+<dd><a href="boodle.agent.html#Agent">boodle.agent.Agent</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="FadeOutAgent-__init__"><strong>__init__</strong></a>(self, duration=0.005)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="FadeOutAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+<dl><dt><a name="FadeOutAgent-get_title"><strong>get_title</strong></a>(self)</dt><dd><tt><a href="#FadeOutAgent-get_title">get_title</a>()&nbsp;-&gt;&nbsp;string<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;agent.&nbsp;This&nbsp;normally&nbsp;returns&nbsp;the&nbsp;title<br>
+value&nbsp;from&nbsp;the&nbsp;agent's&nbsp;metadata.&nbsp;(An&nbsp;agent&nbsp;class&nbsp;can&nbsp;override<br>
+this&nbsp;behavior,&nbsp;but&nbsp;there&nbsp;is&nbsp;usually&nbsp;no&nbsp;reason&nbsp;to&nbsp;do&nbsp;so.)</tt></dd></dl>
 
-<dl><dt><a name="FadeOutAgent-run"><strong>run</strong></a>(self)</dt></dl>
+<dl><dt><a name="FadeOutAgent-run"><strong>run</strong></a>(self)</dt><dd><tt><a href="#FadeOutAgent-run">run</a>()<br>
+&nbsp;<br>
+Perform&nbsp;the&nbsp;agent's&nbsp;action.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="boodle.agent.html#Agent">Agent</a>&nbsp;must&nbsp;override<br>
+this&nbsp;method.</tt></dd></dl>
 
 <hr>
 </td></tr></table> <p>
@@ -108,14 +138,29 @@ given&nbsp;interval,&nbsp;and&nbsp;then&nbsp;stop.<br>&nbsp;</tt></td></tr>
 <font color="#000000" face="helvetica, arial"><a name="NullAgent">class <strong>NullAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#NullAgent">NullAgent</a>:<br>
+<td colspan=2><tt><a href="#NullAgent">NullAgent</a>(*args,&nbsp;**kwargs)<br>
+&nbsp;<br>
+<a href="#NullAgent">NullAgent</a>:<br>
 &nbsp;<br>
 This&nbsp;agent&nbsp;does&nbsp;nothing.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="NullAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.builtin.html#NullAgent">NullAgent</a></dd>
+<dd><a href="boodle.agent.html#Agent">boodle.agent.Agent</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="NullAgent-get_title"><strong>get_title</strong></a>(self)</dt><dd><tt><a href="#NullAgent-get_title">get_title</a>()&nbsp;-&gt;&nbsp;string<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;agent.&nbsp;This&nbsp;normally&nbsp;returns&nbsp;the&nbsp;title<br>
+value&nbsp;from&nbsp;the&nbsp;agent's&nbsp;metadata.&nbsp;(An&nbsp;agent&nbsp;class&nbsp;can&nbsp;override<br>
+this&nbsp;behavior,&nbsp;but&nbsp;there&nbsp;is&nbsp;usually&nbsp;no&nbsp;reason&nbsp;to&nbsp;do&nbsp;so.)</tt></dd></dl>
 
-<dl><dt><a name="NullAgent-run"><strong>run</strong></a>(self)</dt></dl>
+<dl><dt><a name="NullAgent-run"><strong>run</strong></a>(self)</dt><dd><tt><a href="#NullAgent-run">run</a>()<br>
+&nbsp;<br>
+Perform&nbsp;the&nbsp;agent's&nbsp;action.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="boodle.agent.html#Agent">Agent</a>&nbsp;must&nbsp;override<br>
+this&nbsp;method.</tt></dd></dl>
 
 <hr>
 </td></tr></table> <p>
@@ -125,17 +170,32 @@ This&nbsp;agent&nbsp;does&nbsp;nothing.<br>&nbsp;</tt></td></tr>
 <font color="#000000" face="helvetica, arial"><a name="SetPanAgent">class <strong>SetPanAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#SetPanAgent">SetPanAgent</a>:<br>
+<td colspan=2><tt><a href="#SetPanAgent">SetPanAgent</a>(newpan,&nbsp;duration=0.5)<br>
+&nbsp;<br>
+<a href="#SetPanAgent">SetPanAgent</a>:<br>
 &nbsp;<br>
 This&nbsp;agent&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;change&nbsp;to&nbsp;a&nbsp;given&nbsp;pan&nbsp;position.&nbsp;(See<br>
 Channel.set_pan.)<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="SetPanAgent-__init__"><strong>__init__</strong></a>(self, newpan, duration<font color="#909090">=0.5</font>)</dt></dl>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.builtin.html#SetPanAgent">SetPanAgent</a></dd>
+<dd><a href="boodle.agent.html#Agent">boodle.agent.Agent</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="SetPanAgent-__init__"><strong>__init__</strong></a>(self, newpan, duration=0.5)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="SetPanAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+<dl><dt><a name="SetPanAgent-get_title"><strong>get_title</strong></a>(self)</dt><dd><tt><a href="#SetPanAgent-get_title">get_title</a>()&nbsp;-&gt;&nbsp;string<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;agent.&nbsp;This&nbsp;normally&nbsp;returns&nbsp;the&nbsp;title<br>
+value&nbsp;from&nbsp;the&nbsp;agent's&nbsp;metadata.&nbsp;(An&nbsp;agent&nbsp;class&nbsp;can&nbsp;override<br>
+this&nbsp;behavior,&nbsp;but&nbsp;there&nbsp;is&nbsp;usually&nbsp;no&nbsp;reason&nbsp;to&nbsp;do&nbsp;so.)</tt></dd></dl>
 
-<dl><dt><a name="SetPanAgent-run"><strong>run</strong></a>(self)</dt></dl>
+<dl><dt><a name="SetPanAgent-run"><strong>run</strong></a>(self)</dt><dd><tt><a href="#SetPanAgent-run">run</a>()<br>
+&nbsp;<br>
+Perform&nbsp;the&nbsp;agent's&nbsp;action.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="boodle.agent.html#Agent">Agent</a>&nbsp;must&nbsp;override<br>
+this&nbsp;method.</tt></dd></dl>
 
 <hr>
 </td></tr></table> <p>
@@ -145,17 +205,32 @@ Channel.set_pan.)<br>&nbsp;</tt></td></tr>
 <font color="#000000" face="helvetica, arial"><a name="SetVolumeAgent">class <strong>SetVolumeAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#SetVolumeAgent">SetVolumeAgent</a>:<br>
+<td colspan=2><tt><a href="#SetVolumeAgent">SetVolumeAgent</a>(newvol,&nbsp;duration=0.005)<br>
+&nbsp;<br>
+<a href="#SetVolumeAgent">SetVolumeAgent</a>:<br>
 &nbsp;<br>
 This&nbsp;agent&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;change&nbsp;to&nbsp;a&nbsp;given&nbsp;volume.&nbsp;(See<br>
 Channel.set_volume.)<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="SetVolumeAgent-__init__"><strong>__init__</strong></a>(self, newvol, duration<font color="#909090">=0.0050000000000000001</font>)</dt></dl>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.builtin.html#SetVolumeAgent">SetVolumeAgent</a></dd>
+<dd><a href="boodle.agent.html#Agent">boodle.agent.Agent</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="SetVolumeAgent-__init__"><strong>__init__</strong></a>(self, newvol, duration=0.005)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="SetVolumeAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+<dl><dt><a name="SetVolumeAgent-get_title"><strong>get_title</strong></a>(self)</dt><dd><tt><a href="#SetVolumeAgent-get_title">get_title</a>()&nbsp;-&gt;&nbsp;string<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;agent.&nbsp;This&nbsp;normally&nbsp;returns&nbsp;the&nbsp;title<br>
+value&nbsp;from&nbsp;the&nbsp;agent's&nbsp;metadata.&nbsp;(An&nbsp;agent&nbsp;class&nbsp;can&nbsp;override<br>
+this&nbsp;behavior,&nbsp;but&nbsp;there&nbsp;is&nbsp;usually&nbsp;no&nbsp;reason&nbsp;to&nbsp;do&nbsp;so.)</tt></dd></dl>
 
-<dl><dt><a name="SetVolumeAgent-run"><strong>run</strong></a>(self)</dt></dl>
+<dl><dt><a name="SetVolumeAgent-run"><strong>run</strong></a>(self)</dt><dd><tt><a href="#SetVolumeAgent-run">run</a>()<br>
+&nbsp;<br>
+Perform&nbsp;the&nbsp;agent's&nbsp;action.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="boodle.agent.html#Agent">Agent</a>&nbsp;must&nbsp;override<br>
+this&nbsp;method.</tt></dd></dl>
 
 <hr>
 </td></tr></table> <p>
@@ -165,16 +240,31 @@ Channel.set_volume.)<br>&nbsp;</tt></td></tr>
 <font color="#000000" face="helvetica, arial"><a name="StopAgent">class <strong>StopAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#StopAgent">StopAgent</a>:<br>
+<td colspan=2><tt><a href="#StopAgent">StopAgent</a>(*args,&nbsp;**kwargs)<br>
+&nbsp;<br>
+<a href="#StopAgent">StopAgent</a>:<br>
 &nbsp;<br>
 This&nbsp;agent&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;stop&nbsp;playing.&nbsp;(See&nbsp;Channel.stop.)<br>
 All&nbsp;notes&nbsp;and&nbsp;agents&nbsp;in&nbsp;the&nbsp;channel&nbsp;(and&nbsp;subchannels)&nbsp;will&nbsp;be<br>
 discarded.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="StopAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.builtin.html#StopAgent">StopAgent</a></dd>
+<dd><a href="boodle.agent.html#Agent">boodle.agent.Agent</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="StopAgent-get_title"><strong>get_title</strong></a>(self)</dt><dd><tt><a href="#StopAgent-get_title">get_title</a>()&nbsp;-&gt;&nbsp;string<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;agent.&nbsp;This&nbsp;normally&nbsp;returns&nbsp;the&nbsp;title<br>
+value&nbsp;from&nbsp;the&nbsp;agent's&nbsp;metadata.&nbsp;(An&nbsp;agent&nbsp;class&nbsp;can&nbsp;override<br>
+this&nbsp;behavior,&nbsp;but&nbsp;there&nbsp;is&nbsp;usually&nbsp;no&nbsp;reason&nbsp;to&nbsp;do&nbsp;so.)</tt></dd></dl>
 
-<dl><dt><a name="StopAgent-run"><strong>run</strong></a>(self)</dt></dl>
+<dl><dt><a name="StopAgent-run"><strong>run</strong></a>(self)</dt><dd><tt><a href="#StopAgent-run">run</a>()<br>
+&nbsp;<br>
+Perform&nbsp;the&nbsp;agent's&nbsp;action.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="boodle.agent.html#Agent">Agent</a>&nbsp;must&nbsp;override<br>
+this&nbsp;method.</tt></dd></dl>
 
 <hr>
 </td></tr></table> <p>
@@ -184,16 +274,31 @@ discarded.<br>&nbsp;</tt></td></tr>
 <font color="#000000" face="helvetica, arial"><a name="TestSoundAgent">class <strong>TestSoundAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#TestSoundAgent">TestSoundAgent</a>:<br>
+<td colspan=2><tt><a href="#TestSoundAgent">TestSoundAgent</a>(*args,&nbsp;**kwargs)<br>
+&nbsp;<br>
+<a href="#TestSoundAgent">TestSoundAgent</a>:<br>
 &nbsp;<br>
 Plays&nbsp;a&nbsp;little&nbsp;test&nbsp;melody.&nbsp;This&nbsp;does&nbsp;some&nbsp;under-the-cover&nbsp;contortions<br>
 to&nbsp;create&nbsp;a&nbsp;sound&nbsp;sample&nbsp;without&nbsp;loading&nbsp;any&nbsp;Boodler&nbsp;modules&nbsp;from<br>
 the&nbsp;external&nbsp;module&nbsp;collection.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="TestSoundAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.builtin.html#TestSoundAgent">TestSoundAgent</a></dd>
+<dd><a href="boodle.agent.html#Agent">boodle.agent.Agent</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="TestSoundAgent-get_title"><strong>get_title</strong></a>(self)</dt><dd><tt><a href="#TestSoundAgent-get_title">get_title</a>()&nbsp;-&gt;&nbsp;string<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;agent.&nbsp;This&nbsp;normally&nbsp;returns&nbsp;the&nbsp;title<br>
+value&nbsp;from&nbsp;the&nbsp;agent's&nbsp;metadata.&nbsp;(An&nbsp;agent&nbsp;class&nbsp;can&nbsp;override<br>
+this&nbsp;behavior,&nbsp;but&nbsp;there&nbsp;is&nbsp;usually&nbsp;no&nbsp;reason&nbsp;to&nbsp;do&nbsp;so.)</tt></dd></dl>
 
-<dl><dt><a name="TestSoundAgent-run"><strong>run</strong></a>(self)</dt></dl>
+<dl><dt><a name="TestSoundAgent-run"><strong>run</strong></a>(self)</dt><dd><tt><a href="#TestSoundAgent-run">run</a>()<br>
+&nbsp;<br>
+Perform&nbsp;the&nbsp;agent's&nbsp;action.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="boodle.agent.html#Agent">Agent</a>&nbsp;must&nbsp;override<br>
+this&nbsp;method.</tt></dd></dl>
 
 <hr>
 Static methods defined here:<br>

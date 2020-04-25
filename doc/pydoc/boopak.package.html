@@ -1,6 +1,6 @@
-
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module boopak.package</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -51,7 +51,7 @@ info_being_imported()&nbsp;--&nbsp;locate&nbsp;the&nbsp;PackageInfo&nbsp;which&n
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-bexport"><strong>bexport</strong></a>(resname<font color="#909090">=None</font>)</dt><dd><tt><a href="#-bexport">bexport</a>(resname=None)&nbsp;-&gt;&nbsp;None<br>
+<td width="100%"><dl><dt><a name="-bexport"><strong>bexport</strong></a>(resname=None)</dt><dd><tt><a href="#-bexport">bexport</a>(resname=None)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Make&nbsp;a&nbsp;module's&nbsp;file&nbsp;resources&nbsp;available&nbsp;in&nbsp;the&nbsp;module's&nbsp;namespace.<br>
 (This&nbsp;exports&nbsp;them,&nbsp;in&nbsp;the&nbsp;sense&nbsp;that&nbsp;another&nbsp;module&nbsp;will&nbsp;be&nbsp;able<br>
@@ -70,7 +70,7 @@ If&nbsp;you&nbsp;plan&nbsp;a&nbsp;submodule&nbsp;which&nbsp;contains&nbsp;both&n
 resources,&nbsp;you&nbsp;must&nbsp;call&nbsp;<a href="#-subimport">subimport</a>()&nbsp;before&nbsp;<a href="#-bexport">bexport</a>().<br>
 &nbsp;<br>
 You&nbsp;may&nbsp;only&nbsp;call&nbsp;this&nbsp;from&nbsp;a&nbsp;sound&nbsp;module's&nbsp;top&nbsp;level.</tt></dd></dl>
- <dl><dt><a name="-bimport"><strong>bimport</strong></a>(pkgname, spec<font color="#909090">=None</font>)</dt><dd><tt><a href="#-bimport">bimport</a>(pkgname,&nbsp;spec=None)&nbsp;-&gt;&nbsp;module<br>
+ <dl><dt><a name="-bimport"><strong>bimport</strong></a>(pkgname, spec=None)</dt><dd><tt><a href="#-bimport">bimport</a>(pkgname,&nbsp;spec=None)&nbsp;-&gt;&nbsp;module<br>
 &nbsp;<br>
 Import&nbsp;and&nbsp;return&nbsp;a&nbsp;Boodler&nbsp;sound&nbsp;module.&nbsp;You&nbsp;must&nbsp;pass&nbsp;the&nbsp;fully-<br>
 qualified&nbsp;module&nbsp;name.&nbsp;<br>
@@ -88,7 +88,7 @@ also&nbsp;relies&nbsp;on&nbsp;this&nbsp;pattern.)<br>
 &nbsp;<br>
 (To&nbsp;load&nbsp;packages&nbsp;and&nbsp;agents&nbsp;at&nbsp;runtime,&nbsp;based&nbsp;on&nbsp;user&nbsp;input,&nbsp;use<br>
 Agent.load_described().)</tt></dd></dl>
- <dl><dt><a name="-get_file"><strong>get_file</strong></a>(filename, mod<font color="#909090">=None</font>)</dt><dd><tt><a href="#-get_file">get_file</a>(filename,&nbsp;mod=None)&nbsp;-&gt;&nbsp;File<br>
+ <dl><dt><a name="-get_file"><strong>get_file</strong></a>(filename, mod=None)</dt><dd><tt><a href="#-get_file">get_file</a>(filename,&nbsp;mod=None)&nbsp;-&gt;&nbsp;File<br>
 &nbsp;<br>
 Get&nbsp;a&nbsp;File&nbsp;by&nbsp;name,&nbsp;in&nbsp;a&nbsp;Boodler&nbsp;module.&nbsp;This&nbsp;returns&nbsp;a&nbsp;File&nbsp;object&nbsp;--<br>
 see&nbsp;the&nbsp;pinfo&nbsp;package&nbsp;--&nbsp;not&nbsp;an&nbsp;open&nbsp;Python&nbsp;file.<br>
@@ -106,7 +106,7 @@ it.&nbsp;You&nbsp;may&nbsp;call&nbsp;this&nbsp;form&nbsp;at&nbsp;any&nbsp;time.<
 &nbsp;<br>
 If&nbsp;mod&nbsp;is&nbsp;a&nbsp;PackageInfo,&nbsp;this&nbsp;gets&nbsp;a&nbsp;file&nbsp;from&nbsp;the&nbsp;module&nbsp;it<br>
 describes.</tt></dd></dl>
- <dl><dt><a name="-get_info"><strong>get_info</strong></a>(mod<font color="#909090">=None</font>)</dt><dd><tt><a href="#-get_info">get_info</a>(mod=None)&nbsp;-&gt;&nbsp;PackageInfo<br>
+ <dl><dt><a name="-get_info"><strong>get_info</strong></a>(mod=None)</dt><dd><tt><a href="#-get_info">get_info</a>(mod=None)&nbsp;-&gt;&nbsp;PackageInfo<br>
 &nbsp;<br>
 Get&nbsp;the&nbsp;PackageInfo&nbsp;which&nbsp;describes&nbsp;a&nbsp;Boodler&nbsp;module.<br>
 &nbsp;<br>
@@ -119,7 +119,7 @@ it.&nbsp;You&nbsp;may&nbsp;call&nbsp;this&nbsp;form&nbsp;at&nbsp;any&nbsp;time.<
 &nbsp;<br>
 If&nbsp;mod&nbsp;is&nbsp;a&nbsp;PackageInfo,&nbsp;this&nbsp;returns&nbsp;it.&nbsp;(This&nbsp;form&nbsp;exists&nbsp;for&nbsp;<br>
 consistency&nbsp;with&nbsp;other&nbsp;functions&nbsp;in&nbsp;this&nbsp;package.)</tt></dd></dl>
- <dl><dt><a name="-get_metadata"><strong>get_metadata</strong></a>(mod<font color="#909090">=None</font>)</dt><dd><tt><a href="#-get_metadata">get_metadata</a>(mod=None)&nbsp;-&gt;&nbsp;Metadata<br>
+ <dl><dt><a name="-get_metadata"><strong>get_metadata</strong></a>(mod=None)</dt><dd><tt><a href="#-get_metadata">get_metadata</a>(mod=None)&nbsp;-&gt;&nbsp;Metadata<br>
 &nbsp;<br>
 Get&nbsp;the&nbsp;metadata&nbsp;which&nbsp;describes&nbsp;a&nbsp;Boodler&nbsp;module.<br>
 &nbsp;<br>
@@ -141,7 +141,7 @@ whose&nbsp;top&nbsp;level&nbsp;it&nbsp;is.<br>
 This&nbsp;function&nbsp;exists&nbsp;because&nbsp;various&nbsp;parts&nbsp;of&nbsp;Boodler&nbsp;associate<br>
 information&nbsp;with&nbsp;the&nbsp;module,&nbsp;and&nbsp;a&nbsp;module&nbsp;might&nbsp;want&nbsp;to&nbsp;get&nbsp;that<br>
 information&nbsp;for&nbsp;itself.</tt></dd></dl>
- <dl><dt><a name="-open_file"><strong>open_file</strong></a>(filename, binary<font color="#909090">=False</font>, mod<font color="#909090">=None</font>)</dt><dd><tt><a href="#-open_file">open_file</a>(filename,&nbsp;binary=False,&nbsp;mod=None)&nbsp;-&gt;&nbsp;file<br>
+ <dl><dt><a name="-open_file"><strong>open_file</strong></a>(filename, binary=False, mod=None)</dt><dd><tt><a href="#-open_file">open_file</a>(filename,&nbsp;binary=False,&nbsp;mod=None)&nbsp;-&gt;&nbsp;file<br>
 &nbsp;<br>
 Open&nbsp;a&nbsp;file&nbsp;by&nbsp;name,&nbsp;in&nbsp;a&nbsp;Boodler&nbsp;module.&nbsp;This&nbsp;is&nbsp;equivalent&nbsp;to<br>
 <a href="#-get_file">get_file</a>(filename,&nbsp;mod).open(binary).<br>
@@ -159,7 +159,7 @@ it.&nbsp;You&nbsp;may&nbsp;call&nbsp;this&nbsp;form&nbsp;at&nbsp;any&nbsp;time.<
 &nbsp;<br>
 If&nbsp;mod&nbsp;is&nbsp;a&nbsp;PackageInfo,&nbsp;this&nbsp;opens&nbsp;a&nbsp;file&nbsp;from&nbsp;the&nbsp;module&nbsp;it<br>
 describes.</tt></dd></dl>
- <dl><dt><a name="-subimport"><strong>subimport</strong></a>(modname, mod<font color="#909090">=None</font>)</dt><dd><tt><a href="#-subimport">subimport</a>(modname,&nbsp;mod=None)&nbsp;-&gt;&nbsp;value&nbsp;or&nbsp;None<br>
+ <dl><dt><a name="-subimport"><strong>subimport</strong></a>(modname, mod=None)</dt><dd><tt><a href="#-subimport">subimport</a>(modname,&nbsp;mod=None)&nbsp;-&gt;&nbsp;value&nbsp;or&nbsp;None<br>
 &nbsp;<br>
 Import&nbsp;a&nbsp;submodule&nbsp;from&nbsp;a&nbsp;Boodler&nbsp;sound&nbsp;module.&nbsp;This&nbsp;replicates<br>
 the&nbsp;standard&nbsp;"import"&nbsp;statement.&nbsp;The&nbsp;modname&nbsp;may&nbsp;be&nbsp;a&nbsp;qualified<br>

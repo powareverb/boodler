@@ -10,7 +10,30 @@
 <h1>Boodler: Version History</h1>
 
 <dl>
+<dt>3.0.0 (Apr 25, 2020)</dt>
+<dd>
+<p>
+Adds Python 3 compatibility and removes Python 2 compatibility.
+</p>
+<p>
+Removes all output drivers except stdout; audio can now be played with
+something like <code>sox</code> using e.g.:
 
+<pre>
+boodler com.eblong.ow.storm/OneStorm |\
+  play \
+    --type=raw \
+    --channels=2 \
+    --rate=44.1k \
+    --encoding=signed-integer \
+    --bits=16 \
+    -
+</pre>
+</p>
+</dd>
+</dl>
+
+<dl>
 <dt>2.0.4 (Mar 6, 2011)</dt>
 <dd>
 <p>

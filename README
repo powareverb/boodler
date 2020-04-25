@@ -1,8 +1,11 @@
 Boodler: a programmable soundscape tool
-   Version 2.0.4
+   Version 3.0.0
 
 Designed by Andrew Plotkin <erkyrath@eblong.com>
    <http://boodler.org/>
+
+Recent work (3.0.0 and above) by Beau Gunderson <beau@beaugunderson.com>
+   <https://beaugunderson.com/>
 
 Copyright 2001-2011 by Andrew Plotkin
    This program is distributed under the LGPL.
@@ -154,9 +157,6 @@ for details.
 
 One detail: the C source code of the cboodle extensions is
 dual-licensed. You may use it under the terms of the LGPL or the GPL,
-whichever you like. This is because it must be compiled with several
-native libraries, including VorbisEnc (BSD license), LibShout (LGPL),
-and LAME (GPL). The dynamically loadable cboodle_* driver modules are
-therefore all under the LGPL, except for cboodle_lame, which is GPL.
+whichever you like.
 
     -----------------------------------------------

@@ -1,6 +1,6 @@
-
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module boodle.sample</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -15,7 +15,7 @@ WAV,&nbsp;etc).<br>
 &nbsp;<br>
 Public&nbsp;functions:<br>
 &nbsp;<br>
-<a href="#-get">get</a>()&nbsp;--&nbsp;load&nbsp;a&nbsp;sample&nbsp;object,&nbsp;given&nbsp;a&nbsp;filename&nbsp;or&nbsp;File&nbsp;object<br>
+<a href="#-get">get</a>()&nbsp;--&nbsp;load&nbsp;a&nbsp;sample&nbsp;<a href="builtins.html#object">object</a>,&nbsp;given&nbsp;a&nbsp;filename&nbsp;or&nbsp;File&nbsp;<a href="builtins.html#object">object</a><br>
 <a href="#-get_info">get_info</a>()&nbsp;--&nbsp;measure&nbsp;the&nbsp;expected&nbsp;running&nbsp;time&nbsp;and&nbsp;looping&nbsp;params&nbsp;of&nbsp;a&nbsp;sound</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -28,13 +28,12 @@ Public&nbsp;functions:<br>
 <a href="http://www.python.org/doc/current/library/bisect.html">bisect</a><br>
 <a href="boodle.html">boodle</a><br>
 </td><td width="25%" valign=top><a href="boopak.html">boopak</a><br>
-<a href="http://www.python.org/doc/current/library/fileinput.html">fileinput</a><br>
 <a href="http://www.python.org/doc/current/library/os.html">os</a><br>
-</td><td width="25%" valign=top><a href="boodle.stereo.html">boodle.stereo</a><br>
-<a href="http://www.python.org/doc/current/library/struct.html">struct</a><br>
+<a href="boodle.stereo.html">boodle.stereo</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/struct.html">struct</a><br>
 <a href="http://www.python.org/doc/current/library/sunau.html">sunau</a><br>
-</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/wave.html">wave</a><br>
-</td></tr></table></td></tr></table><p>
+<a href="http://www.python.org/doc/current/library/wave.html">wave</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -42,12 +41,15 @@ Public&nbsp;functions:<br>
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
-<dt><font face="helvetica, arial"><a href="boodle.html#BoodlerError">boodle.BoodlerError</a>(<a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>)
+<dt><font face="helvetica, arial"><a href="boodle.html#BoodlerError">boodle.BoodlerError</a>(<a href="builtins.html#Exception">builtins.Exception</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="boodle.sample.html#SampleError">SampleError</a>
 </font></dt></dl>
 </dd>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
 <dt><font face="helvetica, arial"><a href="boodle.sample.html#MixIn">MixIn</a>
 </font></dt><dt><font face="helvetica, arial"><a href="boodle.sample.html#Sample">Sample</a>
 </font></dt><dd>
@@ -65,14 +67,27 @@ Public&nbsp;functions:<br>
 </font></dt></dl>
 </dd>
 </dl>
+</dd>
+</dl>
  <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="AifcLoader">class <strong>AifcLoader</strong></a>(<a href="boodle.sample.html#SampleLoader">SampleLoader</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#SampleLoader">SampleLoader</a>:&nbsp;Base&nbsp;class&nbsp;for&nbsp;the&nbsp;facility&nbsp;to&nbsp;load&nbsp;a&nbsp;particular<br>
+form&nbsp;of&nbsp;sound&nbsp;sample&nbsp;from&nbsp;a&nbsp;file.<br>
+&nbsp;<br>
+Subclasses&nbsp;of&nbsp;this&nbsp;are&nbsp;defined&nbsp;and&nbsp;instantiated&nbsp;later&nbsp;in&nbsp;the&nbsp;module.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.sample.html#AifcLoader">AifcLoader</a></dd>
+<dd><a href="boodle.sample.html#SampleLoader">SampleLoader</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="AifcLoader-raw_load"><strong>raw_load</strong></a>(self, filename, csamp)</dt></dl>
 
 <hr>
@@ -81,7 +96,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
-<dl><dt><a name="AifcLoader-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+<dl><dt><a name="AifcLoader-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="AifcLoader-load"><strong>load</strong></a>(self, filename, suffix)</dt></dl>
 
@@ -90,14 +105,22 @@ Methods inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a
 <dl><dt><a name="AifcLoader-reload"><strong>reload</strong></a>(self, samp)</dt></dl>
 
 <hr>
+Data descriptors inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
-<dl><dt><strong>suffixmap</strong> = {'.aif': &lt;boodle.sample.AifcLoader instance&gt;, '.aifc': &lt;boodle.sample.AifcLoader instance&gt;, '.aiff': &lt;boodle.sample.AifcLoader instance&gt;, '.au': &lt;boodle.sample.SunAuLoader instance&gt;, '.mixin': &lt;boodle.sample.MixinLoader instance&gt;, '.wav': &lt;boodle.sample.WavLoader instance&gt;}</dl>
+<dl><dt><strong>suffixmap</strong> = {'.aif': &lt;boodle.sample.AifcLoader object&gt;, '.aifc': &lt;boodle.sample.AifcLoader object&gt;, '.aiff': &lt;boodle.sample.AifcLoader object&gt;, '.au': &lt;boodle.sample.SunAuLoader object&gt;, '.mixin': &lt;boodle.sample.MixinLoader object&gt;, '.wav': &lt;boodle.sample.WavLoader object&gt;}</dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="MixIn">class <strong>MixIn</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="MixIn">class <strong>MixIn</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#MixIn">MixIn</a>:&nbsp;base&nbsp;class&nbsp;for&nbsp;statically&nbsp;declared&nbsp;mix-in&nbsp;samples.<br>
@@ -137,19 +160,97 @@ When&nbsp;your&nbsp;declaration&nbsp;is&nbsp;complete,&nbsp;your_sample_name&nbs
 be&nbsp;a&nbsp;<a href="#MixinSample">MixinSample</a>&nbsp;instance&nbsp;(not&nbsp;a&nbsp;class).<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Static methods defined here:<br>
-<dl><dt><a name="MixIn-__class__"><strong>__class__</strong></a>(name, bases, dic)</dt></dl>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><strong>__class__</strong> = <a name="__class__">class type</a>(<a href="builtins.html#object">object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>type(object_or_name,&nbsp;bases,&nbsp;dict)<br>
+type(<a href="builtins.html#object">object</a>)&nbsp;-&gt;&nbsp;the&nbsp;<a href="builtins.html#object">object</a>'s&nbsp;type<br>
+type(name,&nbsp;bases,&nbsp;dict)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;type<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="type-__call__"><strong>__call__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
-<dl><dt><a name="MixIn-default"><strong>default</strong></a>(samp, pitch<font color="#909090">=None</font>, volume<font color="#909090">=None</font>)</dt></dl>
+<dl><dt><a name="type-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
+
+<dl><dt><a name="type-__dir__"><strong>__dir__</strong></a>(self, /)</dt><dd><tt>Specialized&nbsp;__dir__&nbsp;implementation&nbsp;for&nbsp;types.</tt></dd></dl>
+
+<dl><dt><a name="type-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
+
+<dl><dt><a name="type-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="type-__instancecheck__"><strong>__instancecheck__</strong></a>(self, instance, /)</dt><dd><tt>Check&nbsp;if&nbsp;an&nbsp;<a href="builtins.html#object">object</a>&nbsp;is&nbsp;an&nbsp;instance.</tt></dd></dl>
+
+<dl><dt><a name="type-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<dl><dt><a name="type-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><tt>Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</tt></dd></dl>
+
+<dl><dt><a name="type-__sizeof__"><strong>__sizeof__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;memory&nbsp;consumption&nbsp;of&nbsp;the&nbsp;type&nbsp;<a href="builtins.html#object">object</a>.</tt></dd></dl>
+
+<dl><dt><a name="type-__subclasscheck__"><strong>__subclasscheck__</strong></a>(self, subclass, /)</dt><dd><tt>Check&nbsp;if&nbsp;a&nbsp;class&nbsp;is&nbsp;a&nbsp;subclass.</tt></dd></dl>
+
+<dl><dt><a name="type-__subclasses__"><strong>__subclasses__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;a&nbsp;list&nbsp;of&nbsp;immediate&nbsp;subclasses.</tt></dd></dl>
+
+<dl><dt><a name="type-mro"><strong>mro</strong></a>(self, /)</dt><dd><tt>Return&nbsp;a&nbsp;type's&nbsp;method&nbsp;resolution&nbsp;order.</tt></dd></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="type-__prepare__"><strong>__prepare__</strong></a>(...)</dt><dd><tt><a href="#__class__-__prepare__">__prepare__</a>()&nbsp;-&gt;&nbsp;dict<br>
+used&nbsp;to&nbsp;create&nbsp;the&nbsp;namespace&nbsp;for&nbsp;the&nbsp;class&nbsp;statement</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="type-__new__"><strong>__new__</strong></a>(*args, **kwargs)</dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__abstractmethods__</strong></dt>
+</dl>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>__text_signature__</strong></dt>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__base__</strong> = &lt;class 'object'&gt;<dd><tt>The&nbsp;most&nbsp;base&nbsp;type</tt></dl>
+
+<dl><dt><strong>__bases__</strong> = (&lt;class 'object'&gt;,)</dl>
+
+<dl><dt><strong>__basicsize__</strong> = 864</dl>
+
+<dl><dt><strong>__dictoffset__</strong> = 264</dl>
+
+<dl><dt><strong>__flags__</strong> = 2148291584</dl>
+
+<dl><dt><strong>__itemsize__</strong> = 40</dl>
+
+<dl><dt><strong>__mro__</strong> = (&lt;class 'type'&gt;, &lt;class 'object'&gt;)</dl>
+
+<dl><dt><strong>__weakrefoffset__</strong> = 368</dl>
+
+</td></tr></table>
+<dl><dt><a name="MixIn-default"><strong>default</strong></a>(samp, pitch=None, volume=None)</dt></dl>
 
 <dl><dt><a name="MixIn-sort_mixin_ranges"><strong>sort_mixin_ranges</strong></a>(ranges)</dt></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>MAX</strong> = 1000000.0</dl>
 
 <dl><dt><strong>MIN</strong> = 0.0</dl>
 
-<dl><dt><strong>range</strong> = &lt;class boodle.sample.range&gt;</dl>
+<dl><dt><strong>range</strong> = &lt;class 'boodle.sample.MixIn.range'&gt;</dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -157,8 +258,19 @@ Data and other attributes defined here:<br>
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="MixinLoader">class <strong>MixinLoader</strong></a>(<a href="boodle.sample.html#SampleLoader">SampleLoader</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#SampleLoader">SampleLoader</a>:&nbsp;Base&nbsp;class&nbsp;for&nbsp;the&nbsp;facility&nbsp;to&nbsp;load&nbsp;a&nbsp;particular<br>
+form&nbsp;of&nbsp;sound&nbsp;sample&nbsp;from&nbsp;a&nbsp;file.<br>
+&nbsp;<br>
+Subclasses&nbsp;of&nbsp;this&nbsp;are&nbsp;defined&nbsp;and&nbsp;instantiated&nbsp;later&nbsp;in&nbsp;the&nbsp;module.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.sample.html#MixinLoader">MixinLoader</a></dd>
+<dd><a href="boodle.sample.html#SampleLoader">SampleLoader</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="MixinLoader-load"><strong>load</strong></a>(self, filename, suffix)</dt></dl>
 
 <dl><dt><a name="MixinLoader-parseparam"><strong>parseparam</strong></a>(self, filename, dirname, tok)</dt></dl>
@@ -171,13 +283,21 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
-<dl><dt><a name="MixinLoader-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+<dl><dt><a name="MixinLoader-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="MixinLoader-register_suffixes"><strong>register_suffixes</strong></a>(self)</dt></dl>
 
 <hr>
+Data descriptors inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
-<dl><dt><strong>suffixmap</strong> = {'.aif': &lt;boodle.sample.AifcLoader instance&gt;, '.aifc': &lt;boodle.sample.AifcLoader instance&gt;, '.aiff': &lt;boodle.sample.AifcLoader instance&gt;, '.au': &lt;boodle.sample.SunAuLoader instance&gt;, '.mixin': &lt;boodle.sample.MixinLoader instance&gt;, '.wav': &lt;boodle.sample.WavLoader instance&gt;}</dl>
+<dl><dt><strong>suffixmap</strong> = {'.aif': &lt;boodle.sample.AifcLoader object&gt;, '.aifc': &lt;boodle.sample.AifcLoader object&gt;, '.aiff': &lt;boodle.sample.AifcLoader object&gt;, '.au': &lt;boodle.sample.SunAuLoader object&gt;, '.mixin': &lt;boodle.sample.MixinLoader object&gt;, '.wav': &lt;boodle.sample.WavLoader object&gt;}</dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -185,13 +305,27 @@ Data and other attributes inherited from <a href="boodle.sample.html#SampleLoade
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="MixinSample">class <strong>MixinSample</strong></a>(<a href="boodle.sample.html#Sample">Sample</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="MixinSample-__init__"><strong>__init__</strong></a>(self, filename, ranges, default, modname<font color="#909090">=None</font>)</dt></dl>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#MixinSample">MixinSample</a>(filename,&nbsp;ranges,&nbsp;default,&nbsp;modname=None)<br>
+&nbsp;<br>
+<a href="#Sample">Sample</a>:&nbsp;represents&nbsp;a&nbsp;sound&nbsp;file,&nbsp;held&nbsp;in&nbsp;memory.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;really&nbsp;just&nbsp;a&nbsp;container&nbsp;for&nbsp;a&nbsp;native&nbsp;<a href="builtins.html#object">object</a>&nbsp;(csamp),&nbsp;which<br>
+is&nbsp;used&nbsp;by&nbsp;the&nbsp;cboodle&nbsp;native&nbsp;module.&nbsp;Samples&nbsp;may&nbsp;only&nbsp;be&nbsp;created<br>
+by&nbsp;the&nbsp;<a href="#SampleLoader">SampleLoader</a>&nbsp;classes&nbsp;in&nbsp;this&nbsp;module.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.sample.html#MixinSample">MixinSample</a></dd>
+<dd><a href="boodle.sample.html#Sample">Sample</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="MixinSample-__init__"><strong>__init__</strong></a>(self, filename, ranges, default, modname=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="MixinSample-find"><strong>find</strong></a>(self, pitch)</dt></dl>
 
-<dl><dt><a name="MixinSample-get_info"><strong>get_info</strong></a>(self, pitch<font color="#909090">=1.0</font>)</dt></dl>
+<dl><dt><a name="MixinSample-get_info"><strong>get_info</strong></a>(self, pitch=1.0)</dt></dl>
 
 <dl><dt><a name="MixinSample-queue_note"><strong>queue_note</strong></a>(self, pitch, volume, pan, starttime, chan)</dt></dl>
 
@@ -199,8 +333,16 @@ Data and other attributes inherited from <a href="boodle.sample.html#SampleLoade
 
 <hr>
 Methods inherited from <a href="boodle.sample.html#Sample">Sample</a>:<br>
-<dl><dt><a name="MixinSample-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="MixinSample-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
+<hr>
+Data descriptors inherited from <a href="boodle.sample.html#Sample">Sample</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 <hr>
 Data and other attributes inherited from <a href="boodle.sample.html#Sample">Sample</a>:<br>
 <dl><dt><strong>reloader</strong> = None</dl>
@@ -209,26 +351,36 @@ Data and other attributes inherited from <a href="boodle.sample.html#Sample">Sam
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Sample">class <strong>Sample</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="Sample">class <strong>Sample</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#Sample">Sample</a>:&nbsp;represents&nbsp;a&nbsp;sound&nbsp;file,&nbsp;held&nbsp;in&nbsp;memory.<br>
+<td colspan=2><tt><a href="#Sample">Sample</a>(filename,&nbsp;csamp)<br>
 &nbsp;<br>
-This&nbsp;is&nbsp;really&nbsp;just&nbsp;a&nbsp;container&nbsp;for&nbsp;a&nbsp;native&nbsp;object&nbsp;(csamp),&nbsp;which<br>
+<a href="#Sample">Sample</a>:&nbsp;represents&nbsp;a&nbsp;sound&nbsp;file,&nbsp;held&nbsp;in&nbsp;memory.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;really&nbsp;just&nbsp;a&nbsp;container&nbsp;for&nbsp;a&nbsp;native&nbsp;<a href="builtins.html#object">object</a>&nbsp;(csamp),&nbsp;which<br>
 is&nbsp;used&nbsp;by&nbsp;the&nbsp;cboodle&nbsp;native&nbsp;module.&nbsp;Samples&nbsp;may&nbsp;only&nbsp;be&nbsp;created<br>
 by&nbsp;the&nbsp;<a href="#SampleLoader">SampleLoader</a>&nbsp;classes&nbsp;in&nbsp;this&nbsp;module.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Sample-__init__"><strong>__init__</strong></a>(self, filename, csamp)</dt></dl>
+<dl><dt><a name="Sample-__init__"><strong>__init__</strong></a>(self, filename, csamp)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="Sample-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Sample-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
-<dl><dt><a name="Sample-get_info"><strong>get_info</strong></a>(self, pitch<font color="#909090">=1.0</font>)</dt></dl>
+<dl><dt><a name="Sample-get_info"><strong>get_info</strong></a>(self, pitch=1.0)</dt></dl>
 
 <dl><dt><a name="Sample-queue_note"><strong>queue_note</strong></a>(self, pitch, volume, pan, starttime, chan)</dt></dl>
 
 <dl><dt><a name="Sample-queue_note_duration"><strong>queue_note_duration</strong></a>(self, pitch, volume, pan, starttime, duration, chan)</dt></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>reloader</strong> = None</dl>
@@ -246,9 +398,9 @@ loading&nbsp;sound&nbsp;files.<br>&nbsp;</tt></td></tr>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="boodle.sample.html#SampleError">SampleError</a></dd>
 <dd><a href="boodle.html#BoodlerError">boodle.BoodlerError</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+<dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
+<dd><a href="builtins.html#BaseException">builtins.BaseException</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
 </dl>
 <hr>
 Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.BoodlerError</a>:<br>
@@ -256,49 +408,53 @@ Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.Boodle
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><a name="SampleError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#SampleError-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+Methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="SampleError-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#SampleError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+Static methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="SampleError-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
-<dl><dt><a name="SampleError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#SampleError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+Methods inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><a name="SampleError-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="SampleError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#SampleError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+<dl><dt><a name="SampleError-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="SampleError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#SampleError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+<dl><dt><a name="SampleError-__reduce__"><strong>__reduce__</strong></a>(...)</dt><dd><tt>Helper&nbsp;for&nbsp;pickle.</tt></dd></dl>
 
-<dl><dt><a name="SampleError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#SampleError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
-&nbsp;<br>
-Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+<dl><dt><a name="SampleError-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
-<dl><dt><a name="SampleError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
-
-<dl><dt><a name="SampleError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#SampleError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
-
-<dl><dt><a name="SampleError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#SampleError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+<dl><dt><a name="SampleError-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><tt>Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</tt></dd></dl>
 
 <dl><dt><a name="SampleError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
 
-<dl><dt><a name="SampleError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#SampleError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+<dl><dt><a name="SampleError-__str__"><strong>__str__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<dl><dt><a name="SampleError-with_traceback"><strong>with_traceback</strong></a>(...)</dt><dd><tt>Exception.<a href="#SampleError-with_traceback">with_traceback</a>(tb)&nbsp;--<br>
+set&nbsp;self.<strong>__traceback__</strong>&nbsp;to&nbsp;tb&nbsp;and&nbsp;return&nbsp;self.</tt></dd></dl>
 
 <hr>
-Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+Data descriptors inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><strong>__cause__</strong></dt>
+<dd><tt>exception&nbsp;cause</tt></dd>
+</dl>
+<dl><dt><strong>__context__</strong></dt>
+<dd><tt>exception&nbsp;context</tt></dd>
+</dl>
 <dl><dt><strong>__dict__</strong></dt>
 </dl>
-<dl><dt><strong>args</strong></dt>
+<dl><dt><strong>__suppress_context__</strong></dt>
 </dl>
-<dl><dt><strong>message</strong></dt>
-<dd><tt>exception&nbsp;message</tt></dd>
+<dl><dt><strong>__traceback__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
 </dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SampleLoader">class <strong>SampleLoader</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SampleLoader">class <strong>SampleLoader</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SampleLoader">SampleLoader</a>:&nbsp;Base&nbsp;class&nbsp;for&nbsp;the&nbsp;facility&nbsp;to&nbsp;load&nbsp;a&nbsp;particular<br>
@@ -307,7 +463,7 @@ form&nbsp;of&nbsp;sound&nbsp;sample&nbsp;from&nbsp;a&nbsp;file.<br>
 Subclasses&nbsp;of&nbsp;this&nbsp;are&nbsp;defined&nbsp;and&nbsp;instantiated&nbsp;later&nbsp;in&nbsp;the&nbsp;module.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="SampleLoader-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+<dl><dt><a name="SampleLoader-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="SampleLoader-load"><strong>load</strong></a>(self, filename, suffix)</dt></dl>
 
@@ -316,8 +472,16 @@ Subclasses&nbsp;of&nbsp;this&nbsp;are&nbsp;defined&nbsp;and&nbsp;instantiated&nb
 <dl><dt><a name="SampleLoader-reload"><strong>reload</strong></a>(self, samp)</dt></dl>
 
 <hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes defined here:<br>
-<dl><dt><strong>suffixmap</strong> = {'.aif': &lt;boodle.sample.AifcLoader instance&gt;, '.aifc': &lt;boodle.sample.AifcLoader instance&gt;, '.aiff': &lt;boodle.sample.AifcLoader instance&gt;, '.au': &lt;boodle.sample.SunAuLoader instance&gt;, '.mixin': &lt;boodle.sample.MixinLoader instance&gt;, '.wav': &lt;boodle.sample.WavLoader instance&gt;}</dl>
+<dl><dt><strong>suffixmap</strong> = {'.aif': &lt;boodle.sample.AifcLoader object&gt;, '.aifc': &lt;boodle.sample.AifcLoader object&gt;, '.aiff': &lt;boodle.sample.AifcLoader object&gt;, '.au': &lt;boodle.sample.SunAuLoader object&gt;, '.mixin': &lt;boodle.sample.MixinLoader object&gt;, '.wav': &lt;boodle.sample.WavLoader object&gt;}</dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -325,8 +489,19 @@ Data and other attributes defined here:<br>
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="SunAuLoader">class <strong>SunAuLoader</strong></a>(<a href="boodle.sample.html#SampleLoader">SampleLoader</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#SampleLoader">SampleLoader</a>:&nbsp;Base&nbsp;class&nbsp;for&nbsp;the&nbsp;facility&nbsp;to&nbsp;load&nbsp;a&nbsp;particular<br>
+form&nbsp;of&nbsp;sound&nbsp;sample&nbsp;from&nbsp;a&nbsp;file.<br>
+&nbsp;<br>
+Subclasses&nbsp;of&nbsp;this&nbsp;are&nbsp;defined&nbsp;and&nbsp;instantiated&nbsp;later&nbsp;in&nbsp;the&nbsp;module.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.sample.html#SunAuLoader">SunAuLoader</a></dd>
+<dd><a href="boodle.sample.html#SampleLoader">SampleLoader</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SunAuLoader-raw_load"><strong>raw_load</strong></a>(self, filename, csamp)</dt></dl>
 
 <hr>
@@ -335,7 +510,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
-<dl><dt><a name="SunAuLoader-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+<dl><dt><a name="SunAuLoader-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="SunAuLoader-load"><strong>load</strong></a>(self, filename, suffix)</dt></dl>
 
@@ -344,8 +519,16 @@ Methods inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a
 <dl><dt><a name="SunAuLoader-reload"><strong>reload</strong></a>(self, samp)</dt></dl>
 
 <hr>
+Data descriptors inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
-<dl><dt><strong>suffixmap</strong> = {'.aif': &lt;boodle.sample.AifcLoader instance&gt;, '.aifc': &lt;boodle.sample.AifcLoader instance&gt;, '.aiff': &lt;boodle.sample.AifcLoader instance&gt;, '.au': &lt;boodle.sample.SunAuLoader instance&gt;, '.mixin': &lt;boodle.sample.MixinLoader instance&gt;, '.wav': &lt;boodle.sample.WavLoader instance&gt;}</dl>
+<dl><dt><strong>suffixmap</strong> = {'.aif': &lt;boodle.sample.AifcLoader object&gt;, '.aifc': &lt;boodle.sample.AifcLoader object&gt;, '.aiff': &lt;boodle.sample.AifcLoader object&gt;, '.au': &lt;boodle.sample.SunAuLoader object&gt;, '.mixin': &lt;boodle.sample.MixinLoader object&gt;, '.wav': &lt;boodle.sample.WavLoader object&gt;}</dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -353,8 +536,19 @@ Data and other attributes inherited from <a href="boodle.sample.html#SampleLoade
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="WavLoader">class <strong>WavLoader</strong></a>(<a href="boodle.sample.html#SampleLoader">SampleLoader</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#SampleLoader">SampleLoader</a>:&nbsp;Base&nbsp;class&nbsp;for&nbsp;the&nbsp;facility&nbsp;to&nbsp;load&nbsp;a&nbsp;particular<br>
+form&nbsp;of&nbsp;sound&nbsp;sample&nbsp;from&nbsp;a&nbsp;file.<br>
+&nbsp;<br>
+Subclasses&nbsp;of&nbsp;this&nbsp;are&nbsp;defined&nbsp;and&nbsp;instantiated&nbsp;later&nbsp;in&nbsp;the&nbsp;module.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.sample.html#WavLoader">WavLoader</a></dd>
+<dd><a href="boodle.sample.html#SampleLoader">SampleLoader</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="WavLoader-raw_load"><strong>raw_load</strong></a>(self, filename, csamp)</dt></dl>
 
 <hr>
@@ -363,7 +557,7 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
-<dl><dt><a name="WavLoader-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+<dl><dt><a name="WavLoader-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="WavLoader-load"><strong>load</strong></a>(self, filename, suffix)</dt></dl>
 
@@ -372,8 +566,16 @@ Methods inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a
 <dl><dt><a name="WavLoader-reload"><strong>reload</strong></a>(self, samp)</dt></dl>
 
 <hr>
+Data descriptors inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes inherited from <a href="boodle.sample.html#SampleLoader">SampleLoader</a>:<br>
-<dl><dt><strong>suffixmap</strong> = {'.aif': &lt;boodle.sample.AifcLoader instance&gt;, '.aifc': &lt;boodle.sample.AifcLoader instance&gt;, '.aiff': &lt;boodle.sample.AifcLoader instance&gt;, '.au': &lt;boodle.sample.SunAuLoader instance&gt;, '.mixin': &lt;boodle.sample.MixinLoader instance&gt;, '.wav': &lt;boodle.sample.WavLoader instance&gt;}</dl>
+<dl><dt><strong>suffixmap</strong> = {'.aif': &lt;boodle.sample.AifcLoader object&gt;, '.aifc': &lt;boodle.sample.AifcLoader object&gt;, '.aiff': &lt;boodle.sample.AifcLoader object&gt;, '.au': &lt;boodle.sample.SunAuLoader object&gt;, '.mixin': &lt;boodle.sample.MixinLoader object&gt;, '.wav': &lt;boodle.sample.WavLoader object&gt;}</dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -390,8 +592,8 @@ suffix.&nbsp;(The&nbsp;suffix&nbsp;should&nbsp;be&nbsp;given&nbsp;as&nbsp;a&nbsp
 characters.)</tt></dd></dl>
  <dl><dt><a name="-get"><strong>get</strong></a>(sname)</dt><dd><tt><a href="#-get">get</a>(sample)&nbsp;-&gt;&nbsp;<a href="#Sample">Sample</a><br>
 &nbsp;<br>
-Load&nbsp;a&nbsp;sample&nbsp;object,&nbsp;given&nbsp;a&nbsp;filename&nbsp;or&nbsp;File&nbsp;object.&nbsp;(You&nbsp;can&nbsp;also<br>
-pass&nbsp;a&nbsp;<a href="#Sample">Sample</a>&nbsp;object;&nbsp;it&nbsp;will&nbsp;be&nbsp;returned&nbsp;back&nbsp;to&nbsp;you.)<br>
+Load&nbsp;a&nbsp;sample&nbsp;<a href="builtins.html#object">object</a>,&nbsp;given&nbsp;a&nbsp;filename&nbsp;or&nbsp;File&nbsp;<a href="builtins.html#object">object</a>.&nbsp;(You&nbsp;can&nbsp;also<br>
+pass&nbsp;a&nbsp;<a href="#Sample">Sample</a>&nbsp;<a href="builtins.html#object">object</a>;&nbsp;it&nbsp;will&nbsp;be&nbsp;returned&nbsp;back&nbsp;to&nbsp;you.)<br>
 &nbsp;<br>
 (If&nbsp;the&nbsp;filename&nbsp;is&nbsp;relative,&nbsp;$BOODLER_SOUND_PATH&nbsp;is&nbsp;searched.)<br>
 &nbsp;<br>
@@ -399,12 +601,12 @@ The&nbsp;module&nbsp;maintains&nbsp;a&nbsp;cache&nbsp;of&nbsp;sample&nbsp;object
 same&nbsp;filename&nbsp;twice,&nbsp;the&nbsp;second&nbsp;<a href="#-get">get</a>()&nbsp;call&nbsp;will&nbsp;be&nbsp;fast.<br>
 &nbsp;<br>
 This&nbsp;function&nbsp;is&nbsp;not&nbsp;useful,&nbsp;since&nbsp;agent.sched_note()&nbsp;and&nbsp;such&nbsp;methods<br>
-call&nbsp;it&nbsp;for&nbsp;you&nbsp;--&nbsp;they&nbsp;accept&nbsp;filenames&nbsp;as&nbsp;well&nbsp;as&nbsp;sample&nbsp;objects.&nbsp;<br>
+call&nbsp;it&nbsp;for&nbsp;you&nbsp;--&nbsp;they&nbsp;accept&nbsp;filenames&nbsp;as&nbsp;well&nbsp;as&nbsp;sample&nbsp;objects.<br>
 This&nbsp;function&nbsp;is&nbsp;available&nbsp;nevertheless.</tt></dd></dl>
- <dl><dt><a name="-get_info"><strong>get_info</strong></a>(samp, pitch<font color="#909090">=1</font>)</dt><dd><tt><a href="#-get_info">get_info</a>(sample,&nbsp;pitch=1)&nbsp;-&gt;&nbsp;tuple<br>
+ <dl><dt><a name="-get_info"><strong>get_info</strong></a>(samp, pitch=1)</dt><dd><tt><a href="#-get_info">get_info</a>(sample,&nbsp;pitch=1)&nbsp;-&gt;&nbsp;tuple<br>
 &nbsp;<br>
 Measure&nbsp;the&nbsp;expected&nbsp;running&nbsp;time&nbsp;and&nbsp;looping&nbsp;parameters&nbsp;of&nbsp;a&nbsp;sound.<br>
-The&nbsp;argument&nbsp;can&nbsp;be&nbsp;either&nbsp;a&nbsp;filename,&nbsp;or&nbsp;a&nbsp;sample&nbsp;object&nbsp;(as&nbsp;<br>
+The&nbsp;argument&nbsp;can&nbsp;be&nbsp;either&nbsp;a&nbsp;filename,&nbsp;or&nbsp;a&nbsp;sample&nbsp;<a href="builtins.html#object">object</a>&nbsp;(as<br>
 returned&nbsp;by&nbsp;<a href="#-get">get</a>()).<br>
 &nbsp;<br>
 The&nbsp;result&nbsp;is&nbsp;a&nbsp;2-tuple.&nbsp;The&nbsp;first&nbsp;member&nbsp;is&nbsp;the&nbsp;duration&nbsp;of&nbsp;the<br>
@@ -424,12 +626,12 @@ the&nbsp;note&nbsp;is&nbsp;actually&nbsp;played.</tt></dd></dl>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>aifc_loader</strong> = &lt;boodle.sample.AifcLoader instance&gt;<br>
-<strong>big_endian</strong> = 1<br>
+<td width="100%"><strong>aifc_loader</strong> = &lt;boodle.sample.AifcLoader object&gt;<br>
+<strong>big_endian</strong> = 0<br>
 <strong>cache</strong> = {}<br>
 <strong>cboodle</strong> = &lt;boodle.DummyDriver&gt;<br>
-<strong>mixin_loader</strong> = &lt;boodle.sample.MixinLoader instance&gt;<br>
+<strong>mixin_loader</strong> = &lt;boodle.sample.MixinLoader object&gt;<br>
 <strong>sound_dirs</strong> = ['.']<br>
-<strong>sunau_loader</strong> = &lt;boodle.sample.SunAuLoader instance&gt;<br>
-<strong>wav_loader</strong> = &lt;boodle.sample.WavLoader instance&gt;</td></tr></table>
+<strong>sunau_loader</strong> = &lt;boodle.sample.SunAuLoader object&gt;<br>
+<strong>wav_loader</strong> = &lt;boodle.sample.WavLoader object&gt;</td></tr></table>
 </body></html>

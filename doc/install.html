@@ -23,33 +23,16 @@ First, download and unpack the source code from the
 
 <p>
 Boodler is written in Python; you must have a Python interpreter installed
-on your system in order to run it. (Python version 2.3.5 or later is 
-recommended. No, it doesn't work in Python 3.)
+on your system in order to run it. Python 3 is required.
 </p>
 
 <p>
-Boodler can generate audio output in any of several forms, each of
-which is defined by a driver module:
+Boodler can generate audio output in one form, which is defined by a driver module:
 </p>
 
 <ul>
-<li><code>file</code> --   write file containing raw sample output</li>
 <li><code>stdout</code> -- write raw sample output to stdout</li>
-<li><code>oss</code> --    Open Sound System</li>
-<li><code>esd</code> --    Enlightened Sound Daemon</li>
-<li><code>alsa</code> --   Advanced Linux Sound Architecture</li>
-<li><code>macosx</code> -- MacOSX CoreAudio</li>
-<li><code>vorbis</code> -- write Ogg Vorbis file</li>
-<li><code>shout</code> --  Shoutcast or Icecast source</li>
-<li><code>lame</code> --   write MP3 file with LAME encoder</li>
 </ul>
-
-<p>
-Boodler will compile all of these drivers that it can find libraries for.
-If you have a Mac, CoreAudio is available if you have the Mac Developer
-Tools installed. On Linux, one of OSS, ESD, or ALSA is likely to be
-available.
-</p>
 
 <h2>The contents of the archive</h2>
 
@@ -60,9 +43,6 @@ If you list the source directory, you will see the following arrangement:
 <dl>
 <dt>./setup.py</dt>
 <dd>A script which compiles and installs Boodler on your machine.</dd>
-<dt>./setup.cfg</dt>
-<dd>If you want to modify the installation process, you can put changes
-here.</dd>
 <dt>./script/<a href="boodler-ref.html">boodler</a></dt>
 <dd>The Boodler program itself. This Python script starts up the Boodler
 engine.</dd>
@@ -73,8 +53,6 @@ engine.</dd>
 <dt>./src/...</dt>
 <dd>The source code for Boodler. This includes Python code, and also
 some native C code which is needed to resample sound data efficiently.</dd>
-<dt>./etc/...</dt>
-<dd>A few optional configuration files.</dd>
 <dt>./doc/*.html</dt>
 <dd>This documentation.</dd>
 </dl>
@@ -167,80 +145,6 @@ type <code>rehash</code>.</li>
 </li>
 
 <li>
-The script aborts with the exception 
-"ImportError: No module named cboodle_oss" or
-"No Boodler output driver has been selected."
-
-<ul>
-<li>
-The default output driver could not be built on your system. Type
-<code>boodler --list-drivers</code> to see a list, and then
-try adding <code>-o <em>driver</em></code> to your Boodler command
-line.
-</li>
-</ul>
-</li>
-
-<li>
-The script aborts with the exception
-"IOError: unable to initialize audio device".
-
-<ul>
-<li>
-The <code>boodle.cboodle</code> module was unable to open the sound
-device. The first line of the error message will have a more specific
-explanation.
-</li>
-</ul>
-</li>
-
-<li>
-Boodler cannot initialize the audio device because 
-<code>/dev/dsp</code> is not found.
-
-<ul>
-<li>
-You may have your sound device installed
-in a different location. You can use the <code>--device</code> argument
-to indicate the correct location:
-
-<pre>
-boodler --device /dev/whatever --testsound
-</pre>
-</li>
-</ul>
-</li>
-
-<li>
-Boodler appears to hang forever, never producing any sound.
-
-<ul>
-<li>Some other
-program may be using the sound device.</li>
-<li>
-When Boodler is built using the OSS or ALSA interfaces, it is a greedy beast
-and insists on monopolizing the sound device itself, the entire time
-it is running. 
-When Boodler is built using ESD, it is willing to share with other
-ESD programs, but it is still possible for some other program to 
-hog the device and prevent ESD from starting up.
-</li>
-</ul>
-</li>
-
-<li>
-Boodler runs for a few seconds and then stops,
-but you hear no sound.
-
-<ul>
-<li>
-You need to mess around with your speakers,
-headphones, cables, or some other irritating piece of the real world.
-</li>
-</ul>
-</li>
-
-<li>
 Most soundscapes skip or sound choppy.
 
 <ul>
@@ -248,10 +152,6 @@ Most soundscapes skip or sound choppy.
 (This is unlikely on a modern desktop machine, but it could happen
 on an older or low-power device.)</li>
 <li>Run fewer applications at the same time as Boodler.</li>
-<li>Try rebuilding Boodler using the 
-<code>python configure.py --integer</code> configuration option.
-This reduces the number of floating-point operations, at the cost
-of less accurate volume fading.</li>
 <li>If you are using MacOSX, increase the number of sound buffers,
 using the <code>--define buffercount=<em>count</em></code> option.
 The default is 6; increasing it to 12 or 16 should help:

@@ -1,6 +1,6 @@
-
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module boopak.pload</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -28,7 +28,6 @@ module&nbsp;handles&nbsp;those&nbsp;tasks.)</tt></p>
 </td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/os.html">os</a><br>
 <a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
 </td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/types.html">types</a><br>
-<a href="boopak.version.html">boopak.version</a><br>
 </td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -37,9 +36,7 @@ module&nbsp;handles&nbsp;those&nbsp;tasks.)</tt></p>
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
-<dt><font face="helvetica, arial"><a href="boopak.pload.html#ExternalDir">ExternalDir</a>
-</font></dt><dt><font face="helvetica, arial"><a href="boopak.pload.html#PackageLoader">PackageLoader</a>
-</font></dt><dt><font face="helvetica, arial"><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>(<a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>)
+<dt><font face="helvetica, arial"><a href="builtins.html#Exception">builtins.Exception</a>(<a href="builtins.html#BaseException">builtins.BaseException</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="boopak.pload.html#PackageLoadError">PackageLoadError</a>
@@ -50,15 +47,24 @@ module&nbsp;handles&nbsp;those&nbsp;tasks.)</tt></p>
 </dd>
 </dl>
 </dd>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boopak.pload.html#ExternalDir">ExternalDir</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.pload.html#PackageLoader">PackageLoader</a>
+</font></dt></dl>
+</dd>
 </dl>
  <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ExternalDir">class <strong>ExternalDir</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="ExternalDir">class <strong>ExternalDir</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#ExternalDir">ExternalDir</a>:&nbsp;information&nbsp;about&nbsp;a&nbsp;package&nbsp;directory&nbsp;outside&nbsp;the<br>
+<td colspan=2><tt><a href="#ExternalDir">ExternalDir</a>(dirname,&nbsp;metadata=None,&nbsp;resources=None)<br>
+&nbsp;<br>
+<a href="#ExternalDir">ExternalDir</a>:&nbsp;information&nbsp;about&nbsp;a&nbsp;package&nbsp;directory&nbsp;outside&nbsp;the<br>
 collection.<br>
 &nbsp;<br>
 This&nbsp;is&nbsp;a&nbsp;simple&nbsp;data&nbsp;structure,&nbsp;stored&nbsp;as&nbsp;the&nbsp;values&nbsp;in&nbsp;the&nbsp;loader's<br>
@@ -77,20 +83,30 @@ package&nbsp;creation&nbsp;tool.)<br>
 Publicly&nbsp;readable&nbsp;fields:<br>
 &nbsp;<br>
 dirname&nbsp;--&nbsp;the&nbsp;directory&nbsp;which&nbsp;contains&nbsp;the&nbsp;package<br>
-metadata&nbsp;--&nbsp;the&nbsp;supplied&nbsp;Metadata&nbsp;object&nbsp;(if&nbsp;any)<br>
-resources&nbsp;--&nbsp;the&nbsp;supplied&nbsp;Resources&nbsp;object&nbsp;(if&nbsp;any)<br>&nbsp;</tt></td></tr>
+metadata&nbsp;--&nbsp;the&nbsp;supplied&nbsp;Metadata&nbsp;<a href="builtins.html#object">object</a>&nbsp;(if&nbsp;any)<br>
+resources&nbsp;--&nbsp;the&nbsp;supplied&nbsp;Resources&nbsp;<a href="builtins.html#object">object</a>&nbsp;(if&nbsp;any)<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="ExternalDir-__init__"><strong>__init__</strong></a>(self, dirname, metadata<font color="#909090">=None</font>, resources<font color="#909090">=None</font>)</dt></dl>
+<dl><dt><a name="ExternalDir-__init__"><strong>__init__</strong></a>(self, dirname, metadata=None, resources=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="PackageLoadError">class <strong>PackageLoadError</strong></a>(<a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="PackageLoadError">class <strong>PackageLoadError</strong></a>(<a href="builtins.html#Exception">builtins.Exception</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#PackageLoadError">PackageLoadError</a>:&nbsp;represents&nbsp;a&nbsp;failure&nbsp;to&nbsp;load&nbsp;a&nbsp;package.<br>
+<td colspan=2><tt><a href="#PackageLoadError">PackageLoadError</a>(pkgname,&nbsp;val='unable&nbsp;to&nbsp;load')<br>
+&nbsp;<br>
+<a href="#PackageLoadError">PackageLoadError</a>:&nbsp;represents&nbsp;a&nbsp;failure&nbsp;to&nbsp;load&nbsp;a&nbsp;package.<br>
 &nbsp;<br>
 This&nbsp;represents&nbsp;some&nbsp;kind&nbsp;of&nbsp;internal&nbsp;error&nbsp;or&nbsp;package&nbsp;formatting<br>
 problem.&nbsp;(If&nbsp;the&nbsp;package&nbsp;simply&nbsp;was&nbsp;not&nbsp;available,&nbsp;the&nbsp;subclass<br>
@@ -98,13 +114,13 @@ problem.&nbsp;(If&nbsp;the&nbsp;package&nbsp;simply&nbsp;was&nbsp;not&nbsp;avail
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="boopak.pload.html#PackageLoadError">PackageLoadError</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+<dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
+<dd><a href="builtins.html#BaseException">builtins.BaseException</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="PackageLoadError-__init__"><strong>__init__</strong></a>(self, pkgname, val<font color="#909090">='unable to load'</font>)</dt></dl>
+<dl><dt><a name="PackageLoadError-__init__"><strong>__init__</strong></a>(self, pkgname, val='unable to load')</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -112,48 +128,54 @@ Data descriptors defined here:<br>
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 <hr>
-Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#PackageLoadError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+Static methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="PackageLoadError-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
-<dl><dt><a name="PackageLoadError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+Methods inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><a name="PackageLoadError-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="PackageLoadError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+<dl><dt><a name="PackageLoadError-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="PackageLoadError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+<dl><dt><a name="PackageLoadError-__reduce__"><strong>__reduce__</strong></a>(...)</dt><dd><tt>Helper&nbsp;for&nbsp;pickle.</tt></dd></dl>
 
-<dl><dt><a name="PackageLoadError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
-&nbsp;<br>
-Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+<dl><dt><a name="PackageLoadError-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
-<dl><dt><a name="PackageLoadError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
-
-<dl><dt><a name="PackageLoadError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
-
-<dl><dt><a name="PackageLoadError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+<dl><dt><a name="PackageLoadError-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><tt>Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</tt></dd></dl>
 
 <dl><dt><a name="PackageLoadError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
 
-<dl><dt><a name="PackageLoadError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+<dl><dt><a name="PackageLoadError-__str__"><strong>__str__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<dl><dt><a name="PackageLoadError-with_traceback"><strong>with_traceback</strong></a>(...)</dt><dd><tt><a href="builtins.html#Exception">Exception</a>.<a href="#PackageLoadError-with_traceback">with_traceback</a>(tb)&nbsp;--<br>
+set&nbsp;self.<strong>__traceback__</strong>&nbsp;to&nbsp;tb&nbsp;and&nbsp;return&nbsp;self.</tt></dd></dl>
 
 <hr>
-Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+Data descriptors inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><strong>__cause__</strong></dt>
+<dd><tt>exception&nbsp;cause</tt></dd>
+</dl>
+<dl><dt><strong>__context__</strong></dt>
+<dd><tt>exception&nbsp;context</tt></dd>
+</dl>
 <dl><dt><strong>__dict__</strong></dt>
 </dl>
-<dl><dt><strong>args</strong></dt>
+<dl><dt><strong>__suppress_context__</strong></dt>
 </dl>
-<dl><dt><strong>message</strong></dt>
-<dd><tt>exception&nbsp;message</tt></dd>
+<dl><dt><strong>__traceback__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
 </dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="PackageLoader">class <strong>PackageLoader</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="PackageLoader">class <strong>PackageLoader</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#PackageLoader">PackageLoader</a>:&nbsp;manages&nbsp;a&nbsp;package&nbsp;collection,&nbsp;loading&nbsp;packages&nbsp;as<br>
+<td colspan=2><tt><a href="#PackageLoader">PackageLoader</a>(collecdir,&nbsp;boodler_api_vers=None,&nbsp;importing_ok=False)<br>
+&nbsp;<br>
+<a href="#PackageLoader">PackageLoader</a>:&nbsp;manages&nbsp;a&nbsp;package&nbsp;collection,&nbsp;loading&nbsp;packages&nbsp;as<br>
 requested.&nbsp;Also&nbsp;maintains&nbsp;an&nbsp;(in-memory)&nbsp;cache,&nbsp;to&nbsp;speed&nbsp;up&nbsp;load<br>
 requests.<br>
 &nbsp;<br>
@@ -233,9 +255,9 @@ global_loader&nbsp;--&nbsp;If&nbsp;a&nbsp;<a href="#PackageLoader">PackageLoader
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#PackageLoader">PackageLoader</a>.global_loader&nbsp;is&nbsp;where&nbsp;to&nbsp;find&nbsp;it.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="PackageLoader-__init__"><strong>__init__</strong></a>(self, collecdir, boodler_api_vers<font color="#909090">=None</font>, importing_ok<font color="#909090">=False</font>)</dt></dl>
+<dl><dt><a name="PackageLoader-__init__"><strong>__init__</strong></a>(self, collecdir, boodler_api_vers=None, importing_ok=False)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="PackageLoader-add_external_package"><strong>add_external_package</strong></a>(self, dirname, metadata<font color="#909090">=None</font>, resources<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageLoader-add_external_package">add_external_package</a>(dirname,&nbsp;metadata=None,&nbsp;resources=None)&nbsp;-&gt;<br>
+<dl><dt><a name="PackageLoader-add_external_package"><strong>add_external_package</strong></a>(self, dirname, metadata=None, resources=None)</dt><dd><tt><a href="#PackageLoader-add_external_package">add_external_package</a>(dirname,&nbsp;metadata=None,&nbsp;resources=None)&nbsp;-&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(str,&nbsp;VersionNumber)<br>
 &nbsp;<br>
 Add&nbsp;an&nbsp;external&nbsp;directory&nbsp;to&nbsp;load&nbsp;a&nbsp;package&nbsp;from.&nbsp;The&nbsp;argument<br>
@@ -267,7 +289,7 @@ downloaded&nbsp;package).</tt></dd></dl>
 Given&nbsp;a&nbsp;filename,&nbsp;create&nbsp;a&nbsp;File&nbsp;representing&nbsp;it,&nbsp;and&nbsp;store&nbsp;the<br>
 File&nbsp;in&nbsp;the&nbsp;module&nbsp;at&nbsp;a&nbsp;location&nbsp;defined&nbsp;by&nbsp;wholekey.&nbsp;Submodules<br>
 are&nbsp;created&nbsp;as&nbsp;necessary.&nbsp;The&nbsp;res&nbsp;argument&nbsp;is&nbsp;the&nbsp;Resource<br>
-object&nbsp;associated&nbsp;with&nbsp;wholekey.<br>
+<a href="builtins.html#object">object</a>&nbsp;associated&nbsp;with&nbsp;wholekey.<br>
 &nbsp;<br>
 The&nbsp;filename&nbsp;must&nbsp;be&nbsp;in&nbsp;universal&nbsp;format:&nbsp;relative&nbsp;to&nbsp;the&nbsp;package<br>
 root,&nbsp;and&nbsp;written&nbsp;with&nbsp;forward&nbsp;slashes,&nbsp;not&nbsp;backslashes.<br>
@@ -318,17 +340,17 @@ it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbs
 
 <dl><dt><a name="PackageLoader-find_item_resources"><strong>find_item_resources</strong></a>(self, obj)</dt><dd><tt><a href="#PackageLoader-find_item_resources">find_item_resources</a>(obj)&nbsp;-&gt;&nbsp;(PackageInfo,&nbsp;Resource)<br>
 &nbsp;<br>
-Given&nbsp;an&nbsp;object&nbsp;in&nbsp;a&nbsp;package&nbsp;module,&nbsp;try&nbsp;to&nbsp;find&nbsp;the&nbsp;package,<br>
-and&nbsp;the&nbsp;Resource&nbsp;that&nbsp;represents&nbsp;the&nbsp;object.&nbsp;If&nbsp;it&nbsp;has&nbsp;no&nbsp;metadata<br>
-defined,&nbsp;this&nbsp;returns&nbsp;a&nbsp;blank&nbsp;Resource&nbsp;object.<br>
+Given&nbsp;an&nbsp;<a href="builtins.html#object">object</a>&nbsp;in&nbsp;a&nbsp;package&nbsp;module,&nbsp;try&nbsp;to&nbsp;find&nbsp;the&nbsp;package,<br>
+and&nbsp;the&nbsp;Resource&nbsp;that&nbsp;represents&nbsp;the&nbsp;<a href="builtins.html#object">object</a>.&nbsp;If&nbsp;it&nbsp;has&nbsp;no&nbsp;metadata<br>
+defined,&nbsp;this&nbsp;returns&nbsp;a&nbsp;blank&nbsp;Resource&nbsp;<a href="builtins.html#object">object</a>.<br>
 &nbsp;<br>
-This&nbsp;tries&nbsp;to&nbsp;use&nbsp;object&nbsp;attributes&nbsp;such&nbsp;as&nbsp;__module__&nbsp;and&nbsp;__name__<br>
+This&nbsp;tries&nbsp;to&nbsp;use&nbsp;<a href="builtins.html#object">object</a>&nbsp;attributes&nbsp;such&nbsp;as&nbsp;__module__&nbsp;and&nbsp;__name__<br>
 to&nbsp;identify&nbsp;it.&nbsp;This&nbsp;will&nbsp;work&nbsp;on&nbsp;classes&nbsp;(but&nbsp;not&nbsp;instances)<br>
 defined&nbsp;in&nbsp;a&nbsp;module;&nbsp;this&nbsp;covers&nbsp;the&nbsp;normal&nbsp;case&nbsp;of&nbsp;Agent&nbsp;classes.<br>
 It&nbsp;will&nbsp;also&nbsp;work&nbsp;on&nbsp;File&nbsp;objects&nbsp;defined&nbsp;in&nbsp;a&nbsp;module.&nbsp;Beyond<br>
 that,&nbsp;results&nbsp;are&nbsp;questionable.</tt></dd></dl>
 
-<dl><dt><a name="PackageLoader-generate_package_path"><strong>generate_package_path</strong></a>(self, pkgname, vers<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageLoader-generate_package_path">generate_package_path</a>(pkgname,&nbsp;vers=None)&nbsp;-&gt;&nbsp;str<br>
+<dl><dt><a name="PackageLoader-generate_package_path"><strong>generate_package_path</strong></a>(self, pkgname, vers=None)</dt><dd><tt><a href="#PackageLoader-generate_package_path">generate_package_path</a>(pkgname,&nbsp;vers=None)&nbsp;-&gt;&nbsp;str<br>
 &nbsp;<br>
 Return&nbsp;the&nbsp;pathname&nbsp;in&nbsp;the&nbsp;collection&nbsp;directory&nbsp;which&nbsp;contains&nbsp;the<br>
 given&nbsp;package&nbsp;group&nbsp;(if&nbsp;vers&nbsp;is&nbsp;None),&nbsp;or&nbsp;the&nbsp;given&nbsp;package<br>
@@ -377,7 +399,7 @@ newest-to-oldest.<br>
 This&nbsp;only&nbsp;searches&nbsp;the&nbsp;on-disk&nbsp;directory&nbsp;the&nbsp;first&nbsp;time&nbsp;you&nbsp;call<br>
 it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbsp;call&nbsp;<a href="#PackageLoader-clear_cache">clear_cache</a>()&nbsp;first.</tt></dd></dl>
 
-<dl><dt><a name="PackageLoader-load"><strong>load</strong></a>(self, pkgname, versionspec<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageLoader-load">load</a>(pkgname,&nbsp;versionspec=None)&nbsp;-&gt;&nbsp;PackageInfo<br>
+<dl><dt><a name="PackageLoader-load"><strong>load</strong></a>(self, pkgname, versionspec=None)</dt><dd><tt><a href="#PackageLoader-load">load</a>(pkgname,&nbsp;versionspec=None)&nbsp;-&gt;&nbsp;PackageInfo<br>
 &nbsp;<br>
 Load&nbsp;a&nbsp;package,&nbsp;given&nbsp;its&nbsp;name&nbsp;and&nbsp;a&nbsp;version&nbsp;spec.<br>
 &nbsp;<br>
@@ -399,11 +421,11 @@ This&nbsp;is&nbsp;not&nbsp;tremendously&nbsp;useful&nbsp;for&nbsp;outside&nbsp;u
 can&nbsp;call&nbsp;it&nbsp;if&nbsp;you&nbsp;want.&nbsp;A&nbsp;PackageGroup&nbsp;represents&nbsp;all&nbsp;the<br>
 available&nbsp;versions&nbsp;of&nbsp;a&nbsp;particular&nbsp;package.</tt></dd></dl>
 
-<dl><dt><a name="PackageLoader-load_item_by_name"><strong>load_item_by_name</strong></a>(self, name, package<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageLoader-load_item_by_name">load_item_by_name</a>(name,&nbsp;package=None)&nbsp;-&gt;&nbsp;value<br>
+<dl><dt><a name="PackageLoader-load_item_by_name"><strong>load_item_by_name</strong></a>(self, name, package=None)</dt><dd><tt><a href="#PackageLoader-load_item_by_name">load_item_by_name</a>(name,&nbsp;package=None)&nbsp;-&gt;&nbsp;value<br>
 &nbsp;<br>
 Given&nbsp;a&nbsp;string&nbsp;that&nbsp;names&nbsp;a&nbsp;resource&nbsp;--&nbsp;for&nbsp;example,<br>
 'com.eblong.example/reptile.Hiss'&nbsp;--&nbsp;import&nbsp;the&nbsp;module&nbsp;and<br>
-return&nbsp;the&nbsp;resource&nbsp;object.<br>
+return&nbsp;the&nbsp;resource&nbsp;<a href="builtins.html#object">object</a>.<br>
 &nbsp;<br>
 If&nbsp;the&nbsp;string&nbsp;begins&nbsp;with&nbsp;a&nbsp;slash&nbsp;('/boodle.builtin.NullAgent')<br>
 then&nbsp;the&nbsp;regular&nbsp;Python&nbsp;modules&nbsp;are&nbsp;searched.&nbsp;No&nbsp;importing<br>
@@ -413,7 +435,7 @@ contents&nbsp;of&nbsp;boodle.agent.<br>
 If&nbsp;the&nbsp;string&nbsp;ends&nbsp;with&nbsp;a&nbsp;slash&nbsp;('com.eblong.example/'),&nbsp;then<br>
 the&nbsp;module&nbsp;itself&nbsp;is&nbsp;returned.<br>
 &nbsp;<br>
-If&nbsp;the&nbsp;package&nbsp;argument&nbsp;is&nbsp;supplied&nbsp;(a&nbsp;PackageInfo&nbsp;object),&nbsp;it<br>
+If&nbsp;the&nbsp;package&nbsp;argument&nbsp;is&nbsp;supplied&nbsp;(a&nbsp;PackageInfo&nbsp;<a href="builtins.html#object">object</a>),&nbsp;it<br>
 becomes&nbsp;the&nbsp;package&nbsp;to&nbsp;look&nbsp;in&nbsp;for&nbsp;unqualified&nbsp;resource&nbsp;names<br>
 ('reptile.Hiss').&nbsp;If&nbsp;no&nbsp;package&nbsp;argument&nbsp;is&nbsp;supplied,&nbsp;then<br>
 an&nbsp;unqualified&nbsp;resource&nbsp;name&nbsp;raises&nbsp;ValueError.</tt></dd></dl>
@@ -421,7 +443,7 @@ an&nbsp;unqualified&nbsp;resource&nbsp;name&nbsp;raises&nbsp;ValueError.</tt></d
 <dl><dt><a name="PackageLoader-load_package_dependencies"><strong>load_package_dependencies</strong></a>(self, pkg)</dt><dd><tt><a href="#PackageLoader-load_package_dependencies">load_package_dependencies</a>(pkg)&nbsp;-&gt;&nbsp;(set,&nbsp;dict,&nbsp;int)<br>
 &nbsp;<br>
 Attempt&nbsp;to&nbsp;load&nbsp;all&nbsp;the&nbsp;packages&nbsp;which&nbsp;the&nbsp;given&nbsp;package&nbsp;depends&nbsp;on.<br>
-The&nbsp;argument&nbsp;should&nbsp;be&nbsp;a&nbsp;PackageInfo&nbsp;object.<br>
+The&nbsp;argument&nbsp;should&nbsp;be&nbsp;a&nbsp;PackageInfo&nbsp;<a href="builtins.html#object">object</a>.<br>
 &nbsp;<br>
 This&nbsp;returns&nbsp;a&nbsp;triple&nbsp;(good,&nbsp;bad,&nbsp;count):<br>
 &nbsp;<br>
@@ -453,7 +475,7 @@ This&nbsp;is&nbsp;an&nbsp;internal&nbsp;call;&nbsp;external&nbsp;callers&nbsp;sh
 &nbsp;<br>
 (<a href="#PackageLoader-load_specific">load_specific</a>()&nbsp;is&nbsp;intended&nbsp;to&nbsp;be&nbsp;called&nbsp;by&nbsp;a&nbsp;package<br>
 function&nbsp;which&nbsp;has&nbsp;already&nbsp;consulted&nbsp;package_groups&nbsp;and&nbsp;a<br>
-PackageGroup&nbsp;object.&nbsp;If&nbsp;you&nbsp;bypass&nbsp;those,&nbsp;you&nbsp;might&nbsp;load<br>
+PackageGroup&nbsp;<a href="builtins.html#object">object</a>.&nbsp;If&nbsp;you&nbsp;bypass&nbsp;those,&nbsp;you&nbsp;might&nbsp;load<br>
 a&nbsp;package&nbsp;which&nbsp;is&nbsp;not&nbsp;part&nbsp;of&nbsp;any&nbsp;PackageGroup.&nbsp;That&nbsp;would<br>
 leave&nbsp;the&nbsp;cache&nbsp;in&nbsp;a&nbsp;confusing&nbsp;state.)</tt></dd></dl>
 
@@ -477,6 +499,14 @@ Stub,&nbsp;overridden&nbsp;in&nbsp;PackageCollection.&nbsp;In&nbsp;a&nbsp;<a hre
 does&nbsp;nothing&nbsp;and&nbsp;returns&nbsp;an&nbsp;empty&nbsp;dict.</tt></dd></dl>
 
 <hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>global_loader</strong> = None</dl>
 
@@ -489,19 +519,21 @@ Data and other attributes defined here:<br>
 <font color="#000000" face="helvetica, arial"><a name="PackageNotFoundError">class <strong>PackageNotFoundError</strong></a>(<a href="boopak.pload.html#PackageLoadError">PackageLoadError</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#PackageNotFoundError">PackageNotFoundError</a>:&nbsp;represents&nbsp;a&nbsp;failure&nbsp;to&nbsp;load&nbsp;a&nbsp;package<br>
+<td colspan=2><tt><a href="#PackageNotFoundError">PackageNotFoundError</a>(pkgname,&nbsp;val='unable&nbsp;to&nbsp;load')<br>
+&nbsp;<br>
+<a href="#PackageNotFoundError">PackageNotFoundError</a>:&nbsp;represents&nbsp;a&nbsp;failure&nbsp;to&nbsp;load&nbsp;a&nbsp;package<br>
 because&nbsp;it&nbsp;was&nbsp;not&nbsp;in&nbsp;the&nbsp;collection.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="boopak.pload.html#PackageNotFoundError">PackageNotFoundError</a></dd>
 <dd><a href="boopak.pload.html#PackageLoadError">PackageLoadError</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
-<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+<dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
+<dd><a href="builtins.html#BaseException">builtins.BaseException</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
 </dl>
 <hr>
 Methods inherited from <a href="boopak.pload.html#PackageLoadError">PackageLoadError</a>:<br>
-<dl><dt><a name="PackageNotFoundError-__init__"><strong>__init__</strong></a>(self, pkgname, val<font color="#909090">='unable to load'</font>)</dt></dl>
+<dl><dt><a name="PackageNotFoundError-__init__"><strong>__init__</strong></a>(self, pkgname, val='unable to load')</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="boopak.pload.html#PackageLoadError">PackageLoadError</a>:<br>
@@ -509,39 +541,43 @@ Data descriptors inherited from <a href="boopak.pload.html#PackageLoadError">Pac
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 <hr>
-Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#PackageNotFoundError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+Static methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="PackageNotFoundError-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
-<dl><dt><a name="PackageNotFoundError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+Methods inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><a name="PackageNotFoundError-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="PackageNotFoundError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+<dl><dt><a name="PackageNotFoundError-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
 
-<dl><dt><a name="PackageNotFoundError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+<dl><dt><a name="PackageNotFoundError-__reduce__"><strong>__reduce__</strong></a>(...)</dt><dd><tt>Helper&nbsp;for&nbsp;pickle.</tt></dd></dl>
 
-<dl><dt><a name="PackageNotFoundError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
-&nbsp;<br>
-Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+<dl><dt><a name="PackageNotFoundError-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
-<dl><dt><a name="PackageNotFoundError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
-
-<dl><dt><a name="PackageNotFoundError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
-
-<dl><dt><a name="PackageNotFoundError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+<dl><dt><a name="PackageNotFoundError-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><tt>Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</tt></dd></dl>
 
 <dl><dt><a name="PackageNotFoundError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
 
-<dl><dt><a name="PackageNotFoundError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+<dl><dt><a name="PackageNotFoundError-__str__"><strong>__str__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<dl><dt><a name="PackageNotFoundError-with_traceback"><strong>with_traceback</strong></a>(...)</dt><dd><tt><a href="builtins.html#Exception">Exception</a>.<a href="#PackageNotFoundError-with_traceback">with_traceback</a>(tb)&nbsp;--<br>
+set&nbsp;self.<strong>__traceback__</strong>&nbsp;to&nbsp;tb&nbsp;and&nbsp;return&nbsp;self.</tt></dd></dl>
 
 <hr>
-Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+Data descriptors inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><strong>__cause__</strong></dt>
+<dd><tt>exception&nbsp;cause</tt></dd>
+</dl>
+<dl><dt><strong>__context__</strong></dt>
+<dd><tt>exception&nbsp;context</tt></dd>
+</dl>
 <dl><dt><strong>__dict__</strong></dt>
 </dl>
-<dl><dt><strong>args</strong></dt>
+<dl><dt><strong>__suppress_context__</strong></dt>
 </dl>
-<dl><dt><strong>message</strong></dt>
-<dd><tt>exception&nbsp;message</tt></dd>
+<dl><dt><strong>__traceback__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
 </dl>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -552,5 +588,6 @@ Data descriptors inherited from <a href="http://www.python.org/doc/current/libra
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>Filename_Metadata</strong> = 'Metadata'<br>
 <strong>Filename_Resources</strong> = 'Resources'<br>
-<strong>Filename_Versions</strong> = 'Versions'</td></tr></table>
+<strong>Filename_Versions</strong> = 'Versions'<br>
+<strong>__warningregistry__</strong> = {'version': 0}</td></tr></table>
 </body></html>

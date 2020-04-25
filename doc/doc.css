@@ -1,32 +1,33 @@
-
 body {
   font-family: Gill Sans, Helvetica, Arial, sans-serif;
-  font-size: 13px;
+  font-size: 16pt;
   background: #EFEBDC;
+}
+
+p, ul, dl {
+  line-height: 22pt;
 }
 
 p {
   font-family: Palatino, Georgia, serif;
-  font-size: 12px;
-  line-height: 14px;
+  font-size: 16pt;
 }
 
 ul {
   font-family: Palatino, Georgia, serif;
-  font-size: 12px;
-  line-height: 14px;
+  font-size: 16pt;
 }
 
 dl {
   font-family: Palatino, Georgia, serif;
-  font-size: 12px;
-  line-height: 14px;
+  font-size: 16pt;
   margin-left: 20px;
 }
 
 ul > li {
   list-style: none;
 }
+
 ul > li:before {
   display: marker;
   content: url(dot10dark.png);
@@ -47,7 +48,7 @@ pre {
 h1 {
   background-image: url(dot14.png);
   background-repeat: repeat-x;
-  background-position: 0% 11px;
+  background-position: 0% 16pt;
 
   font-weight: normal;
   color: #443;
@@ -57,9 +58,11 @@ h1 {
 h1:first-line {
   background: #EFEBDC;
 }
+
 h1:before {
   content: "\A0";
 }
+
 h1:after {
   content: "\A0";
 }
@@ -67,10 +70,10 @@ h1:after {
 h2 {
   background-image: url(dot10.png);
   background-repeat: repeat-x;
-  background-position: 0% 7px;
+  background-position: 0% 7pt;
 
   font-weight: normal;
-  font-size: 17px;
+  font-size: 18pt;
   color: #443;
   padding-left: 20px;
 }
@@ -78,9 +81,11 @@ h2 {
 h2:first-line {
   background: #EFEBDC;
 }
+
 h2:before {
   content: "\A0";
 }
+
 h2:after {
   content: "\A0";
 }
@@ -94,4 +99,3 @@ h4 {
   font-weight: normal;
   color: #222;
 }
-
