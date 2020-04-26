@@ -269,32 +269,37 @@ def bexport(resname=None):
 
     In all cases, submodules are created where necessary. (So if the
     resource name is 'sub.file', your module will end up with a 'dir'
-    submodule, if it didn't have one already.) 
+    submodule, if it didn't have one already.)
 
     If you plan a submodule which contains both Python code and file
     resources, you must call subimport() before bexport().
 
     You may only call this from a sound module's top level.
     """
-    # Just about files -- maybe rename
-
     curpkg = info_being_imported()
     loader = pload.PackageLoader.global_loader
     mod = curpkg.get_content()
 
     grp = curpkg.resource_tree
+
     if resname:
         ls = resname.split('.')
+
         for key in ls:
             if key not in grp:
                 raise Exception('resource not found: ' + resname)
+
             grp = grp.get(key)
 
     ls = pinfo.dict_all_values(grp)
-    for resname in ls:
-        res = curpkg.resources.get(resname)
+
+    for _resname in ls:
+        res = curpkg.resources.get(_resname)
+
         if not res:
-            raise Exception('resource not found: ' + resname)
+            raise Exception('resource not found: ' + _resname)
+
         filename = res.get_one('boodler.filename')
+
         if filename:
-            loader.attrify_filename(curpkg, mod, resname, res, filename)
+            loader.attrify_filename(curpkg, mod, _resname, res, filename)
