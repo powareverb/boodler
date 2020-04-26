@@ -4,24 +4,22 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-from boopak import pinfo
-import unittest
-import booman
-from boopak import argdef
-from boopak import collect
-from boopak import pload
 import inspect
 import keyword
 import os
 import os.path
 import re
 import types
+import unittest
 
 from packaging.specifiers import SpecifierSet
 from packaging.version import InvalidVersion, Version
 
-from booman import CommandError
+import booman
+
 from boodle.agent import Agent
+from booman.exceptions import CommandError
+from boopak import argdef, collect, pinfo, pload
 
 
 class ConstructError(CommandError):

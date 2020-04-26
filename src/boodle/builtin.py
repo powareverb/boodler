@@ -170,6 +170,7 @@ class TestSoundAgent(agent.Agent):
 
     sound = None
 
+    @staticmethod
     def makesound(fl):
         """makesound(fl) -> None
         Generate AIFF sound data for a short musical note, and write the
@@ -196,8 +197,7 @@ class TestSoundAgent(agent.Agent):
             afl.writeframes(dat)
         afl.close()
 
-    makesound = staticmethod(makesound)
-
+    @staticmethod
     def getsound():
         """getsound() -> File
         Create a sound sample object for a short musical note. The AIFF
@@ -213,8 +213,6 @@ class TestSoundAgent(agent.Agent):
             mfile = pinfo.MemFile(dat, '.aiff', 'TestSound')
             TestSoundAgent.sound = mfile
         return TestSoundAgent.sound
-
-    getsound = staticmethod(getsound)
 
     def run(self):
         from boodle import music

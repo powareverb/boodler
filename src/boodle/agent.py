@@ -12,10 +12,9 @@ import types
 
 from functools import total_ordering
 
-import boodle
-
-from boodle import generator, sample, stereo
-from boodle.generator import FrameCount  # imported for users to see
+from boodle import cboodle, generator, sample, stereo
+from boodle.exceptions import BoodlerError
+from boodle.utilities import check_prop_name
 from boopak import pload, sparse, argdef
 
 
@@ -106,7 +105,7 @@ class Agent:
         try:
             self.init(*args, **kwargs)
         except TypeError as ex:
-            raise boodle.BoodlerError(str(ex))
+            raise BoodlerError(str(ex))
 
     def __eq__(self, other):
         return id(self) == id(other)
@@ -306,7 +305,7 @@ class Agent:
             if event is None:
                 raise generator.ScheduleError('must return event to listen for')
         if event != '':
-            event = boodle.check_prop_name(event)
+            event = check_prop_name(event)
 
         if handle is None:
             handle = self.receive
@@ -331,8 +330,8 @@ class Agent:
         if event is None:
             ls = [han for han in self.handlers]
         else:
-            event = boodle.check_prop_name(event)
-            ls = [han for han in self.handlers if (han.event == event)]
+            event = check_prop_name(event)
+            ls = [han for han in self.handlers if han.event == event]
 
         if not ls:
             return
@@ -387,7 +386,7 @@ class Agent:
             raise generator.ChannelError('cannot send event to inactive channel')
         gen = self.generator
 
-        evname = boodle.check_prop_name(evname)
+        evname = check_prop_name(evname)
         ev = (evname,) + args
 
         gen.sendevent(ev, chan)
@@ -586,7 +585,8 @@ class Agent:
         """
         raise NotImplementedError('agent has no receive() method')
 
-    def get_class_name(cla):
+    @classmethod
+    def get_class_name(cls):
         """get_class_name() -> (str, str, bool)
 
         Return the qualified name of the module, and of the Agent class
@@ -599,34 +599,33 @@ class Agent:
         sys.path.
         """
 
-        res = Agent.cached_class_names.get(cla)
+        res = Agent.cached_class_names.get(cls)
         if res:
             return res
 
         # Default value
-        res = (cla.__module__, cla.__name__, False)
+        res = (cls.__module__, cls.__name__, False)
 
         loader = pload.PackageLoader.global_loader
         if loader:
             try:
-                (pkg, resource) = loader.find_item_resources(cla)
+                (pkg, resource) = loader.find_item_resources(cls)
                 res = (pkg.name, resource.key, True)
             except:
                 pass
 
-        Agent.cached_class_names[cla] = res
+        Agent.cached_class_names[cls] = res
         return res
 
-    get_class_name = classmethod(get_class_name)
-
-    def get_argument_list(cla):
+    @classmethod
+    def get_argument_list(cls):
         """get_argument_list() -> ArgList
 
         Return the argument list specification for the class.
         """
 
-        res = Agent.cached_argument_lists.get(cla)
-        if not (res is None):
+        res = Agent.cached_argument_lists.get(cls)
+        if res is not None:
             return res
 
         # Default value
@@ -636,7 +635,7 @@ class Agent:
         loader = pload.PackageLoader.global_loader
         if loader:
             try:
-                (pkg, resource) = loader.find_item_resources(cla)
+                _, resource = loader.find_item_resources(cls)
                 nodestr = resource.get_one('boodler.arguments')
             except:
                 pass
@@ -645,12 +644,11 @@ class Agent:
             node = sparse.parse(nodestr)
             res = argdef.ArgList.from_node(node)
 
-        Agent.cached_argument_lists[cla] = res
+        Agent.cached_argument_lists[cls] = res
         return res
 
-    get_argument_list = classmethod(get_argument_list)
-
-    def get_title(cla):
+    @classmethod
+    def get_title(cls):
         """get_title() -> string
 
         Return the name of the agent. This normally returns the title
@@ -661,7 +659,7 @@ class Agent:
         loader = pload.PackageLoader.global_loader
         if loader:
             try:
-                (pkg, resource) = loader.find_item_resources(cla)
+                _, resource = loader.find_item_resources(cls)
                 res = resource.get_one('dc.title')
                 if res:
                     return res
@@ -670,8 +668,6 @@ class Agent:
 
         # Default value
         return 'unnamed agent'
-
-    get_title = classmethod(get_title)
 
 
 # Constants for the hold parameter of Agent.listen()
@@ -771,7 +767,7 @@ def load_described(loader, args, wantmodule=False):
     tracking.
     """
 
-    if type(args) in [str]:
+    if isinstance(args, str):
         argstr = args
         args = ['(', args, ')']
     elif isinstance(args, list):
@@ -791,9 +787,11 @@ def load_described(loader, args, wantmodule=False):
 
     if isinstance(args, sparse.ID):
         args = sparse.List(args)
+
     if not isinstance(args, sparse.List):
         raise ValueError('arguments must be a list')
-    if len(args) == 0:
+
+    if not args:
         # default to the null agent, if none was given
         args = sparse.List(sparse.ID('/boodle.builtin.NullAgent'))
 
@@ -825,9 +823,6 @@ def load_described(loader, args, wantmodule=False):
     wrapper = argdef.ArgClassWrapper(clas, valls, valdic)
     return wrapper
 
-
-# cboodle may be updated later, by a set_driver() call.
-cboodle = boodle.cboodle
 
 argdef.Agent = Agent
 argdef.load_described = load_described

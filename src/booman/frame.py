@@ -10,6 +10,7 @@ import traceback
 import booman.command
 import booman.token
 
+from booman.exceptions import CommandCancelled, CommandError
 from boopak import collect
 
 # Global state for the command interpreter.
@@ -136,12 +137,12 @@ def handle(args=None):
                 tok = booman.command.CommandToken()
                 cmdclass = tok.accept(source)
                 break
-            except booman.CommandCancelled:
+            except CommandCancelled:
                 pass
         # Okay, we got a command. Execute it.
         cmd = cmdclass()
         cmd.perform(source)
-    except booman.CommandError as ex:
+    except CommandError as ex:
         # Simple exception: print the message.
         if str(ex):
             print(str(ex))

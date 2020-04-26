@@ -23,8 +23,11 @@ import wave
 
 from functools import total_ordering
 
-import boodle
-import boopak
+import boopak.pinfo
+
+from boodle import cboodle, stereo
+from boodle.exceptions import BoodlerError
+
 
 # Maps File objects, and also str/unicode pathnames, to Samples.
 cache = {}
@@ -67,7 +70,7 @@ class Sample:
             if not cboodle.is_sample_loaded(self.csamp):
                 raise SampleError('sample is unloaded')
 
-        (panscx, panshx, panscy, panshy) = boodle.stereo.extend_tuple(pan)
+        (panscx, panshx, panscy, panshy) = stereo.extend_tuple(pan)
 
         def closure(samp=self, chan=chan):
             samp.refcount -= 1
@@ -92,7 +95,7 @@ class Sample:
             if not cboodle.is_sample_loaded(self.csamp):
                 raise SampleError('sample is unloaded')
 
-        (panscx, panshx, panscy, panshy) = boodle.stereo.extend_tuple(pan)
+        (panscx, panshx, panscy, panshy) = stereo.extend_tuple(pan)
 
         def closure(samp=self, chan=chan):
             samp.refcount -= 1
@@ -638,11 +641,8 @@ class MixinLoader(SampleLoader):
 
 mixin_loader = MixinLoader()
 
-# cboodle may be updated later, by a set_driver() call.
-cboodle = boodle.cboodle
 
-
-class SampleError(boodle.BoodlerError):
+class SampleError(BoodlerError):
     """SampleError: Represents problems encountered while finding or
     loading sound files.
     """

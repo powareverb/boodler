@@ -12,12 +12,9 @@ import zipfile
 
 from packaging.version import Version
 
-from booman import CommandError, CommandCancelled
-from booman import create
-from booman import frame
-from booman import token
-from boopak import collect
-from boopak import pinfo
+from booman import create, frame, token
+from booman.exceptions import CommandError, CommandCancelled
+from boopak import collect, pinfo
 
 
 class CommandToken(token.Token):

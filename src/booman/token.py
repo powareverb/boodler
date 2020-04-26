@@ -8,7 +8,7 @@ import os.path
 
 from packaging.version import InvalidVersion, Version
 
-from booman import CommandError, CommandCancelled
+from booman.exceptions import CommandError, CommandCancelled
 from boopak import collect, pinfo
 
 

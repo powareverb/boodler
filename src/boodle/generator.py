@@ -22,8 +22,11 @@ from functools import cmp_to_key
 
 import boodle
 
-from boodle import BoodlerError, StopGeneration
 from boodle import sample, listen, stereo
+from boodle.exceptions import BoodlerError, StopGeneration
+from boodle.utilities import check_prop_name
+
+cboodle = boodle.cboodle
 
 
 class Generator:
@@ -85,9 +88,11 @@ class Generator:
         self.lastunload = 0
         self.stats_interval = None
         self.statslogger = None
+
         if stdinlisten:
             lis = listen.StdinListener(self.postqueue.append)
             self.listeners.append(lis)
+
         if netlisten:
             lis = listen.SocketListener(self.postqueue.append, listenport)
             self.listeners.append(lis)
@@ -678,7 +683,7 @@ class Channel:
         no property and a property set to None, use has_prop().
         """
 
-        key = boodle.check_prop_name(key)
+        key = check_prop_name(key)
         chan = self
         while chan:
             if key in chan.propmap:
@@ -693,7 +698,7 @@ class Channel:
         if one is inherited from the parent.
         """
 
-        key = boodle.check_prop_name(key)
+        key = check_prop_name(key)
         chan = self
         while chan:
             if key in chan.propmap:
@@ -707,7 +712,7 @@ class Channel:
         Set a property on this channel.
         """
 
-        key = boodle.check_prop_name(key)
+        key = check_prop_name(key)
         self.propmap[key] = val
 
     def del_prop(self, key):
@@ -720,10 +725,11 @@ class Channel:
         may still return a value after del_prop(key).
         """
 
-        key = boodle.check_prop_name(key)
+        key = check_prop_name(key)
         if key in self.propmap:
             self.propmap.pop(key)
 
+    @staticmethod
     def compare(ch1, ch2):
         """compare(ch1, ch2) -> int
 
@@ -732,8 +738,6 @@ class Channel:
         the root last.
         """
         return (ch2.depth > ch1.depth) - (ch2.depth < ch1.depth)
-
-    compare = staticmethod(compare)
 
 
 class FrameCount:
@@ -888,10 +892,6 @@ def run_agents(starttime, gen):
 
     if not gen.channels:
         raise StopGeneration()
-
-
-# cboodle may be updated later, by a set_driver() call.
-cboodle = boodle.cboodle
 
 
 class ScheduleError(BoodlerError):

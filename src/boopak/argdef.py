@@ -150,11 +150,6 @@ find_resource_ref() -- work out the representation of a resource
 resolve_value() -- resolve a value or wrapped value
 """
 
-# Declare the imports list, so that "from boodle.argdef import *"
-# doesn't pull in random garbage. This only lists what a typical
-# sound module would need. Functions like node_to_value() are not
-# included, even though they're not listed as "internal" above.
-
 import sys
 
 from functools import cmp_to_key
@@ -171,6 +166,11 @@ from boopak import sparse, pinfo, pload
 # imports this one. If you import this module alone, it will suffer from
 # "... is not defined" errors. Hopefully this won't be a problem in
 # practice.
+
+# Declare the imports list, so that "from boodle.argdef import *"
+# doesn't pull in random garbage. This only lists what a typical
+# sound module would need. Functions like node_to_value() are not
+# included, even though they're not listed as "internal" above.
 
 __all__ = [
     'Arg',
@@ -407,8 +407,8 @@ class ArgList:
         ls = [arg for arg in self.args if (not arg.optional)]
         return len(ls)
 
-    @staticmethod
-    def from_argspec(args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations):
+    @classmethod
+    def from_argspec(cls, args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations):
         """from_argspec(args, varargs, varkw, defaults) -> ArgList
 
         Construct an ArgList from a Python function. The four arguments
@@ -428,7 +428,8 @@ class ArgList:
 
         if varkw:
             raise ArgDefError('cannot understand **' + varkw)
-        arglist = ArgList()
+
+        arglist = cls()
 
         if varargs:
             arglist.listtype = list
@@ -453,7 +454,8 @@ class ArgList:
         arglist.sort_args()
         return arglist
 
-    def merge(arglist1, arglist2=None):
+    @classmethod
+    def merge(cls, arglist1, arglist2=None):
         """merge(arglist1, arglist2=None) -> ArgList
 
         Construct an ArgList by merging two ArgLists. This does not
@@ -481,20 +483,24 @@ class ArgList:
         unmerged = []
         for arg2 in arglist2.args:
             arg = None
+
             if not (arg2.index is None):
                 arg = arglist.get_index(arg2.index)
+
             if (arg is None) and not (arg2.name is None):
                 arg = arglist.get_name(arg2.name)
+
             if arg is None:
                 unmerged.append(arg2)
             else:
                 arg.absorb(arg2)
+
         for arg in unmerged:
             arglist.args.append(arg)
-        arglist.sort_args()
-        return arglist
 
-    merge = staticmethod(merge)
+        arglist.sort_args()
+
+        return arglist
 
     def resolve(self, node):
         """resolve(node) -> (list, dict)
@@ -622,7 +628,8 @@ class ArgList:
 
         return (resultls, resultdic)
 
-    def from_node(node):
+    @classmethod
+    def from_node(cls, node):
         """from_node(node) -> ArgList
 
         Construct an ArgList from an S-expression. The Tree passed in should
@@ -635,14 +642,12 @@ class ArgList:
         if len(node) != 2 or not isinstance(node[1], sparse.List):
             raise ArgDefError('second element must be a list of types')
 
-        res = ArgList()
+        res = cls()
         for val in node[1]:
             res.args.append(Arg.from_node(val))
         if node.has_attr('listtype'):
             res.listtype = node_to_type(node.get_attr('listtype'))
         return res
-
-    from_node = staticmethod(from_node)
 
 
 def _argument_sort_func(arg1, arg2):
@@ -850,7 +855,8 @@ class Arg:
         self.optional = arg.optional
         # Always absorb the optional attribute
 
-    def from_node(node):
+    @classmethod
+    def from_node(cls, node):
         """from_node(node) -> Arg
 
         Construct an Arg from an S-expression. The Tree passed in should
@@ -861,16 +867,22 @@ class Arg:
                 not isinstance(node[0], sparse.ID) or node[0].as_string() != 'arg'):
             raise ArgDefError('must be an (arg) list')
         dic = {}
+
         if node.has_attr('name'):
             dic['name'] = node.get_attr('name').as_string()
+
         if node.has_attr('index'):
             dic['index'] = node.get_attr('index').as_integer()
+
         if node.has_attr('description'):
             dic['description'] = node.get_attr('description').as_string()
+
         if node.has_attr('optional'):
             dic['optional'] = node.get_attr('optional').as_boolean()
+
         if node.has_attr('type'):
             dic['type'] = node_to_type(node.get_attr('type'))
+
         if node.has_attr('default'):
             clas = node_to_value(dic.get('type'), node.get_attr('default'))
             dic['default'] = resolve_value(clas)
@@ -879,9 +891,8 @@ class Arg:
             # the default is an Agent instance that we don't know how to
             # construct. (That would break unserialization, I guess.)
             # (but maybe the default value is being instantiated already!)
-        return Arg(**dic)
 
-    from_node = staticmethod(from_node)
+        return cls(**dic)
 
 
 class ArgExtra:
@@ -899,8 +910,6 @@ class ArgExtra:
 class ArgDefError(ValueError):
     """ArgDefError: represents an error constructing an ArgList.
     """
-
-    pass
 
 
 class SequenceOf:
@@ -1561,11 +1570,9 @@ class ArgClassWrapper(ArgWrapper):
     unwrap() -- instantiate the value
     """
 
-    def create(cla, ls, dic=None):
-        ls = list(ls)
-        return ArgClassWrapper(ls, dic)
-
-    create = staticmethod(create)
+    @classmethod
+    def create(cls, ls, dic=None):
+        return cls(list(ls), dic)
 
     def __init__(self, cla, ls, dic=None):
         self.cla = cla
@@ -1604,11 +1611,9 @@ class ArgListWrapper(ArgWrapper):
     unwrap() -- instantiate the value
     """
 
-    def create(ls):
-        ls = list(ls)
-        return ArgListWrapper(ls)
-
-    create = staticmethod(create)
+    @classmethod
+    def create(cls, ls):
+        return cls(list(ls))
 
     def __init__(self, ls):
         self.ls = ls
@@ -1640,14 +1645,13 @@ class ArgTupleWrapper(ArgWrapper):
     unwrap() -- instantiate the value
     """
 
-    def create(tup):
+    @classmethod
+    def create(cls, tup):
         tup = tuple(tup)
         muts = [val for val in tup if isinstance(val, ArgWrapper)]
         if not muts:
             return tup
-        return ArgTupleWrapper(tup)
-
-    create = staticmethod(create)
+        return cls(tup)
 
     def __init__(self, tup):
         self.tup = tup

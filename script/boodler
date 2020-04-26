@@ -26,14 +26,13 @@ import boopak.collect
 import boopak.pload
 
 from boodle import agent, generator, builtin
+from boodle.exceptions import StopGeneration
 
 # same as in boodle-mgr
 if 'darwin' in sys.platform.lower():
     Default_Relative_Data_Dir = 'Library/Application Support/Boodler'
 else:
     Default_Relative_Data_Dir = '.boodler'
-
-defaultdriver = 'stdout'
 
 usage = 'usage: %prog [ options ] package/Agent [ data ... ]'
 
@@ -48,14 +47,6 @@ loglevels = {
 popt = optparse.OptionParser(usage=usage,
                              formatter=optparse.IndentedHelpFormatter(short_first=False))
 
-popt.add_option(
-    '-o',
-    '--output',
-    action='store',
-    type='string',
-    dest='driver',
-    help='output driver to use (default: ' + defaultdriver + ')',
-)
 popt.add_option(
     '-m',
     '--master',
@@ -163,7 +154,6 @@ popt.add_option(
 popt.add_option('--testsound', action='store_true', dest='playtestsound', help='play a test tune')
 
 popt.set_defaults(
-    driver=defaultdriver,
     ratewanted=0,
     basevolume=0.5,
     netlisten=False,
@@ -337,10 +327,6 @@ if opts.externaldirs:
 
 cboodle = boodle.cboodle
 
-if opts.driver:
-    opts.driver = opts.driver.lower()
-    cboodle = boodle.set_driver(opts.driver)
-
 if opts.playtestsound:
     if len(args) != 0:
         rootlogger.warning('ignoring arguments, playing --testsound instead')
@@ -349,10 +335,10 @@ if opts.playtestsound:
 if opts.verbosehardware:
     # For these options, we need to start up the driver even if
     # no agent was specified. So specify a no-op agent.
-    if len(args) == 0:
+    if not args:
         args = ['/boodle.builtin.NullAgent']
 
-if len(args) == 0:
+if not args:
     print((usage.replace('%prog', os.path.basename(sys.argv[0]))))
     sys.exit()
 
@@ -406,7 +392,7 @@ try:
         rootlogger.error(str(ex))
         if opts.verboseerrors:
             raise
-        raise boodle.StopGeneration()
+        raise StopGeneration()
     if not ag.inited:
         raise generator.ScheduleError('agent is uninitialized')
     gen.addagent(ag, gen.rootchannel, 0, ag.run)
@@ -427,7 +413,7 @@ try:
         cboodle.loop(generator.run_agents, gen)
     finally:
         cboodle.final()
-except boodle.StopGeneration:
+except StopGeneration:
     pass
 except KeyboardInterrupt:
     rootlogger.warning('keyboard interrupt')
