@@ -737,6 +737,7 @@ class PackageLoader:
         map_resources = False
 
         maincode = pkg.metadata.get_one('boodler.main')
+
         if not maincode:
             attrify_resources = True
             (file, pathname, desc) = imp.find_module('emptymodule', boopak.__path__)

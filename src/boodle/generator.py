@@ -13,14 +13,17 @@ FrameCount -- represents a time (or duration) measured in sound frames
 run_agents() -- the big function that does everything
 """
 
-from boodle import BoodlerError, StopGeneration
-from boodle import sample, listen, stereo
-import boodle
-import sys
-import logging
-import traceback
 import bisect
 import io
+import logging
+import sys
+
+from functools import cmp_to_key
+
+import boodle
+
+from boodle import BoodlerError, StopGeneration
+from boodle import sample, listen, stereo
 
 
 class Generator:
@@ -528,7 +531,8 @@ class Channel:
         gen.remhandlers(hans)
 
         chans = [ch for ch in gen.channels if (ch is self or self in ch.ancestors)]
-        chans.sort(Channel.compare)
+        chans.sort(key=cmp_to_key(Channel.compare))
+
         for ch in chans:
             ch.close()
 
