@@ -14,7 +14,8 @@ module handles those tasks.)
 
 import sys
 import os.path
-import imp
+import importlib.machinery
+import importlib.util
 import types
 
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
@@ -29,6 +30,22 @@ import boopak
 Filename_Versions = 'Versions'
 Filename_Metadata = 'Metadata'
 Filename_Resources = 'Resources'
+
+
+def load_module(module_name: str, name: str, module_path: str):
+    if name == '.':
+        name = '__init__'
+
+    loader = importlib.machinery.SourceFileLoader(
+        module_name, os.path.join(module_path, f'{name}.py'))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    mod = importlib.util.module_from_spec(spec)
+
+    sys.modules[module_name] = mod
+
+    loader.exec_module(mod)
+
+    return mod
 
 
 class PackageLoader:
@@ -738,18 +755,6 @@ class PackageLoader:
 
         maincode = pkg.metadata.get_one('boodler.main')
 
-        if not maincode:
-            attrify_resources = True
-            (file, pathname, desc) = imp.find_module('emptymodule', boopak.__path__)
-        else:
-            map_resources = True
-            (file, pathname, desc) = imp.find_module(maincode, [pkg.dir])
-
-        if not desc[0] in ['', '.py', '.pyc']:
-            if file:
-                file.close()
-            raise PackageLoadError(pkg.name, 'module must be .py or .pyc: ' + pathname)
-
         # Imports can occur recursively, so we always hold on to the previous
         # value and restore it afterward.
 
@@ -758,20 +763,25 @@ class PackageLoader:
         pkg.import_in_progress = True
 
         try:
-            mod = imp.load_module(pkg.encoded_name, file, pathname, desc)
+            if not maincode:
+                attrify_resources = True
+                mod = load_module(pkg.encoded_name, 'emptymodule', boopak.__path__[0])
+            else:
+                map_resources = True
+                mod = load_module(pkg.encoded_name, maincode, pkg.dir)
         finally:
-            # Clean up.
-            if file:
-                file.close()
             pkg.import_in_progress = False
             checkpkg = self.currently_importing
+
             self.currently_importing = previously_importing
+
             if checkpkg != pkg:
                 raise Exception('import stack unstable: ' + pkg.name)
 
         if attrify_resources:
             for res in pkg.resources.resources():
                 filename = res.get_one('boodler.filename')
+
                 if filename:
                     self.attrify_filename(pkg, mod, res.key, res, filename)
 
@@ -782,16 +792,20 @@ class PackageLoader:
             for res in pkg.resources.resources():
                 keyls = parse_resource_name(res.key)
                 submod = mod
+
                 for key in keyls:
                     submod = getattr(submod, key, None)
+
                     if submod is None:
                         break
-                if not (submod is None):
+
+                if submod is not None:
                     pkg.content_info[submod] = res
 
         # The import is complete.
         self.module_info[mod] = pkg
-        pkg.content = mod
+
+        return mod
 
     def load_item_by_name(self, name, package=None):
         """load_item_by_name(name, package=None) -> value
@@ -888,6 +902,7 @@ class PackageLoader:
             prefix = modname[pos + 1:]
 
         pkg = self.package_names.get(basemodname)
+
         if pkg is None:
             raise ValueError('does not appear to have been defined inside a Boodler package: ' +
                              str(obj))
@@ -933,23 +948,22 @@ class PackageLoader:
 
         keyls = parse_resource_name(wholekey)
         attr = keyls.pop()
+
         for key in keyls:
             submod = getattr(mod, key, None)
+
             if submod is None:
                 # Create an empty submodule.
-                (fl, pathname, desc) = imp.find_module('emptymodule', boopak.__path__)
-                try:
-                    submod = imp.load_module(mod.__name__ + '.' + key, fl, pathname, desc)
-                finally:
-                    # Clean up.
-                    if fl:
-                        fl.close()
+                submod = load_module(f'{mod.__name__}.{key}', 'emptymodule', boopak.__path__[0])
+
                 setattr(mod, key, submod)
 
             if not isinstance(submod, types.ModuleType):
                 raise ValueError('resource key based on non-module: ' + wholekey)
+
             if mod.__name__ + '.' + key != submod.__name__:
                 raise ValueError('resource key based on imported module: ' + wholekey)
+
             mod = submod
 
         # We've drilled down so that mod is the next-to-last element
@@ -969,7 +983,6 @@ class PackageLoader:
         Stub, overridden in PackageCollection. In a PackageLoader, this
         does nothing.
         """
-        pass
 
     def stop_import_recording(self):
         """stop_import_recording() -> dic

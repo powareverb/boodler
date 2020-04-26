@@ -225,14 +225,16 @@ class PackageInfo:
         A sound-player will have to call this, but a package manager
         should not. (The package creation tool does, though.)
         """
-
-        if not (self.content is None):
+        if self.content is not None:
             return self.content
+
         if self.import_in_progress:
             # Annoying intermediate case; the module has been added to
             # sys.modules, but not yet to pkg.content.
             return sys.modules.get(self.encoded_name)
-        self.loader.import_package_content(self)
+
+        self.content = self.loader.import_package_content(self)
+
         return self.content
 
     def get_file(self, filename):
