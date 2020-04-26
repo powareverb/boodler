@@ -71,7 +71,7 @@ def list_drivers():
     """list_drivers() -> list of (str, str)
 
     List the Boodler drivers which are installed and usable.
-    Returns a list of tuples (key, fullname). In each pair, key is a 
+    Returns a list of tuples (key, fullname). In each pair, key is a
     driver key (which can be passed to set_driver()), and fullname
     is a human-readable description of the driver.
     """
@@ -95,7 +95,7 @@ def list_drivers():
 
 class BoodlerError(Exception):
     """BoodlerError: A parent class for errors encountered during
-    Boodler operation. These include violations of internal sanity 
+    Boodler operation. These include violations of internal sanity
     checks, and sanity checks on imported package code.
 
     When a BoodlerError is displayed, the last (lowest) stack frame
@@ -103,21 +103,17 @@ class BoodlerError(Exception):
     and message.
     """
 
-    pass
-
 
 class StopGeneration(Exception):
     """StopGeneration: Raised when the top-level soundscape reaches its
     end -- no more agents or sounds to be run.
     """
 
-    pass
-
 
 # Regular expression for valid event/property names: one or more elements,
 # separated by periods. Each element must contain only letters, digits,
 # and underscores. An element may not start with a digit.
-_prop_name_regexp = _re_compile('\\A[a-zA-Z_][a-zA-Z_0-9]*(\.([a-zA-Z_][a-zA-Z_0-9]*))*\\Z')
+_prop_name_regexp = _re_compile(r'\A[a-zA-Z_][a-zA-Z_0-9]*(\.([a-zA-Z_][a-zA-Z_0-9]*))*\Z')
 
 # A cache of valid event/property names. We keep this so that we don't
 # have to regexp them every time.
@@ -127,8 +123,8 @@ _valid_prop_names = {}
 def check_prop_name(val):
     """check_prop_name(val) -> str
 
-    Ensure that the value is a valid event or property name. If it isn't, 
-    raise BoodlerError. If it is, return a str version of it (in case it 
+    Ensure that the value is a valid event or property name. If it isn't,
+    raise BoodlerError. If it is, return a str version of it (in case it
     was a unicode object).
     """
 
