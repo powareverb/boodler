@@ -10,7 +10,6 @@ import os
 import os.path
 import re
 import types
-import unittest
 
 from packaging.specifiers import SpecifierSet
 from packaging.version import InvalidVersion, Version
@@ -113,7 +112,7 @@ def examine_directory(loader, dirname, destname=None):
     if destname:
         try:
             (tmpname, tmpvers) = parse_package_filename(destname, False)
-        except ValueError as ex:
+        except ValueError:
             pass
 
     if tmpname and not pkgname:
@@ -141,9 +140,12 @@ def examine_directory(loader, dirname, destname=None):
     if pkgname is None:
         raise ConstructError(
             dirname, 'Package name must be given in Metadata or inferred from directory name')
+
     ls = pinfo.parse_package_name(pkgname)
+
     if len(ls) < 3:
         raise ConstructError(dirname, 'Package name must have at least three elements: ' + pkgname)
+
     if ls[0:2] == ['org', 'boodler']:
         warning(dirname, 'Package name begins with "org.boodler", which is reserved')
 
@@ -165,6 +167,7 @@ def examine_directory(loader, dirname, destname=None):
                 raise ValueError('boodler.requires must have one or two elements.')
 
             pinfo.parse_package_name(reqname)
+
             if not (reqspec is None):
                 SpecifierSet(reqspec)
         except Exception as ex:
@@ -293,13 +296,14 @@ def examine_directory(loader, dirname, destname=None):
 
             resuse = None
             filebase = file
+
             if file.endswith('.aiff'):
                 resuse = 'sound'
                 filebase = file[:-5]
-            if file.endswith('.wav'):
+            elif file.endswith('.wav'):
                 resuse = 'sound'
                 filebase = file[:-4]
-            if file.endswith('.mixin'):
+            elif file.endswith('.mixin'):
                 resuse = 'sound'
                 filebase = file[:-6]
 
@@ -398,10 +402,9 @@ def examine_directory(loader, dirname, destname=None):
 
             arglist = resolve_argument_list(dirname, key, ag)
 
-            if not (arglist is None):
+            if arglist is not None:
                 try:
                     nod = arglist.to_node()
-                    # print '### created agent', key, ':', nod.serialize()
                     res.add('boodler.arguments', nod.serialize())
                 except Exception as ex:
                     warning(dirname, key + ' argument list error: ' + str(ex))
@@ -421,13 +424,16 @@ def examine_directory(loader, dirname, destname=None):
 
     for res in resources.resources():
         use = res.get_one('boodler.use')
+
         if use == 'sound':
             val = res.get_one('boodler.filename')
+
             if val is None:
                 warning(dirname, 'no filename found for sound resource: ' + res.key)
-        if use == 'agent':
+        elif use == 'agent':
             val = res.get_one('boodler.filename')
-            if not (val is None):
+
+            if val is not None:
                 warning(dirname, 'filename found for agent resource: ' + res.key)
 
     # Done.
@@ -452,10 +458,11 @@ def walk_module(context, mod, prefix=''):
 
     for key in dir(mod):
         isprivate = False
+
         if alllist is None:
             isprivate = key.startswith('_')
         else:
-            isprivate = not (key in alllist)
+            isprivate = key not in alllist
 
         if isprivate:
             continue
@@ -591,14 +598,14 @@ def resolve_argument_list(dirname, key, ag):
     except argdef.ArgDefError as ex:
         warning(dirname, key + '.init() could not be inspected: ' + str(ex))
 
-    if not (ag._args is None):
+    if ag._args is not None:
         try:
             arglist = argdef.ArgList.merge(ag._args, arglist)
         except argdef.ArgDefError as ex:
             warning(dirname, key + '.init() does not match _args: ' + str(ex))
             arglist = ag._args
 
-    if not (arglist is None):
+    if arglist is not None:
         ls = [arg for arg in arglist.args if (arg.index is None)]
         unindexed = len(ls)
         indexed = len(arglist.args) - unindexed
@@ -698,7 +705,7 @@ def build_package_filename(pkgname, pkgvers):
     return res
 
 
-version_start_regexp = re.compile('\\.[0-9]')
+version_start_regexp = re.compile(r'\.[0-9]')
 
 
 def parse_package_filename(val, assume_1=True):
@@ -746,76 +753,3 @@ def parse_package_filename(val, assume_1=True):
             pkgvers = None
 
     return (pkgname, pkgvers)
-
-
-class TestCreate(unittest.TestCase):
-
-    def test_build_package_filename(self):
-        ls = [
-            ('foo.bar', '1.0', 'foo.bar.1.0.boop'),
-            ('foo.bar', '2.30.1', 'foo.bar.2.30.1.boop'),
-            ('foo.bar.baz', '9.8.1', 'foo.bar.baz.9.8.1.boop'),
-        ]
-        for (pkgname, pkgvers, result) in ls:
-            pkgvers = Version(pkgvers)
-            val = build_package_filename(pkgname, pkgvers)
-            self.assertEqual(val, result)
-
-    def test_parse_package_filename(self):
-        ls = [
-            ('foo.bar', '1.0', 'foo.bar.1.0.boop'),
-            ('foo.bar', '1.0', 'FOO.BAR.1.0.BOOP'),
-            ('foo.bar', '2.30.1', 'foo.bar.2.30.1.boop'),
-            ('foo', '1.2.3', 'foo.1.2.3.boop'),
-            ('hello.a.string', '12.95', 'hello.a.string.12.95.boop'),
-            ('foo.bar', '1.0', 'foo.bar.boop'),
-            ('foo.bar', '2.0', 'foo.bar.2.0.boop'),
-            ('foo.bar.baz', '9.8.1', 'foo.bar.baz.9.8.1.boop'),
-        ]
-
-        for (pkgname, pkgvers, result) in ls:
-            (resname, resvers) = parse_package_filename(result)
-            self.assertEqual(resname, pkgname)
-            self.assertEqual(str(resvers), pkgvers)
-
-    def test_parse_package_filename_assume(self):
-        (resname, resvers) = parse_package_filename('foo.boop')
-        self.assertEqual(str(resvers), '1.0')
-        (resname, resvers) = parse_package_filename('foo.boop', False)
-        self.assertEqual(resvers, None)
-
-        (resname, resvers) = parse_package_filename('foo.1.0.boop')
-        self.assertEqual(str(resvers), '1.0')
-        (resname, resvers) = parse_package_filename('foo.1.0.boop', False)
-        self.assertEqual(str(resvers), '1.0')
-
-        (resname, resvers) = parse_package_filename('foo.2.5.boop')
-        self.assertEqual(str(resvers), '2.5')
-        (resname, resvers) = parse_package_filename('foo.2.5.boop', False)
-        self.assertEqual(str(resvers), '2.5')
-
-    def test_parse_package_filename_bad(self):
-        ls = [
-            ('', ValueError),
-            ('fooboop', ValueError),
-            ('.boop', ValueError),
-            ('!.boop', ValueError),
-            ('hel lo.boop', ValueError),
-            ('foo. boop', ValueError),
-            ('1.2.3.boop', ValueError),
-            ('1.2.$.boop', ValueError),
-            ('foo.1.$.boop', ValueError),
-            ('foo.$.boop', ValueError),
-            ('foo.1._.boop', ValueError),
-            ('foo..boop', ValueError),
-            ('foo..1.boop', ValueError),
-            ('foo.1..2.boop', ValueError),
-            ('front^caret.boop', ValueError),
-            ('mis.1.0.caret^.boop', ValueError),
-            ('mis.1.0.^1.boop', ValueError),
-            ('mis.1.0.^^x.boop', ValueError),
-            ('mis.1.0.bo^op', ValueError),
-        ]
-
-        for val, exc in ls:
-            self.assertRaises(exc, parse_package_filename, val)
