@@ -1,11 +1,9 @@
 # This defines what goes into the MANIFEST which is created by (and for)
 # the "setup.py sdist" command.
 
-include GPL LGPL README TODO
+include GPL LGPL README
 recursive-include src/cboodle *.h *.c
-include src/cboodle/PORTING
 graft doc
-graft etc
 
 global-exclude *~
 
