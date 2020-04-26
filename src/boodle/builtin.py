@@ -168,6 +168,9 @@ class TestSoundAgent(agent.Agent):
     the external module collection.
     """
 
+    # silence pytest warning
+    __test__ = False
+
     sound = None
 
     @staticmethod

@@ -263,6 +263,9 @@ to arbitrary levels of complexity, or write your own.
     install_requires=[
         'packaging',
     ],
+    tests_require=[
+        'tox',
+    ],
     packages=[
         'boodle',
         'booman',
