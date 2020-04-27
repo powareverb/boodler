@@ -10,8 +10,6 @@ Copyright 2001-2011 by Andrew Plotkin
    This program is distributed under the LGPL.
    See the LGPL document, or the above URL, for details.
 
-------------------------------------------------------------------------
-
 ## WHAT IT IS
 
 Boodler is a tool for creating soundscapes -- continuous, infinitely
@@ -25,17 +23,14 @@ switch between them, fade them in and out. This package comes with
 many example soundscapes. You can use these, modify them, combine them
 to arbitrary levels of complexity, or write your own.
 
-Boodler is written in Python, with the driver modules (cboodle_*)
-written in C. It was developed under Python 2.3.5 and Python 2.5.1; 
-more recent Python 2.x versions should work as well.
+Boodler is written in Python, with the driver module (cboodle_stdout)
+written in C. It was developed under Python 3.
 
 Boodler can generate audio output to one destination:
 
-    stdout: write raw sample output to stdout
+- stdout: write raw sample output to stdout
 
 Boodler does not come with any warranty of any sort whatsoever.
-
-------------------------------------------------------------------------
 
 ## GETTING STARTED
 
@@ -54,8 +49,6 @@ documentation folder (doc/index.html in this package) and follow the
 Note that the Boodler is not distributed with any soundscapes. You
 must download those separately. See the "Running Boodler" link in the
 documentation folder.
-
-------------------------------------------------------------------------
 
 ## LICENSING FOR USERS
 
@@ -96,8 +89,6 @@ soundscape, based solely on *your own* sound-sample files and code,
 then that stream of sound is entirely your own work; you may do with
 it as you wish.
 
-------------------------------------------------------------------------
-
 ## LICENSING FOR SOUNDSCAPE DESIGNERS
 
 (Creating new soundscapes)
@@ -121,8 +112,6 @@ may license them as you wish -- GPL, LGPL, Creative Commons, some
 other license. Or you might choose to not release them at all; you are
 not obligated to do so.
 
-------------------------------------------------------------------------
-
 ## LICENSING FOR SOUNDSCAPE CONTRIBUTORS
 
 (Putting your work in the Boodler library)
@@ -139,8 +128,6 @@ To be accepted, a package must be, at minimum, free for non-commercial
 use. The Boodler project strongly encourages contributions to be either
 placed in the public domain, or licensed under an open-source or
 Creative Commons license.
-
-------------------------------------------------------------------------
 
 ## LICENSING FOR PROGRAMMERS
 
