@@ -228,6 +228,9 @@ class local_generate_pydoc(Command):
         print('build index.html')
 
 
+with open('README.md', 'r') as readme:
+    long_description = readme.read()
+
 setup(
     name='boodler-redux',
     version='3.0.0',
@@ -248,18 +251,8 @@ setup(
         'Operating System :: MacOS :: MacOS X',
         'Programming Language :: Python :: 3',
     ],
-    long_description="""
-Boodler is a tool for creating soundscapes -- continuous, infinitely
-varying streams of sound. Boodler is designed to run in the background
-on a computer, maintaining whatever sound environment you desire.
-
-Boodler is extensible, customizable, and modular. Each soundscape is a
-small piece of Python code -- typically less than a page. A soundscape
-can incorporate other soundscapes; it can combine other soundscapes,
-switch between them, fade them in and out. This package comes with
-many example soundscapes. You can use these, modify them, combine them
-to arbitrary levels of complexity, or write your own.
-""",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     install_requires=[
         'packaging',
     ],
