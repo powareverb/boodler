@@ -28,7 +28,6 @@ import boopak.pinfo
 from boodle import cboodle, stereo
 from boodle.exceptions import BoodlerError
 
-
 # Maps File objects, and also str/unicode pathnames, to Samples.
 cache = {}
 
@@ -64,7 +63,7 @@ class Sample:
             raise SampleError('sample is unplayable')
 
         if not cboodle.is_sample_loaded(self.csamp):
-            if not (self.reloader is None):
+            if self.reloader is not None:
                 self.reloader.reload(self)
 
             if not cboodle.is_sample_loaded(self.csamp):
@@ -293,39 +292,45 @@ def get_info(samp, pitch=1):
 class MixIn(type):
     """MixIn: base class for statically declared mix-in samples.
 
-    To use this, declare a construct:
+    To use this, declare a construct::
 
-    class your_sample_name(MixIn):
-        ranges = [
-            MixIn.Range(...),
-            MixIn.Range(...),
-            MixIn.Range(...),
-        ]
-        default = MixIn.default(...)
+        class your_sample_name(MixIn):
+            ranges = [
+                MixIn.Range(...),
+                MixIn.Range(...),
+                MixIn.Range(...),
+            ]
+            default = MixIn.default(...)
 
-    A range declaration looks like
+    A range declaration looks like::
 
         MixIn.Range(maxval, sample)
-    or
+
+    or::
+
         MixIn.Range(minval, maxval, sample)
-    or
+
+    or::
+
         MixIn.Range(minval, maxval, sample, pitch=1.0, volume=1.0)
 
     If you don't give a minval, the maxval of the previous range is used.
     You may use the constants MixIn.MIN and MixIn.MAX to represent the
     limits of the range. The pitch and volume arguments are optional.
 
-    A default declaration looks like
+    A default declaration looks like::
 
         MixIn.default(sample)
-    or
+
+    or::
+
         MixIn.default(sample, pitch=1.0, volume=1.0)
 
     The default declaration is optional. (As are, again, the pitch and
     volume arguments.)
 
-    When your declaration is complete, your_sample_name will magically
-    be a MixinSample instance (not a class).
+    When your declaration is complete, `your_sample_name` will magically
+    be a `MixinSample` instance (not a class).
     """
 
     MIN = 0.0

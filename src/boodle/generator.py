@@ -42,16 +42,16 @@ class Generator:
     not.)
 
     queue -- list of [runtime, agent, handler] lists. Sorted by
-        runtime (and, insignificantly, by the other list values).
-        These are not tuples because we have to update the runtime in
-        place occasionally.
+             runtime (and, insignificantly, by the other list values).
+             These are not tuples because we have to update the runtime in
+             place occasionally.
     rootchannel -- the root channel object
     channels -- set of channels in existence
 
     allhandlers -- set of all active handler objects
     listeners -- list of sources of external events
     postqueue -- list of events received from external sources. These
-        are handled at the beginning of the next run cycle
+                 are handled at the beginning of the next run cycle
 
     loader -- the package loader
 

@@ -7,7 +7,7 @@
 Agent.
 
 Boodler allows you to start up a complex arrangement of soundscapes
-directly from the command line. For example:
+directly from the command line. For example::
 
   boodler " org.boodler.manage/Simultaneous
     (com.eblong.zarf.heartbeat/OneBeat 1.5)
@@ -67,7 +67,7 @@ the type_to_node() and value_to_node() helper functions.
 
 -- The wrapping problem
 
-One more wrinkle needs to be managed. In the example:
+One more wrinkle needs to be managed. In the example::
 
   boodler " org.boodler.manage/Simultaneous
     (com.eblong.zarf.heartbeat/OneBeat 1.5)
@@ -77,7 +77,7 @@ One more wrinkle needs to be managed. In the example:
 as arguments. Its task is to start up each one, which is
 straightforward.
 
-However, consider the example:
+However, consider the example::
 
   boodler " org.boodler.manage/Sequential
     30 60 2
@@ -1084,7 +1084,7 @@ class Wrapped:
     be instantiated later -- as many times as desired.
 
     Let me explain further. The usual pattern for resolving an ArgList
-    looks like:
+    looks like::
 
         (ls, dic) = arglist.resolve(tree)
         clas = ArgClassWrapper(f, ls, dic)
